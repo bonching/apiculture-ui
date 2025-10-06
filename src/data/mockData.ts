@@ -1,0 +1,180 @@
+import { Farm, Alert } from "../types";
+
+// Generate mock history data
+const generateHistory = (baseValue: number, variance: number, points: number = 24) => {
+  return Array.from({ length: points }, (_, i) => ({
+    time: `${23 - i}h`,
+    value: Math.round((baseValue + (Math.random() - 0.5) * variance) * 10) / 10,
+  })).reverse();
+};
+
+export const mockFarms: Farm[] = [
+  {
+    id: "farm-1",
+    name: "Meadow Valley Farm",
+    location: "North Valley",
+    beehives: [
+      {
+        id: "hive-1-1",
+        name: "Hive Alpha",
+        harvestStatus: "excellent",
+        honeyProduction: 28.5,
+        sensors: {
+          temperature: 34.5,
+          humidity: 58,
+          co2: 420,
+          beeCount: 45000,
+          soundLevel: 68,
+          activityLevel: "high",
+        },
+        hasAlert: false,
+        temperatureHistory: generateHistory(34.5, 2),
+        humidityHistory: generateHistory(58, 5),
+        beeCountHistory: generateHistory(45000, 2000),
+      },
+      {
+        id: "hive-1-2",
+        name: "Hive Beta",
+        harvestStatus: "good",
+        honeyProduction: 24.2,
+        sensors: {
+          temperature: 33.8,
+          humidity: 62,
+          co2: 450,
+          beeCount: 42000,
+          soundLevel: 65,
+          activityLevel: "medium",
+        },
+        hasAlert: false,
+        temperatureHistory: generateHistory(33.8, 2),
+        humidityHistory: generateHistory(62, 5),
+        beeCountHistory: generateHistory(42000, 2000),
+      },
+      {
+        id: "hive-1-3",
+        name: "Hive Gamma",
+        harvestStatus: "critical",
+        honeyProduction: 12.1,
+        sensors: {
+          temperature: 38.2,
+          humidity: 72,
+          co2: 680,
+          beeCount: 28000,
+          soundLevel: 52,
+          activityLevel: "low",
+        },
+        hasAlert: true,
+        temperatureHistory: generateHistory(38.2, 3),
+        humidityHistory: generateHistory(72, 6),
+        beeCountHistory: generateHistory(28000, 3000),
+      },
+    ],
+  },
+  {
+    id: "farm-2",
+    name: "Sunset Apiary",
+    location: "East Hills",
+    beehives: [
+      {
+        id: "hive-2-1",
+        name: "Hive Delta",
+        harvestStatus: "good",
+        honeyProduction: 26.8,
+        sensors: {
+          temperature: 35.1,
+          humidity: 55,
+          co2: 410,
+          beeCount: 48000,
+          soundLevel: 70,
+          activityLevel: "high",
+        },
+        hasAlert: false,
+        temperatureHistory: generateHistory(35.1, 2),
+        humidityHistory: generateHistory(55, 5),
+        beeCountHistory: generateHistory(48000, 2000),
+      },
+      {
+        id: "hive-2-2",
+        name: "Hive Epsilon",
+        harvestStatus: "fair",
+        honeyProduction: 19.5,
+        sensors: {
+          temperature: 36.5,
+          humidity: 65,
+          co2: 520,
+          beeCount: 35000,
+          soundLevel: 58,
+          activityLevel: "medium",
+        },
+        hasAlert: true,
+        temperatureHistory: generateHistory(36.5, 2.5),
+        humidityHistory: generateHistory(65, 6),
+        beeCountHistory: generateHistory(35000, 2500),
+      },
+    ],
+  },
+  {
+    id: "farm-3",
+    name: "Wildflower Fields",
+    location: "South Plains",
+    beehives: [
+      {
+        id: "hive-3-1",
+        name: "Hive Zeta",
+        harvestStatus: "excellent",
+        honeyProduction: 31.2,
+        sensors: {
+          temperature: 34.2,
+          humidity: 57,
+          co2: 400,
+          beeCount: 52000,
+          soundLevel: 72,
+          activityLevel: "high",
+        },
+        hasAlert: false,
+        temperatureHistory: generateHistory(34.2, 2),
+        humidityHistory: generateHistory(57, 5),
+        beeCountHistory: generateHistory(52000, 2000),
+      },
+    ],
+  },
+];
+
+export const mockAlerts: Alert[] = [
+  {
+    id: "alert-1",
+    severity: "critical",
+    title: "High Temperature Alert",
+    message: "Temperature has exceeded optimal range (38.2°C). Immediate attention required.",
+    beehiveName: "Hive Gamma",
+    farmName: "Meadow Valley Farm",
+    timestamp: "2 hours ago",
+  },
+  {
+    id: "alert-2",
+    severity: "warning",
+    title: "Elevated CO₂ Levels",
+    message: "CO₂ concentration is higher than normal (520 ppm). Monitor ventilation.",
+    beehiveName: "Hive Epsilon",
+    farmName: "Sunset Apiary",
+    timestamp: "4 hours ago",
+  },
+  {
+    id: "alert-3",
+    severity: "warning",
+    title: "Low Activity Detected",
+    message: "Bee activity is lower than expected. Check for possible issues.",
+    beehiveName: "Hive Gamma",
+    farmName: "Meadow Valley Farm",
+    timestamp: "6 hours ago",
+  },
+  {
+    id: "alert-4",
+    severity: "info",
+    title: "Honey Production Milestone",
+    message: "Hive has reached 30kg production milestone. Consider harvest preparation.",
+    beehiveName: "Hive Zeta",
+    farmName: "Wildflower Fields",
+    timestamp: "1 day ago",
+  },
+];
