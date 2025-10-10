@@ -1,17 +1,24 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { Wifi, WifiOff, Edit, Plus, Database, Shield, TrendingUp } from "lucide-react";
-import { Sensor, Beehive } from "../types";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
+import { Wifi, WifiOff, Edit, Plus, Database, Shield, TrendingUp, Filter } from "lucide-react";
+import { Sensor, Beehive, Farm } from "../types";
 
 interface SensorsListPageProps {
   sensors: Sensor[];
   beehives: Beehive[];
+  farms: Farm[];
   onEditSensor: (sensor: Sensor) => void;
   onAddSensor: () => void;
+  initialStatusFilter?: "online" | "offline" | null;
 }
 
-export function SensorsListPage({ sensors, beehives, onEditSensor, onAddSensor }: SensorsListPageProps) {
+export function SensorsListPage({ sensors, beehives, farms, onEditSensor, onAddSensor, initialStatusFilter }: SensorsListPageProps) {
+  const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter || "all");
+  const [farmFilter, setFarmFilter] = useState<string>("all");
+  const [beehiveFilter, setBeehiveFilter] = useState<string>("all");
   const getBeehiveName = (beehiveId: string | null) => {
     if (!beehiveId) return "Unlinked";
     const beehive = beehives.find(b => b.id === beehiveId);
@@ -50,6 +57,33 @@ export function SensorsListPage({ sensors, beehives, onEditSensor, onAddSensor }
     ).join(' ');
   };
 
+  // Get farm for a beehive
+  const getFarmForBeehive = (beehiveId: string | null) => {
+    if (!beehiveId) return null;
+    const beehive = beehives.find(b => b.id === beehiveId);
+    if (!beehive) return null;
+    return farms.find(f => f.beehiveIds.includes(beehive.id));
+  };
+
+  // Filter sensors
+  const filteredSensors = sensors.filter(sensor => {
+    if (statusFilter !== "all" && sensor.status !== statusFilter) return false;
+    if (beehiveFilter !== "all" && sensor.beehiveId !== beehiveFilter) return false;
+    if (farmFilter !== "all") {
+      const farm = getFarmForBeehive(sensor.beehiveId);
+      if (farm?.id !== farmFilter) return false;
+    }
+    return true;
+  });
+
+  // Available beehives based on farm filter
+  const availableBeehives = farmFilter === "all" 
+    ? beehives 
+    : beehives.filter(b => {
+        const farm = farms.find(f => f.beehiveIds.includes(b.id));
+        return farm?.id === farmFilter;
+      });
+
   return (
     <div className="p-4 pb-24 space-y-4 bg-gradient-to-b from-amber-50 to-yellow-100 min-h-screen">
       <div className="flex items-center justify-between">
@@ -63,8 +97,80 @@ export function SensorsListPage({ sensors, beehives, onEditSensor, onAddSensor }
         </Button>
       </div>
 
+      {/* Filters */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="h-5 w-5" />
+            Filters
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div className="space-y-2">
+            <label className="text-muted-foreground">Status</label>
+            <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Sensors</SelectItem>
+                <SelectItem value="online">Online Only</SelectItem>
+                <SelectItem value="offline">Offline Only</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-muted-foreground">Farm</label>
+            <Select value={farmFilter} onValueChange={(value) => {
+              setFarmFilter(value);
+              setBeehiveFilter("all");
+            }}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Farms</SelectItem>
+                {farms.map(farm => (
+                  <SelectItem key={farm.id} value={farm.id}>{farm.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-muted-foreground">Beehive</label>
+            <Select value={beehiveFilter} onValueChange={setBeehiveFilter}>
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Beehives</SelectItem>
+                {availableBeehives.map(beehive => (
+                  <SelectItem key={beehive.id} value={beehive.id}>{beehive.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {(statusFilter !== "all" || farmFilter !== "all" || beehiveFilter !== "all") && (
+            <Button 
+              variant="outline" 
+              className="w-full" 
+              onClick={() => {
+                setStatusFilter("all");
+                setFarmFilter("all");
+                setBeehiveFilter("all");
+              }}
+            >
+              Clear Filters
+            </Button>
+          )}
+        </CardContent>
+      </Card>
+
       <div className="space-y-3">
-        {sensors.map((sensor) => (
+        {filteredSensors.map((sensor) => (
           <Card key={sensor.id}>
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
@@ -126,11 +232,13 @@ export function SensorsListPage({ sensors, beehives, onEditSensor, onAddSensor }
           </Card>
         ))}
 
-        {sensors.length === 0 && (
+        {filteredSensors.length === 0 && (
           <Card>
             <CardContent className="pt-6 text-center">
               <Wifi className="h-12 w-12 mx-auto mb-2 opacity-50 text-muted-foreground" />
-              <p className="text-muted-foreground mb-4">No sensors yet</p>
+              <p className="text-muted-foreground mb-4">
+                {sensors.length === 0 ? "No sensors yet" : "No sensors match the current filters"}
+              </p>
               <Button onClick={onAddSensor} className="bg-amber-500 hover:bg-amber-600">
                 <Plus className="h-4 w-4 mr-2" />
                 Add Your First Sensor

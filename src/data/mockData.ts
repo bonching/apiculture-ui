@@ -17,7 +17,7 @@ export const mockSensors: Sensor[] = [
     status: "online",
     currentValue: 34.5,
     beehiveId: "hive-1-1",
-    systems: ["data_collection", "harvesting"],
+    systems: ["data_collection"],
     lastUpdated: "2 min ago",
   },
   {
@@ -47,7 +47,7 @@ export const mockSensors: Sensor[] = [
     status: "online",
     currentValue: 45000,
     beehiveId: "hive-1-1",
-    systems: ["data_collection", "harvesting"],
+    systems: ["data_collection"],
     lastUpdated: "5 min ago",
   },
   {
@@ -67,7 +67,7 @@ export const mockSensors: Sensor[] = [
     status: "online",
     currentValue: "high",
     beehiveId: "hive-1-1",
-    systems: ["data_collection", "harvesting"],
+    systems: ["data_collection"],
     lastUpdated: "1 min ago",
   },
   // Beta sensors
@@ -98,7 +98,7 @@ export const mockSensors: Sensor[] = [
     status: "online",
     currentValue: 42000,
     beehiveId: "hive-1-2",
-    systems: ["harvesting"],
+    systems: ["data_collection"],
     lastUpdated: "6 min ago",
   },
   // Gamma sensors (offline)
@@ -130,7 +130,7 @@ export const mockSensors: Sensor[] = [
     status: "online",
     currentValue: 35.1,
     beehiveId: "hive-2-1",
-    systems: ["data_collection", "harvesting"],
+    systems: ["data_collection"],
     lastUpdated: "1 min ago",
   },
   {
@@ -150,7 +150,7 @@ export const mockSensors: Sensor[] = [
     status: "online",
     currentValue: 48000,
     beehiveId: "hive-2-1",
-    systems: ["harvesting", "data_collection"],
+    systems: ["data_collection"],
     lastUpdated: "3 min ago",
   },
   // Epsilon sensors (some offline)
@@ -182,7 +182,7 @@ export const mockSensors: Sensor[] = [
     status: "online",
     currentValue: 34.2,
     beehiveId: "hive-3-1",
-    systems: ["data_collection", "harvesting"],
+    systems: ["data_collection"],
     lastUpdated: "2 min ago",
   },
   {
@@ -202,8 +202,29 @@ export const mockSensors: Sensor[] = [
     status: "online",
     currentValue: 52000,
     beehiveId: "hive-3-1",
-    systems: ["harvesting", "data_collection"],
+    systems: ["data_collection"],
     lastUpdated: "4 min ago",
+  },
+  // Harvesting System Sensors (not linked to beehives)
+  {
+    id: "sensor-20",
+    name: "Harvest Monitor H1",
+    type: "activity",
+    status: "online",
+    currentValue: "medium",
+    beehiveId: null,
+    systems: ["harvesting"],
+    lastUpdated: "5 min ago",
+  },
+  {
+    id: "sensor-21",
+    name: "Harvest Monitor H2",
+    type: "activity",
+    status: "online",
+    currentValue: "high",
+    beehiveId: null,
+    systems: ["harvesting"],
+    lastUpdated: "3 min ago",
   },
 ];
 
@@ -293,23 +314,23 @@ export const mockBeehives: Beehive[] = [
 export const mockFarms: Farm[] = [
   {
     id: "farm-1",
-    name: "Meadow Valley Farm",
-    location: "North Valley",
-    address: "123 Honey Lane, North Valley, CA 94530",
+    name: "Ising Farm",
+    location: "Vinzons, Camarines Norte",
+    address: "Calangcawan Sur, Vinzons, Camarines Norte",
     beehiveIds: ["hive-1-1", "hive-1-2", "hive-1-3"],
   },
   {
     id: "farm-2",
-    name: "Sunset Apiary",
-    location: "East Hills",
-    address: "456 Bee Boulevard, East Hills, CA 94531",
+    name: "Alveare Farm",
+    location: "Vinzons, Camarines Norte",
+    address: "Calangcawan Sur, Vinzons, Camarines Norte",
     beehiveIds: ["hive-2-1", "hive-2-2"],
   },
   {
     id: "farm-3",
-    name: "Wildflower Fields",
-    location: "South Plains",
-    address: "789 Pollen Path, South Plains, CA 94532",
+    name: "BoJayHan Farm",
+    location: "Labo, Camarines Norte",
+    address: "Iberica, Labo, Camarines Norte",
     beehiveIds: ["hive-3-1"],
   },
 ];

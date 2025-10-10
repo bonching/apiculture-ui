@@ -7,9 +7,10 @@ import { Alert as AlertType } from "../types";
 
 interface AlertsPanelProps {
   alerts: AlertType[];
+  onViewDetails: (alert: AlertType) => void;
 }
 
-export function AlertsPanel({ alerts }: AlertsPanelProps) {
+export function AlertsPanel({ alerts, onViewDetails }: AlertsPanelProps) {
   const [sortBy, setSortBy] = useState<"criticality" | "timestamp">("criticality");
 
   const getAlertIcon = (severity: string) => {
@@ -96,7 +97,7 @@ export function AlertsPanel({ alerts }: AlertsPanelProps) {
             </Card>
           ) : (
             sortedAlerts.map((alert) => (
-              <Card key={alert.id}>
+              <Card key={alert.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onViewDetails(alert)}>
                 <CardHeader>
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3 flex-1">
@@ -115,7 +116,12 @@ export function AlertsPanel({ alerts }: AlertsPanelProps) {
                 </CardHeader>
                 <CardContent>
                   <p className="text-muted-foreground mb-2">{alert.message}</p>
-                  <div className="text-muted-foreground">{alert.timestamp}</div>
+                  <div className="flex items-center justify-between">
+                    <div className="text-muted-foreground">{alert.timestamp}</div>
+                    <Button variant="link" className="text-amber-600 p-0 h-auto">
+                      View Details →
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             ))

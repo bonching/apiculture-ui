@@ -26,11 +26,27 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
   });
 
   const handleSystemToggle = (system: SensorSystem) => {
+    let newSystems = formData.systems.includes(system)
+      ? formData.systems.filter(s => s !== system)
+      : [...formData.systems, system];
+
+    // Harvesting is mutually exclusive from defense and data_collection
+    if (system === "harvesting" && newSystems.includes("harvesting")) {
+      newSystems = ["harvesting"];
+      // Clear beehiveId when switching to harvesting
+      setFormData({
+        ...formData,
+        systems: newSystems,
+        beehiveId: null,
+      });
+      return;
+    } else if ((system === "defense" || system === "data_collection") && newSystems.includes(system)) {
+      newSystems = newSystems.filter(s => s !== "harvesting");
+    }
+
     setFormData({
       ...formData,
-      systems: formData.systems.includes(system)
-        ? formData.systems.filter(s => s !== system)
-        : [...formData.systems, system],
+      systems: newSystems,
     });
   };
 
@@ -40,6 +56,11 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
   };
 
   const isNewSensor = !sensor;
+
+  // Beehive linking is required for defense/data_collection, disabled for harvesting
+  const isHarvestingOnly = formData.systems.includes("harvesting") && formData.systems.length === 1;
+  const requiresBeehiveLink = formData.systems.includes("defense") || formData.systems.includes("data_collection");
+  const beehiveLinkingDisabled = isHarvestingOnly;
 
   const systemInfo = [
     {
@@ -140,10 +161,14 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="beehiveId">Linked Beehive (Optional)</Label>
+                <Label htmlFor="beehiveId">
+                  Linked Beehive {requiresBeehiveLink && <span className="text-red-500">*</span>}
+                  {beehiveLinkingDisabled && <span className="text-muted-foreground"> (Disabled for Harvesting System)</span>}
+                </Label>
                 <Select
                   value={formData.beehiveId || "none"}
                   onValueChange={(value) => setFormData({ ...formData, beehiveId: value === "none" ? null : value })}
+                  disabled={beehiveLinkingDisabled}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a beehive" />
@@ -157,6 +182,11 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
                     ))}
                   </SelectContent>
                 </Select>
+                {requiresBeehiveLink && !formData.beehiveId && (
+                  <p className="text-red-500">
+                    Beehive linking is required for Defense and Data Collection systems
+                  </p>
+                )}
               </div>
 
               <div className="flex gap-3 pt-4">
@@ -171,6 +201,7 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
                 <Button
                   type="submit"
                   className="flex-1 bg-amber-500 hover:bg-amber-600"
+                  disabled={requiresBeehiveLink && !formData.beehiveId}
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Save Sensor
@@ -190,7 +221,7 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-muted-foreground">
-              A sensor can be used in multiple systems
+              Note: Harvesting System is mutually exclusive from Defense and Data Collection systems
             </p>
             {systemInfo.map((system) => {
               const Icon = system.icon;

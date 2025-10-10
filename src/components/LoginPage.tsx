@@ -11,7 +11,7 @@ interface LoginPageProps {
 
 export function LoginPage({ onLogin }: LoginPageProps) {
   const [username, setUsername] = useState("beekeeper");
-  const [password, setPassword] = useState("123");
+  const [password, setPassword] = useState("apiculture");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

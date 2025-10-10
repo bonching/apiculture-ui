@@ -9,10 +9,11 @@ import { BeehiveEditPage } from "./components/BeehiveEditPage";
 import { SensorsListPage } from "./components/SensorsListPage";
 import { SensorEditPage } from "./components/SensorEditPage";
 import { AlertsPanel } from "./components/AlertsPanel";
+import { AlertDetailPage } from "./components/AlertDetailPage";
 import { ProfilePage } from "./components/ProfilePage";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { mockFarms, mockAlerts, mockBeehives, mockSensors } from "./data/mockData";
-import { Beehive, Farm, Sensor } from "./types";
+import { Beehive, Farm, Sensor, Alert } from "./types";
 import { toast } from "sonner@2.0.3";
 
 type View = 
@@ -25,7 +26,8 @@ type View =
   | "beehive-edit"
   | "sensors"
   | "sensor-edit"
-  | "alerts" 
+  | "alerts"
+  | "alert-detail"
   | "profile";
 
 export default function App() {
@@ -42,6 +44,10 @@ export default function App() {
   const [selectedFarm, setSelectedFarm] = useState<Farm | null>(null);
   const [selectedBeehive, setSelectedBeehive] = useState<Beehive | null>(null);
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
+  const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
+  
+  // Filter state
+  const [sensorStatusFilter, setSensorStatusFilter] = useState<"online" | "offline" | null>(null);
 
   const handleLogin = (user: string) => {
     setUsername(user);
@@ -240,6 +246,19 @@ export default function App() {
       setSelectedFarm(null);
       setSelectedBeehive(null);
     }
+    if (view === "sensors") {
+      setSensorStatusFilter(null);
+    }
+  };
+
+  const handleNavigateToSensors = (statusFilter?: "online" | "offline") => {
+    setSensorStatusFilter(statusFilter || null);
+    setCurrentView("sensors");
+  };
+
+  const handleViewAlertDetails = (alert: Alert) => {
+    setSelectedAlert(alert);
+    setCurrentView("alert-detail");
   };
 
   const handleBackFromBeehive = () => {
@@ -256,10 +275,17 @@ export default function App() {
     setCurrentView("farms");
   };
 
-  const showBottomNav = !["login", "beehive", "farm-details", "farm-edit", "beehive-edit", "sensor-edit"].includes(currentView);
+  const showBottomNav = !["login", "beehive", "farm-details", "farm-edit", "beehive-edit", "sensor-edit", "alert-detail"].includes(currentView);
 
   const getFarmBeehives = (farm: Farm) => {
     return beehives.filter(b => farm.beehiveIds.includes(b.id));
+  };
+
+  // Get sensors for a beehive (for alert details)
+  const getBeehiveSensors = (beehiveName: string) => {
+    const beehive = beehives.find(b => b.name === beehiveName);
+    if (!beehive) return [];
+    return sensors.filter(s => beehive.sensorIds.includes(s.id));
   };
 
   // Helper to get sensor data for a beehive (for BeehiveDetail)
@@ -299,6 +325,7 @@ export default function App() {
           beehives={beehives}
           sensors={sensors}
           alertCount={alerts.length}
+          onNavigateToSensors={handleNavigateToSensors}
         />
       )}
       
@@ -370,8 +397,10 @@ export default function App() {
         <SensorsListPage
           sensors={sensors}
           beehives={beehives}
+          farms={farms}
           onEditSensor={handleEditSensor}
           onAddSensor={handleAddSensor}
+          initialStatusFilter={sensorStatusFilter}
         />
       )}
 
@@ -388,7 +417,18 @@ export default function App() {
       )}
       
       {currentView === "alerts" && (
-        <AlertsPanel alerts={alerts} />
+        <AlertsPanel alerts={alerts} onViewDetails={handleViewAlertDetails} />
+      )}
+
+      {currentView === "alert-detail" && selectedAlert && (
+        <AlertDetailPage
+          alert={selectedAlert}
+          sensors={getBeehiveSensors(selectedAlert.beehiveName)}
+          onBack={() => {
+            setSelectedAlert(null);
+            setCurrentView("alerts");
+          }}
+        />
       )}
       
       {currentView === "profile" && (

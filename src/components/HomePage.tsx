@@ -8,9 +8,10 @@ interface HomePageProps {
   beehives: Beehive[];
   sensors: Sensor[];
   alertCount: number;
+  onNavigateToSensors: (statusFilter?: "online" | "offline") => void;
 }
 
-export function HomePage({ farms, beehives, sensors, alertCount }: HomePageProps) {
+export function HomePage({ farms, beehives, sensors, alertCount, onNavigateToSensors }: HomePageProps) {
   // Calculate total stats
   const totalBeehives = beehives.length;
   const totalHoneyProduction = beehives.reduce((sum, hive) => sum + hive.honeyProduction, 0);
@@ -109,8 +110,11 @@ export function HomePage({ farms, beehives, sensors, alertCount }: HomePageProps
             <div className="flex items-center gap-3">
               <TrendingUp className="h-8 w-8 text-green-600" />
               <div>
-                <div className="text-muted-foreground">Avg/Hive</div>
-                <div>{totalBeehives > 0 ? (totalHoneyProduction / totalBeehives).toFixed(1) : 0} kg</div>
+                <div className="text-muted-foreground">Est. Bees</div>
+                <div>{beehives.reduce((sum, hive) => {
+                  const beeCountSensor = sensors.find(s => s.beehiveId === hive.id && s.type === "bee_count");
+                  return sum + (beeCountSensor ? Number(beeCountSensor.currentValue) : 0);
+                }, 0).toLocaleString()}</div>
               </div>
             </div>
           </CardContent>
@@ -125,22 +129,28 @@ export function HomePage({ farms, beehives, sensors, alertCount }: HomePageProps
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-green-50 rounded-lg">
+            <button
+              onClick={() => onNavigateToSensors("online")}
+              className="w-full flex items-center justify-between p-3 bg-green-50 rounded-lg hover:bg-green-100 transition-colors"
+            >
               <div className="flex items-center gap-3">
                 <Wifi className="h-5 w-5 text-green-600" />
                 <div className="text-green-900">Online Sensors</div>
               </div>
               <Badge className="bg-green-600">{onlineSensors}</Badge>
-            </div>
+            </button>
             
             {offlineSensors > 0 && (
-              <div className="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+              <button
+                onClick={() => onNavigateToSensors("offline")}
+                className="w-full flex items-center justify-between p-3 bg-red-50 rounded-lg hover:bg-red-100 transition-colors"
+              >
                 <div className="flex items-center gap-3">
                   <WifiOff className="h-5 w-5 text-red-600" />
                   <div className="text-red-900">Offline Sensors</div>
                 </div>
                 <Badge className="bg-red-600">{offlineSensors}</Badge>
-              </div>
+              </button>
             )}
           </div>
         </CardContent>

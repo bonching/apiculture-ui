@@ -1,11 +1,14 @@
-export interface Sensors {
-  temperature: number;
-  humidity: number;
-  co2: number;
-  beeCount: number;
-  soundLevel: number;
-  activityLevel: "low" | "medium" | "high";
+export type SensorSystem = "harvesting" | "data_collection" | "defense";
+
+export interface Sensor {
+  id: string;
+  name: string;
+  type: "temperature" | "humidity" | "co2" | "bee_count" | "sound" | "activity";
   status: "online" | "offline";
+  currentValue: number | string;
+  beehiveId: string | null;
+  systems: SensorSystem[];
+  lastUpdated: string;
 }
 
 export interface HistoryData {
@@ -16,9 +19,11 @@ export interface HistoryData {
 export interface Beehive {
   id: string;
   name: string;
+  description: string;
+  farmId: string;
   harvestStatus: "excellent" | "good" | "fair" | "poor" | "critical";
   honeyProduction: number;
-  sensors: Sensors;
+  sensorIds: string[];
   hasAlert: boolean;
   temperatureHistory: HistoryData[];
   humidityHistory: HistoryData[];
@@ -29,7 +34,8 @@ export interface Farm {
   id: string;
   name: string;
   location: string;
-  beehives: Beehive[];
+  address: string;
+  beehiveIds: string[];
 }
 
 export interface Alert {
@@ -40,4 +46,5 @@ export interface Alert {
   beehiveName: string;
   farmName: string;
   timestamp: string;
+  timestampMs: number;
 }
