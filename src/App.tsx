@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { LoginPage } from "./components/LoginPage";
-import { Dashboard } from "./components/Dashboard";
+import { HomePage } from "./components/HomePage";
+import { FarmsListPage } from "./components/FarmsListPage";
 import { BeehiveDetail } from "./components/BeehiveDetail";
 import { AlertsPanel } from "./components/AlertsPanel";
+import { ProfilePage } from "./components/ProfilePage";
+import { BottomNavigation } from "./components/BottomNavigation";
 import { mockFarms, mockAlerts } from "./data/mockData";
 import { Beehive } from "./types";
 
-type View = "login" | "dashboard" | "beehive" | "alerts";
+type View = "login" | "home" | "farms" | "beehive" | "alerts" | "profile";
 
 export default function App() {
   const [currentView, setCurrentView] = useState<View>("login");
@@ -15,7 +18,7 @@ export default function App() {
 
   const handleLogin = (email: string) => {
     setUserEmail(email);
-    setCurrentView("dashboard");
+    setCurrentView("home");
   };
 
   const handleLogout = () => {
@@ -29,14 +32,19 @@ export default function App() {
     setCurrentView("beehive");
   };
 
-  const handleBackToDashboard = () => {
-    setCurrentView("dashboard");
+  const handleNavigate = (view: string) => {
+    setCurrentView(view as View);
+    if (view !== "beehive") {
+      setSelectedBeehive(null);
+    }
+  };
+
+  const handleBackFromBeehive = () => {
+    setCurrentView("farms");
     setSelectedBeehive(null);
   };
 
-  const handleShowAlerts = () => {
-    setCurrentView("alerts");
-  };
+  const showBottomNav = currentView !== "login" && currentView !== "beehive";
 
   return (
     <div className="size-full">
@@ -44,27 +52,44 @@ export default function App() {
         <LoginPage onLogin={handleLogin} />
       )}
       
-      {currentView === "dashboard" && (
-        <Dashboard
+      {currentView === "home" && (
+        <HomePage
+          farms={mockFarms}
+          alertCount={mockAlerts.length}
+        />
+      )}
+      
+      {currentView === "farms" && (
+        <FarmsListPage
           farms={mockFarms}
           onSelectBeehive={handleSelectBeehive}
-          onShowAlerts={handleShowAlerts}
-          onLogout={handleLogout}
-          alertCount={mockAlerts.length}
         />
       )}
       
       {currentView === "beehive" && selectedBeehive && (
         <BeehiveDetail
           beehive={selectedBeehive}
-          onBack={handleBackToDashboard}
+          onBack={handleBackFromBeehive}
         />
       )}
       
       {currentView === "alerts" && (
-        <AlertsPanel
-          alerts={mockAlerts}
-          onBack={handleBackToDashboard}
+        <AlertsPanel alerts={mockAlerts} />
+      )}
+      
+      {currentView === "profile" && (
+        <ProfilePage
+          userEmail={userEmail}
+          farms={mockFarms}
+          onLogout={handleLogout}
+        />
+      )}
+
+      {showBottomNav && (
+        <BottomNavigation
+          currentView={currentView}
+          onNavigate={handleNavigate}
+          alertCount={mockAlerts.length}
         />
       )}
     </div>

@@ -5,6 +5,7 @@ export interface Sensors {
   beeCount: number;
   soundLevel: number;
   activityLevel: "low" | "medium" | "high";
+  status: "online" | "offline";
 }
 
 export interface HistoryData {
