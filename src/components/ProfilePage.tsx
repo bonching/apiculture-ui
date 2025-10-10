@@ -5,20 +5,18 @@ import { User, Mail, MapPin, Calendar, LogOut, Settings, Bell, Shield } from "lu
 import { Farm } from "../types";
 
 interface ProfilePageProps {
-  userEmail: string;
+  username: string;
   farms: Farm[];
+  beehives: any[];
   onLogout: () => void;
 }
 
-export function ProfilePage({ userEmail, farms, onLogout }: ProfilePageProps) {
-  const totalBeehives = farms.reduce((acc, farm) => acc + farm.beehives.length, 0);
-  const totalHoney = farms.reduce(
-    (acc, farm) => acc + farm.beehives.reduce((sum, hive) => sum + hive.honeyProduction, 0),
-    0
-  );
+export function ProfilePage({ username, farms, beehives, onLogout }: ProfilePageProps) {
+  const totalBeehives = beehives.length;
+  const totalHoney = beehives.reduce((sum, hive) => sum + hive.honeyProduction, 0);
 
-  const getInitials = (email: string) => {
-    return email.substring(0, 2).toUpperCase();
+  const getInitials = (name: string) => {
+    return name.substring(0, 2).toUpperCase();
   };
 
   return (
@@ -29,12 +27,12 @@ export function ProfilePage({ userEmail, farms, onLogout }: ProfilePageProps) {
           <div className="flex items-center gap-4 mb-4">
             <Avatar className="h-20 w-20">
               <AvatarFallback className="bg-amber-500 text-white">
-                {getInitials(userEmail)}
+                {getInitials(username)}
               </AvatarFallback>
             </Avatar>
             <div className="flex-1">
               <h2>Beekeeper Profile</h2>
-              <p className="text-muted-foreground">{userEmail}</p>
+              <p className="text-muted-foreground">@{username}</p>
             </div>
           </div>
           
@@ -62,15 +60,15 @@ export function ProfilePage({ userEmail, farms, onLogout }: ProfilePageProps) {
         </CardHeader>
         <CardContent className="space-y-3">
           <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-            <Mail className="h-5 w-5 text-muted-foreground" />
+            <User className="h-5 w-5 text-muted-foreground" />
             <div className="flex-1">
-              <div className="text-muted-foreground">Email</div>
-              <div>{userEmail}</div>
+              <div className="text-muted-foreground">Username</div>
+              <div>@{username}</div>
             </div>
           </div>
           
           <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
-            <User className="h-5 w-5 text-muted-foreground" />
+            <Mail className="h-5 w-5 text-muted-foreground" />
             <div className="flex-1">
               <div className="text-muted-foreground">Role</div>
               <div>Beekeeper</div>

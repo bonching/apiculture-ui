@@ -1,31 +1,25 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Hexagon, MapPin, Droplets, Wifi, WifiOff, TrendingUp, AlertTriangle } from "lucide-react";
-import { Farm } from "../types";
+import { Farm, Beehive, Sensor } from "../types";
 
 interface HomePageProps {
   farms: Farm[];
+  beehives: Beehive[];
+  sensors: Sensor[];
   alertCount: number;
 }
 
-export function HomePage({ farms, alertCount }: HomePageProps) {
+export function HomePage({ farms, beehives, sensors, alertCount }: HomePageProps) {
   // Calculate total stats
-  const totalBeehives = farms.reduce((acc, farm) => acc + farm.beehives.length, 0);
-  const totalHoneyProduction = farms.reduce(
-    (acc, farm) => acc + farm.beehives.reduce((sum, hive) => sum + hive.honeyProduction, 0),
-    0
-  );
-  const onlineSensors = farms.reduce(
-    (acc, farm) => acc + farm.beehives.filter(hive => hive.sensors.status === "online").length,
-    0
-  );
-  const offlineSensors = totalBeehives - onlineSensors;
+  const totalBeehives = beehives.length;
+  const totalHoneyProduction = beehives.reduce((sum, hive) => sum + hive.honeyProduction, 0);
+  const onlineSensors = sensors.filter(s => s.status === "online").length;
+  const offlineSensors = sensors.filter(s => s.status === "offline").length;
 
   // Calculate health status distribution
-  const healthStats = farms.reduce((acc, farm) => {
-    farm.beehives.forEach(hive => {
-      acc[hive.harvestStatus] = (acc[hive.harvestStatus] || 0) + 1;
-    });
+  const healthStats = beehives.reduce((acc, hive) => {
+    acc[hive.harvestStatus] = (acc[hive.harvestStatus] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
@@ -116,7 +110,7 @@ export function HomePage({ farms, alertCount }: HomePageProps) {
               <TrendingUp className="h-8 w-8 text-green-600" />
               <div>
                 <div className="text-muted-foreground">Avg/Hive</div>
-                <div>{(totalHoneyProduction / totalBeehives).toFixed(1)} kg</div>
+                <div>{totalBeehives > 0 ? (totalHoneyProduction / totalBeehives).toFixed(1) : 0} kg</div>
               </div>
             </div>
           </CardContent>
@@ -159,38 +153,46 @@ export function HomePage({ farms, alertCount }: HomePageProps) {
           <CardDescription>Status distribution across all hives</CardDescription>
         </CardHeader>
         <CardContent className="space-y-2">
-          {Object.entries(healthStats)
-            .sort(([a], [b]) => {
-              const order = ["excellent", "good", "fair", "poor", "critical"];
-              return order.indexOf(a) - order.indexOf(b);
-            })
-            .map(([status, count]) => (
-              <div
-                key={status}
-                className={`flex items-center justify-between p-3 rounded-lg ${getStatusColor(status)}`}
-              >
-                <div className="capitalize">{status}</div>
-                <Badge variant="secondary">{count} hives</Badge>
-              </div>
-            ))}
+          {Object.entries(healthStats).length === 0 ? (
+            <p className="text-muted-foreground text-center py-4">No beehives yet</p>
+          ) : (
+            Object.entries(healthStats)
+              .sort(([a], [b]) => {
+                const order = ["excellent", "good", "fair", "poor", "critical"];
+                return order.indexOf(a) - order.indexOf(b);
+              })
+              .map(([status, count]) => (
+                <div
+                  key={status}
+                  className={`flex items-center justify-between p-3 rounded-lg ${getStatusColor(status)}`}
+                >
+                  <div className="capitalize">{status}</div>
+                  <Badge variant="secondary">{count} hives</Badge>
+                </div>
+              ))
+          )}
         </CardContent>
       </Card>
 
-      {/* Recent Activity */}
+      {/* Farm Locations */}
       <Card>
         <CardHeader>
           <CardTitle>Farm Locations</CardTitle>
         </CardHeader>
         <CardContent className="space-y-2">
-          {farms.map((farm) => (
-            <div key={farm.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-              <div>
-                <div>{farm.name}</div>
-                <div className="text-muted-foreground">{farm.location}</div>
+          {farms.length === 0 ? (
+            <p className="text-muted-foreground text-center py-4">No farms yet</p>
+          ) : (
+            farms.map((farm) => (
+              <div key={farm.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                <div>
+                  <div>{farm.name}</div>
+                  <div className="text-muted-foreground">{farm.location}</div>
+                </div>
+                <Badge variant="secondary">{farm.beehiveIds.length} hives</Badge>
               </div>
-              <Badge variant="secondary">{farm.beehives.length} hives</Badge>
-            </div>
-          ))}
+            ))
+          )}
         </CardContent>
       </Card>
     </div>

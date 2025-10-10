@@ -1,4 +1,4 @@
-import { Home, MapPin, Bell, User } from "lucide-react";
+import { Home, MapPin, Bell, User, Wifi } from "lucide-react";
 import { Badge } from "./ui/badge";
 
 interface BottomNavigationProps {
@@ -11,13 +11,14 @@ export function BottomNavigation({ currentView, onNavigate, alertCount }: Bottom
   const navItems = [
     { id: "home", label: "Home", icon: Home },
     { id: "farms", label: "Farms", icon: MapPin },
+    { id: "sensors", label: "Sensors", icon: Wifi },
     { id: "alerts", label: "Alerts", icon: Bell, badge: alertCount },
     { id: "profile", label: "Profile", icon: User },
   ];
 
   return (
     <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-border shadow-lg">
-      <div className="grid grid-cols-4 max-w-lg mx-auto">
+      <div className="grid grid-cols-5 max-w-lg mx-auto">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentView === item.id;
