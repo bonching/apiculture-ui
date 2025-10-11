@@ -51,10 +51,12 @@ export function SensorsListPage({ sensors, beehives, farms, onEditSensor, onAddS
     }
   };
 
-  const getSensorTypeDisplay = (type: string) => {
-    return type.replace('_', ' ').split(' ').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+  const getDataCaptureDisplay = (types: string[]) => {
+    return types.map(type => 
+      type.replace('_', ' ').split(' ').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ')
+    ).join(', ');
   };
 
   // Get farm for a beehive
@@ -68,7 +70,8 @@ export function SensorsListPage({ sensors, beehives, farms, onEditSensor, onAddS
   // Filter sensors
   const filteredSensors = sensors.filter(sensor => {
     if (statusFilter !== "all" && sensor.status !== statusFilter) return false;
-    if (beehiveFilter !== "all" && sensor.beehiveId !== beehiveFilter) return false;
+    if (beehiveFilter === "unmapped" && sensor.beehiveId !== null) return false;
+    if (beehiveFilter !== "all" && beehiveFilter !== "unmapped" && sensor.beehiveId !== beehiveFilter) return false;
     if (farmFilter !== "all") {
       const farm = getFarmForBeehive(sensor.beehiveId);
       if (farm?.id !== farmFilter) return false;
@@ -146,6 +149,7 @@ export function SensorsListPage({ sensors, beehives, farms, onEditSensor, onAddS
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Beehives</SelectItem>
+                <SelectItem value="unmapped">Unmapped Sensors</SelectItem>
                 {availableBeehives.map(beehive => (
                   <SelectItem key={beehive.id} value={beehive.id}>{beehive.name}</SelectItem>
                 ))}
@@ -184,7 +188,7 @@ export function SensorsListPage({ sensors, beehives, farms, onEditSensor, onAddS
                     {sensor.name}
                   </CardTitle>
                   <div className="text-muted-foreground mt-1">
-                    {getSensorTypeDisplay(sensor.type)} • {getBeehiveName(sensor.beehiveId)}
+                    {getDataCaptureDisplay(sensor.dataCapture)} • {getBeehiveName(sensor.beehiveId)}
                   </div>
                 </div>
                 <Button

@@ -1,9 +1,28 @@
 export type SensorSystem = "harvesting" | "data_collection" | "defense";
 
+export type DataCaptureType = 
+  | "temperature" 
+  | "humidity" 
+  | "co2" 
+  | "voc"
+  | "image"
+  | "sound" 
+  | "vibration"
+  | "lux"
+  | "pheromone"
+  | "uv_index"
+  | "rainfall"
+  | "wind_speed"
+  | "barometric_pressure"
+  | "odor_compounds"
+  | "pollen_concentration"
+  | "bee_count" 
+  | "activity";
+
 export interface Sensor {
   id: string;
   name: string;
-  type: "temperature" | "humidity" | "co2" | "bee_count" | "sound" | "activity";
+  dataCapture: DataCaptureType[]; // Changed from 'type' to support multiple metrics
   status: "online" | "offline";
   currentValue: number | string;
   beehiveId: string | null;

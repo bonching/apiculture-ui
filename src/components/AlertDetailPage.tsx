@@ -37,46 +37,33 @@ export function AlertDetailPage({ alert, sensors, onBack }: AlertDetailPageProps
     }
   };
 
-  const getSensorIcon = (type: string) => {
-    switch (type) {
+  const getSensorIcon = (dataCapture: string[]) => {
+    // Show icon for primary data type
+    const primary = dataCapture[0];
+    switch (primary) {
       case "temperature":
         return <Thermometer className="h-5 w-5" />;
       case "humidity":
         return <Droplets className="h-5 w-5" />;
       case "co2":
+      case "voc":
         return <Wind className="h-5 w-5" />;
-      case "bee_count":
-      case "sound":
-      case "activity":
-        return <Activity className="h-5 w-5" />;
       default:
         return <Activity className="h-5 w-5" />;
     }
   };
 
-  const getSensorTypeDisplay = (type: string) => {
-    return type.replace('_', ' ').split(' ').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ');
+  const getDataCaptureDisplay = (dataCapture: string[]) => {
+    return dataCapture.map(type => 
+      type.replace('_', ' ').split(' ').map(word => 
+        word.charAt(0).toUpperCase() + word.slice(1)
+      ).join(' ')
+    ).join(', ');
   };
 
   const formatValue = (sensor: Sensor) => {
-    switch (sensor.type) {
-      case "temperature":
-        return `${sensor.currentValue}°C`;
-      case "humidity":
-        return `${sensor.currentValue}%`;
-      case "co2":
-        return `${sensor.currentValue} ppm`;
-      case "bee_count":
-        return Number(sensor.currentValue).toLocaleString();
-      case "sound":
-        return `${sensor.currentValue} dB`;
-      case "activity":
-        return String(sensor.currentValue);
-      default:
-        return String(sensor.currentValue);
-    }
+    // For multi-metric sensors, just display the currentValue as is
+    return String(sensor.currentValue);
   };
 
   return (
@@ -148,9 +135,9 @@ export function AlertDetailPage({ alert, sensors, onBack }: AlertDetailPageProps
                   className="flex items-center justify-between p-3 bg-muted rounded-lg"
                 >
                   <div className="flex items-center gap-3">
-                    {getSensorIcon(sensor.type)}
+                    {getSensorIcon(sensor.dataCapture)}
                     <div>
-                      <div>{getSensorTypeDisplay(sensor.type)}</div>
+                      <div>{getDataCaptureDisplay(sensor.dataCapture)}</div>
                       <div className="text-muted-foreground">{sensor.name}</div>
                     </div>
                   </div>

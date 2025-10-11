@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Checkbox } from "./ui/checkbox";
 import { Badge } from "./ui/badge";
 import { ArrowLeft, Save, Link2, Database, Shield, TrendingUp } from "lucide-react";
-import { Sensor, Beehive, SensorSystem } from "../types";
+import { Sensor, Beehive, SensorSystem, DataCaptureType } from "../types";
 
 interface SensorEditPageProps {
   sensor: Sensor | null;
@@ -19,11 +19,40 @@ interface SensorEditPageProps {
 export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditPageProps) {
   const [formData, setFormData] = useState({
     name: sensor?.name || "",
-    type: sensor?.type || "temperature",
+    dataCapture: sensor?.dataCapture || ["temperature"] as DataCaptureType[],
     status: sensor?.status || "online",
     beehiveId: sensor?.beehiveId || null,
     systems: sensor?.systems || [],
   });
+
+  const dataCaptureTypes: { value: DataCaptureType; label: string }[] = [
+    { value: "temperature", label: "Temperature" },
+    { value: "humidity", label: "Humidity" },
+    { value: "co2", label: "CO2" },
+    { value: "voc", label: "VOC (Volatile Organic Compounds)" },
+    { value: "image", label: "Image Capture" },
+    { value: "sound", label: "Sound" },
+    { value: "vibration", label: "Vibration" },
+    { value: "lux", label: "Lux Levels (Light Intensity)" },
+    { value: "pheromone", label: "Pheromone Concentration" },
+    { value: "uv_index", label: "UV Index" },
+    { value: "rainfall", label: "Rainfall" },
+    { value: "wind_speed", label: "Wind Speed" },
+    { value: "barometric_pressure", label: "Barometric Pressure" },
+    { value: "odor_compounds", label: "Odor Compound Profiles" },
+    { value: "pollen_concentration", label: "Pollen Concentration" },
+    { value: "bee_count", label: "Bee Count" },
+    { value: "activity", label: "Activity Level" },
+  ];
+
+  const handleDataCaptureToggle = (type: DataCaptureType) => {
+    setFormData({
+      ...formData,
+      dataCapture: formData.dataCapture.includes(type)
+        ? formData.dataCapture.filter(t => t !== type)
+        : [...formData.dataCapture, type],
+    });
+  };
 
   const handleSystemToggle = (system: SensorSystem) => {
     let newSystems = formData.systems.includes(system)
@@ -125,23 +154,32 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="type">Sensor Type</Label>
-                <Select
-                  value={formData.type}
-                  onValueChange={(value) => setFormData({ ...formData, type: value as any })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="temperature">Temperature</SelectItem>
-                    <SelectItem value="humidity">Humidity</SelectItem>
-                    <SelectItem value="co2">CO2</SelectItem>
-                    <SelectItem value="bee_count">Bee Count</SelectItem>
-                    <SelectItem value="sound">Sound</SelectItem>
-                    <SelectItem value="activity">Activity</SelectItem>
-                  </SelectContent>
-                </Select>
+                <Label>Data Capture Types</Label>
+                <p className="text-muted-foreground">
+                  Select one or more metrics this sensor can capture (e.g., BME680 captures temperature, humidity, CO2, and VOC)
+                </p>
+                <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto border rounded-lg p-3">
+                  {dataCaptureTypes.map((type) => (
+                    <div key={type.value} className="flex items-center space-x-2">
+                      <Checkbox
+                        id={type.value}
+                        checked={formData.dataCapture.includes(type.value)}
+                        onCheckedChange={() => handleDataCaptureToggle(type.value)}
+                      />
+                      <label
+                        htmlFor={type.value}
+                        className="cursor-pointer flex-1"
+                      >
+                        {type.label}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+                {formData.dataCapture.length === 0 && (
+                  <p className="text-red-500">
+                    Please select at least one data capture type
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -201,7 +239,7 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
                 <Button
                   type="submit"
                   className="flex-1 bg-amber-500 hover:bg-amber-600"
-                  disabled={requiresBeehiveLink && !formData.beehiveId}
+                  disabled={(requiresBeehiveLink && !formData.beehiveId) || formData.dataCapture.length === 0}
                 >
                   <Save className="h-4 w-4 mr-2" />
                   Save Sensor

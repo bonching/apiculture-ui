@@ -112,7 +112,7 @@ export function HomePage({ farms, beehives, sensors, alertCount, onNavigateToSen
               <div>
                 <div className="text-muted-foreground">Est. Bees</div>
                 <div>{beehives.reduce((sum, hive) => {
-                  const beeCountSensor = sensors.find(s => s.beehiveId === hive.id && s.type === "bee_count");
+                  const beeCountSensor = sensors.find(s => s.beehiveId === hive.id && s.dataCapture.includes("bee_count"));
                   return sum + (beeCountSensor ? Number(beeCountSensor.currentValue) : 0);
                 }, 0).toLocaleString()}</div>
               </div>

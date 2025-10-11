@@ -216,7 +216,7 @@ export default function App() {
       const newSensor: Sensor = {
         id: `sensor-${Date.now()}`,
         name: sensorData.name || "",
-        type: sensorData.type || "temperature",
+        dataCapture: sensorData.dataCapture || ["temperature"],
         status: sensorData.status || "online",
         currentValue: 0,
         beehiveId: sensorData.beehiveId || null,
@@ -292,22 +292,29 @@ export default function App() {
   const getBeehiveSensorsData = (beehive: Beehive) => {
     const beehiveSensors = sensors.filter(s => beehive.sensorIds.includes(s.id));
     
-    // Build sensors object from individual sensors
-    const tempSensor = beehiveSensors.find(s => s.type === "temperature");
-    const humiditySensor = beehiveSensors.find(s => s.type === "humidity");
-    const co2Sensor = beehiveSensors.find(s => s.type === "co2");
-    const beeCountSensor = beehiveSensors.find(s => s.type === "bee_count");
-    const soundSensor = beehiveSensors.find(s => s.type === "sound");
-    const activitySensor = beehiveSensors.find(s => s.type === "activity");
+    // Build sensors object from individual sensors with multi-metric support
+    const tempSensor = beehiveSensors.find(s => s.dataCapture.includes("temperature"));
+    const humiditySensor = beehiveSensors.find(s => s.dataCapture.includes("humidity"));
+    const co2Sensor = beehiveSensors.find(s => s.dataCapture.includes("co2"));
+    const beeCountSensor = beehiveSensors.find(s => s.dataCapture.includes("bee_count"));
+    const soundSensor = beehiveSensors.find(s => s.dataCapture.includes("sound"));
+    const activitySensor = beehiveSensors.find(s => s.dataCapture.includes("activity"));
     
     const hasOfflineSensor = beehiveSensors.some(s => s.status === "offline");
     
+    // Extract numeric values from multi-value strings
+    const extractFirstNumber = (value: number | string): number => {
+      if (typeof value === "number") return value;
+      const match = String(value).match(/[\d.]+/);
+      return match ? parseFloat(match[0]) : 0;
+    };
+    
     return {
-      temperature: tempSensor ? Number(tempSensor.currentValue) : 0,
-      humidity: humiditySensor ? Number(humiditySensor.currentValue) : 0,
-      co2: co2Sensor ? Number(co2Sensor.currentValue) : 0,
+      temperature: tempSensor ? extractFirstNumber(tempSensor.currentValue) : 0,
+      humidity: humiditySensor ? extractFirstNumber(humiditySensor.currentValue) : 0,
+      co2: co2Sensor ? extractFirstNumber(co2Sensor.currentValue) : 0,
       beeCount: beeCountSensor ? Number(beeCountSensor.currentValue) : 0,
-      soundLevel: soundSensor ? Number(soundSensor.currentValue) : 0,
+      soundLevel: soundSensor ? extractFirstNumber(soundSensor.currentValue) : 0,
       activityLevel: activitySensor ? String(activitySensor.currentValue) as "low" | "medium" | "high" : "medium",
       status: hasOfflineSensor ? "offline" as const : "online" as const,
     };

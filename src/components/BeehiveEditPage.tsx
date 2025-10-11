@@ -188,7 +188,7 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
                   <Label htmlFor={sensor.id} className="flex-1 cursor-pointer">
                     <div>{sensor.name}</div>
                     <div className="text-muted-foreground">
-                      Type: {sensor.type.replace('_', ' ')} • Status: {sensor.status}
+                      Captures: {sensor.dataCapture.map(t => t.replace('_', ' ')).join(', ')} • Status: {sensor.status}
                     </div>
                   </Label>
                 </div>
