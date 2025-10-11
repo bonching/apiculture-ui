@@ -901,11 +901,6 @@
     border-width: 1px;
   }
 
-  .border-0 {
-    border-style: var(--tw-border-style);
-    border-width: 0;
-  }
-
   .border-t {
     border-top-style: var(--tw-border-style);
     border-top-width: 1px;
@@ -1456,12 +1451,6 @@
   @media (hover: hover) {
     .hover\:bg-green-100:hover {
       background-color: var(--color-green-100);
-    }
-  }
-
-  @media (hover: hover) {
-    .hover\:bg-muted:hover {
-      background-color: var(--muted);
     }
   }
 
