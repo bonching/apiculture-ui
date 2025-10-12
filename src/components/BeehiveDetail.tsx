@@ -3,7 +3,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
-import { ArrowLeft, Thermometer, Droplet, Wind, Activity, Volume2, Camera, TrendingUp } from "lucide-react";
+import { TrendsDialog } from "./TrendsDialog";
+import { ArrowLeft, Thermometer, Droplet, Wind, Activity, Volume2, Camera, TrendingUp, Zap, Sun, CloudRain, Waves, Gauge, Flower } from "lucide-react";
 import { Beehive } from "../types";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 
@@ -15,16 +16,25 @@ interface BeehiveDetailProps {
       co2: number;
       beeCount: number;
       soundLevel: number;
-      activityLevel: "low" | "medium" | "high";
+      activityLevel: number;
+      voc: number;
+      vibration: number;
+      lux: number;
+      pheromone: number;
+      uvIndex: number;
+      rainfall: number;
+      windSpeed: number;
+      barometricPressure: number;
+      pollenConcentration: number;
       status: "online" | "offline";
     };
   };
   onBack: () => void;
-  onViewTrends: (metric?: "honey" | "temperature" | "humidity" | "beeCount") => void;
 }
 
-export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailProps) {
+export function BeehiveDetail({ beehive, onBack }: BeehiveDetailProps) {
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
+  const [trendMetric, setTrendMetric] = useState<string | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -41,6 +51,16 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
       default:
         return "bg-gray-500";
     }
+  };
+
+  const generateHoneyHistory = () => {
+    return Array.from({ length: 24 }, (_, i) => {
+      const variation = Math.random() * 2 - 1;
+      return {
+        time: i === 23 ? "Now" : `${23 - i}h`,
+        value: Math.max(0, beehive.honeyProduction + variation),
+      };
+    }).reverse();
   };
 
   return (
@@ -80,7 +100,7 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-100"
-                  onClick={() => onViewTrends("honey")}
+                  onClick={() => setTrendMetric("honey")}
                 >
                   <TrendingUp className="h-4 w-4" />
                 </Button>
@@ -107,7 +127,7 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
                     variant="ghost"
                     size="icon"
                     className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-100"
-                    onClick={() => onViewTrends("beeCount")}
+                    onClick={() => setTrendMetric("beeCount")}
                   >
                     <TrendingUp className="h-4 w-4" />
                   </Button>
@@ -117,11 +137,11 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
           </Card>
         </div>
 
-        {/* Current Sensor Readings */}
+        {/* Current Sensor Readings - Environmental */}
         <Card>
           <CardHeader>
-            <CardTitle>Current Readings</CardTitle>
-            <CardDescription>Real-time sensor data</CardDescription>
+            <CardTitle>Environmental Readings</CardTitle>
+            <CardDescription>Real-time environmental data</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -135,7 +155,7 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-100"
-                  onClick={() => onViewTrends("temperature")}
+                  onClick={() => setTrendMetric("temperature")}
                 >
                   <TrendingUp className="h-4 w-4" />
                 </Button>
@@ -153,7 +173,7 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
                   variant="ghost"
                   size="icon"
                   className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
-                  onClick={() => onViewTrends("humidity")}
+                  onClick={() => setTrendMetric("humidity")}
                 >
                   <TrendingUp className="h-4 w-4" />
                 </Button>
@@ -165,15 +185,80 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
                 <Wind className="h-5 w-5 text-gray-500" />
                 <div>CO₂ Level</div>
               </div>
-              <div>{beehive.sensors.co2} ppm</div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.co2} ppm</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-gray-600 hover:text-gray-700 hover:bg-gray-100"
+                  onClick={() => setTrendMetric("co2")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center gap-3">
+                <Zap className="h-5 w-5 text-orange-500" />
+                <div>VOC Level</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.voc} kΩ</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-orange-600 hover:text-orange-700 hover:bg-orange-100"
+                  onClick={() => setTrendMetric("voc")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center gap-3">
+                <Gauge className="h-5 w-5 text-indigo-500" />
+                <div>Barometric Pressure</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.barometricPressure} hPa</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-indigo-600 hover:text-indigo-700 hover:bg-indigo-100"
+                  onClick={() => setTrendMetric("barometricPressure")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Acoustic & Activity Readings */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Acoustic & Activity Readings</CardTitle>
+            <CardDescription>Sound and movement monitoring</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
               <div className="flex items-center gap-3">
                 <Volume2 className="h-5 w-5 text-purple-500" />
                 <div>Sound Level</div>
               </div>
-              <div>{beehive.sensors.soundLevel} dB</div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.soundLevel} dB</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-purple-600 hover:text-purple-700 hover:bg-purple-100"
+                  onClick={() => setTrendMetric("sound")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -181,9 +266,161 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
                 <Activity className="h-5 w-5 text-green-500" />
                 <div>Activity Level</div>
               </div>
-              <Badge variant={beehive.sensors.activityLevel === "high" ? "default" : "secondary"}>
-                {beehive.sensors.activityLevel}
-              </Badge>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.activityLevel}%</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-100"
+                  onClick={() => setTrendMetric("activity")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center gap-3">
+                <Waves className="h-5 w-5 text-cyan-500" />
+                <div>Vibration</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.vibration} mm/s</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-cyan-600 hover:text-cyan-700 hover:bg-cyan-100"
+                  onClick={() => setTrendMetric("vibration")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Light & Weather Readings */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Light & Weather Readings</CardTitle>
+            <CardDescription>External environmental conditions</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center gap-3">
+                <Sun className="h-5 w-5 text-yellow-500" />
+                <div>Light Intensity</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.lux} lux</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100"
+                  onClick={() => setTrendMetric("lux")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center gap-3">
+                <Sun className="h-5 w-5 text-orange-500" />
+                <div>UV Index</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.uvIndex}</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-orange-600 hover:text-orange-700 hover:bg-orange-100"
+                  onClick={() => setTrendMetric("uvIndex")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center gap-3">
+                <CloudRain className="h-5 w-5 text-blue-400" />
+                <div>Rainfall</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.rainfall} mm</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                  onClick={() => setTrendMetric("rainfall")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center gap-3">
+                <Wind className="h-5 w-5 text-teal-500" />
+                <div>Wind Speed</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.windSpeed} km/h</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-teal-600 hover:text-teal-700 hover:bg-teal-100"
+                  onClick={() => setTrendMetric("windSpeed")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Chemical & Biological Readings */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Chemical & Biological Readings</CardTitle>
+            <CardDescription>Pheromone and pollen monitoring</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center gap-3">
+                <Zap className="h-5 w-5 text-pink-500" />
+                <div>Pheromone Level</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.pheromone}%</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-pink-600 hover:text-pink-700 hover:bg-pink-100"
+                  onClick={() => setTrendMetric("pheromone")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+              <div className="flex items-center gap-3">
+                <Flower className="h-5 w-5 text-yellow-600" />
+                <div>Pollen Concentration</div>
+              </div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.pollenConcentration}%</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-yellow-600 hover:text-yellow-700 hover:bg-yellow-100"
+                  onClick={() => setTrendMetric("pollenConcentration")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -214,6 +451,137 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Trend Dialogs */}
+      <TrendsDialog
+        open={trendMetric === "honey"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Honey Production Trend"
+        data={generateHoneyHistory()}
+        color="#f59e0b"
+        unit=" kg"
+      />
+      <TrendsDialog
+        open={trendMetric === "temperature"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Temperature Trend"
+        data={beehive.temperatureHistory}
+        color="#ef4444"
+        unit="°C"
+      />
+      <TrendsDialog
+        open={trendMetric === "humidity"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Humidity Trend"
+        data={beehive.humidityHistory}
+        color="#3b82f6"
+        unit="%"
+        chartType="area"
+      />
+      <TrendsDialog
+        open={trendMetric === "beeCount"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Bee Population Trend"
+        data={beehive.beeCountHistory}
+        color="#10b981"
+        chartType="area"
+      />
+      <TrendsDialog
+        open={trendMetric === "co2"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="CO₂ Level Trend"
+        data={beehive.co2History}
+        color="#6b7280"
+        unit=" ppm"
+      />
+      <TrendsDialog
+        open={trendMetric === "sound"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Sound Level Trend"
+        data={beehive.soundHistory}
+        color="#a855f7"
+        unit=" dB"
+      />
+      <TrendsDialog
+        open={trendMetric === "activity"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Activity Level Trend"
+        data={beehive.activityHistory}
+        color="#22c55e"
+        unit="%"
+      />
+      <TrendsDialog
+        open={trendMetric === "voc"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="VOC Level Trend"
+        data={beehive.vocHistory}
+        color="#f97316"
+        unit=" kΩ"
+      />
+      <TrendsDialog
+        open={trendMetric === "vibration"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Vibration Trend"
+        data={beehive.vibrationHistory}
+        color="#06b6d4"
+        unit=" mm/s"
+      />
+      <TrendsDialog
+        open={trendMetric === "lux"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Light Intensity Trend"
+        data={beehive.luxHistory}
+        color="#eab308"
+        unit=" lux"
+      />
+      <TrendsDialog
+        open={trendMetric === "uvIndex"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="UV Index Trend"
+        data={beehive.uvIndexHistory}
+        color="#f97316"
+      />
+      <TrendsDialog
+        open={trendMetric === "rainfall"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Rainfall Trend"
+        data={beehive.rainfallHistory}
+        color="#3b82f6"
+        unit=" mm"
+        chartType="area"
+      />
+      <TrendsDialog
+        open={trendMetric === "windSpeed"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Wind Speed Trend"
+        data={beehive.windSpeedHistory}
+        color="#14b8a6"
+        unit=" km/h"
+      />
+      <TrendsDialog
+        open={trendMetric === "barometricPressure"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Barometric Pressure Trend"
+        data={beehive.barometricPressureHistory}
+        color="#6366f1"
+        unit=" hPa"
+      />
+      <TrendsDialog
+        open={trendMetric === "pheromone"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Pheromone Level Trend"
+        data={beehive.pheromoneHistory}
+        color="#ec4899"
+        unit="%"
+      />
+      <TrendsDialog
+        open={trendMetric === "pollenConcentration"}
+        onOpenChange={(open) => !open && setTrendMetric(null)}
+        title="Pollen Concentration Trend"
+        data={beehive.pollenConcentrationHistory}
+        color="#ca8a04"
+        unit="%"
+      />
     </div>
   );
 }

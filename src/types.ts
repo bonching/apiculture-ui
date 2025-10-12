@@ -49,6 +49,18 @@ export interface Beehive {
   temperatureHistory: HistoryData[];
   humidityHistory: HistoryData[];
   beeCountHistory: HistoryData[];
+  co2History: HistoryData[];
+  soundHistory: HistoryData[];
+  activityHistory: HistoryData[];
+  vocHistory: HistoryData[];
+  vibrationHistory: HistoryData[];
+  luxHistory: HistoryData[];
+  pheromoneHistory: HistoryData[];
+  uvIndexHistory: HistoryData[];
+  rainfallHistory: HistoryData[];
+  windSpeedHistory: HistoryData[];
+  barometricPressureHistory: HistoryData[];
+  pollenConcentrationHistory: HistoryData[];
 }
 
 export interface Farm {

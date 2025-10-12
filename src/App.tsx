@@ -6,7 +6,6 @@ import { FarmDetailsPage } from "./components/FarmDetailsPage";
 import { FarmEditPage } from "./components/FarmEditPage";
 import { BeehiveDetail } from "./components/BeehiveDetail";
 import { BeehiveEditPage } from "./components/BeehiveEditPage";
-import { TrendsPage } from "./components/TrendsPage";
 import { SensorsListPage } from "./components/SensorsListPage";
 import { SensorEditPage } from "./components/SensorEditPage";
 import { AlertsPanel } from "./components/AlertsPanel";
@@ -25,7 +24,6 @@ type View =
   | "farm-edit"
   | "beehive" 
   | "beehive-edit"
-  | "trends"
   | "sensors"
   | "sensor-edit"
   | "alerts"
@@ -47,7 +45,6 @@ export default function App() {
   const [selectedBeehive, setSelectedBeehive] = useState<Beehive | null>(null);
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
-  const [selectedMetric, setSelectedMetric] = useState<"honey" | "temperature" | "humidity" | "beeCount" | undefined>(undefined);
   
   // Filter state
   const [sensorStatusFilter, setSensorStatusFilter] = useState<"online" | "offline" | null>(null);
@@ -155,6 +152,18 @@ export default function App() {
         temperatureHistory: [],
         humidityHistory: [],
         beeCountHistory: [],
+        co2History: [],
+        soundHistory: [],
+        activityHistory: [],
+        vocHistory: [],
+        vibrationHistory: [],
+        luxHistory: [],
+        pheromoneHistory: [],
+        uvIndexHistory: [],
+        rainfallHistory: [],
+        windSpeedHistory: [],
+        barometricPressureHistory: [],
+        pollenConcentrationHistory: [],
       };
       setBeehives([...beehives, newBeehive]);
       
@@ -275,17 +284,12 @@ export default function App() {
     setSelectedBeehive(null);
   };
 
-  const handleViewTrends = (metric?: "honey" | "temperature" | "humidity" | "beeCount") => {
-    setSelectedMetric(metric);
-    setCurrentView("trends");
-  };
-
   const handleBackFromFarmDetails = () => {
     setSelectedFarm(null);
     setCurrentView("farms");
   };
 
-  const showBottomNav = !["login", "beehive", "trends", "farm-details", "farm-edit", "beehive-edit", "sensor-edit", "alert-detail"].includes(currentView);
+  const showBottomNav = !["login", "beehive", "farm-details", "farm-edit", "beehive-edit", "sensor-edit", "alert-detail"].includes(currentView);
 
   const getFarmBeehives = (farm: Farm) => {
     return beehives.filter(b => farm.beehiveIds.includes(b.id));
@@ -309,6 +313,15 @@ export default function App() {
     const beeCountSensor = beehiveSensors.find(s => s.dataCapture.includes("bee_count"));
     const soundSensor = beehiveSensors.find(s => s.dataCapture.includes("sound"));
     const activitySensor = beehiveSensors.find(s => s.dataCapture.includes("activity"));
+    const vocSensor = beehiveSensors.find(s => s.dataCapture.includes("voc"));
+    const vibrationSensor = beehiveSensors.find(s => s.dataCapture.includes("vibration"));
+    const luxSensor = beehiveSensors.find(s => s.dataCapture.includes("lux"));
+    const pheromoneSensor = beehiveSensors.find(s => s.dataCapture.includes("pheromone"));
+    const uvIndexSensor = beehiveSensors.find(s => s.dataCapture.includes("uv_index"));
+    const rainfallSensor = beehiveSensors.find(s => s.dataCapture.includes("rainfall"));
+    const windSpeedSensor = beehiveSensors.find(s => s.dataCapture.includes("wind_speed"));
+    const barometricPressureSensor = beehiveSensors.find(s => s.dataCapture.includes("barometric_pressure"));
+    const pollenConcentrationSensor = beehiveSensors.find(s => s.dataCapture.includes("pollen_concentration"));
     
     const hasOfflineSensor = beehiveSensors.some(s => s.status === "offline");
     
@@ -325,7 +338,16 @@ export default function App() {
       co2: co2Sensor ? extractFirstNumber(co2Sensor.currentValue) : 0,
       beeCount: beeCountSensor ? Number(beeCountSensor.currentValue) : 0,
       soundLevel: soundSensor ? extractFirstNumber(soundSensor.currentValue) : 0,
-      activityLevel: activitySensor ? String(activitySensor.currentValue) as "low" | "medium" | "high" : "medium",
+      activityLevel: activitySensor ? extractFirstNumber(activitySensor.currentValue) : 0,
+      voc: vocSensor ? extractFirstNumber(vocSensor.currentValue) : 0,
+      vibration: vibrationSensor ? extractFirstNumber(vibrationSensor.currentValue) : 0,
+      lux: luxSensor ? extractFirstNumber(luxSensor.currentValue) : 0,
+      pheromone: pheromoneSensor ? extractFirstNumber(pheromoneSensor.currentValue) : 0,
+      uvIndex: uvIndexSensor ? extractFirstNumber(uvIndexSensor.currentValue) : 0,
+      rainfall: rainfallSensor ? extractFirstNumber(rainfallSensor.currentValue) : 0,
+      windSpeed: windSpeedSensor ? extractFirstNumber(windSpeedSensor.currentValue) : 0,
+      barometricPressure: barometricPressureSensor ? extractFirstNumber(barometricPressureSensor.currentValue) : 0,
+      pollenConcentration: pollenConcentrationSensor ? extractFirstNumber(pollenConcentrationSensor.currentValue) : 0,
       status: hasOfflineSensor ? "offline" as const : "online" as const,
     };
   };
@@ -390,18 +412,6 @@ export default function App() {
             sensors: getBeehiveSensorsData(selectedBeehive),
           }}
           onBack={handleBackFromBeehive}
-          onViewTrends={handleViewTrends}
-        />
-      )}
-
-      {currentView === "trends" && selectedBeehive && (
-        <TrendsPage
-          beehive={selectedBeehive}
-          metric={selectedMetric}
-          onBack={() => {
-            setSelectedMetric(undefined);
-            setCurrentView("beehive");
-          }}
         />
       )}
 
