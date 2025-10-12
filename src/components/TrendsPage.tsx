@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { ArrowLeft, Thermometer, Droplet, TrendingUp } from "lucide-react";
@@ -6,10 +7,16 @@ import { Beehive } from "../types";
 
 interface TrendsPageProps {
   beehive: Beehive;
+  metric?: "honey" | "temperature" | "humidity" | "beeCount";
   onBack: () => void;
 }
 
-export function TrendsPage({ beehive, onBack }: TrendsPageProps) {
+export function TrendsPage({ beehive, metric, onBack }: TrendsPageProps) {
+  const honeyRef = useRef<HTMLDivElement>(null);
+  const temperatureRef = useRef<HTMLDivElement>(null);
+  const humidityRef = useRef<HTMLDivElement>(null);
+  const beeCountRef = useRef<HTMLDivElement>(null);
+
   // Generate honey production history from beehive.honeyProduction
   const honeyProductionHistory = Array.from({ length: 24 }, (_, i) => {
     const variation = Math.random() * 2 - 1; // Random variation between -1 and 1
@@ -18,6 +25,26 @@ export function TrendsPage({ beehive, onBack }: TrendsPageProps) {
       value: Math.max(0, beehive.honeyProduction + variation),
     };
   }).reverse();
+
+  // Scroll to the specific metric chart when metric prop changes
+  useEffect(() => {
+    if (metric) {
+      const refs = {
+        honey: honeyRef,
+        temperature: temperatureRef,
+        humidity: humidityRef,
+        beeCount: beeCountRef,
+      };
+      
+      const targetRef = refs[metric];
+      if (targetRef?.current) {
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+          targetRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
+        }, 100);
+      }
+    }
+  }, [metric]);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-yellow-100 pb-24">
@@ -41,7 +68,7 @@ export function TrendsPage({ beehive, onBack }: TrendsPageProps) {
 
       <div className="p-4 space-y-4">
         {/* Honey Production Trend */}
-        <Card>
+        <Card ref={honeyRef} className={metric === "honey" ? "ring-2 ring-amber-500" : ""}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <TrendingUp className="h-5 w-5 text-amber-500" />
@@ -63,7 +90,7 @@ export function TrendsPage({ beehive, onBack }: TrendsPageProps) {
         </Card>
 
         {/* Temperature Trend */}
-        <Card>
+        <Card ref={temperatureRef} className={metric === "temperature" ? "ring-2 ring-red-500" : ""}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Thermometer className="h-5 w-5 text-red-500" />
@@ -85,7 +112,7 @@ export function TrendsPage({ beehive, onBack }: TrendsPageProps) {
         </Card>
 
         {/* Humidity Trend */}
-        <Card>
+        <Card ref={humidityRef} className={metric === "humidity" ? "ring-2 ring-blue-500" : ""}>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Droplet className="h-5 w-5 text-blue-500" />
@@ -107,7 +134,7 @@ export function TrendsPage({ beehive, onBack }: TrendsPageProps) {
         </Card>
 
         {/* Bee Population Trend */}
-        <Card>
+        <Card ref={beeCountRef} className={metric === "beeCount" ? "ring-2 ring-green-500" : ""}>
           <CardHeader>
             <CardTitle>Bee Population Trend</CardTitle>
             <CardDescription>Estimated count over time</CardDescription>

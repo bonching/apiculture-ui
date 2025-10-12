@@ -249,35 +249,6 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
           </CardContent>
         </Card>
 
-        {/* Hive Location */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Hive Location</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              <Label>Where in the hive is this sensor placed?</Label>
-              <RadioGroup 
-                value={formData.hiveLocation} 
-                onValueChange={(value) => setFormData({ ...formData, hiveLocation: value as any })}
-              >
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="brood" id="brood" />
-                  <Label htmlFor="brood" className="cursor-pointer">Brood</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="honey_super" id="honey_super" />
-                  <Label htmlFor="honey_super" className="cursor-pointer">Honey Super</Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="external" id="external" />
-                  <Label htmlFor="external" className="cursor-pointer">External</Label>
-                </div>
-              </RadioGroup>
-            </div>
-          </CardContent>
-        </Card>
-
         {/* Farm and Beehive Linking Card */}
         <Card>
           <CardHeader>
@@ -345,6 +316,31 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
                   Beehive linking is required for Defense and Data Collection systems
                 </p>
               )}
+            </div>
+
+            {/* Hive Location - Moved here after beehive field */}
+            <div className="space-y-2">
+              <Label>Hive Location</Label>
+              <p className="text-muted-foreground">
+                Where in the hive is this sensor placed?
+              </p>
+              <RadioGroup 
+                value={formData.hiveLocation} 
+                onValueChange={(value) => setFormData({ ...formData, hiveLocation: value as any })}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="brood" id="brood" />
+                  <Label htmlFor="brood" className="cursor-pointer">Brood</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="honey_super" id="honey_super" />
+                  <Label htmlFor="honey_super" className="cursor-pointer">Honey Super</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="external" id="external" />
+                  <Label htmlFor="external" className="cursor-pointer">External</Label>
+                </div>
+              </RadioGroup>
             </div>
           </CardContent>
         </Card>

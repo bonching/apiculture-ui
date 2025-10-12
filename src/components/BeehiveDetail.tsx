@@ -1,6 +1,8 @@
+import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
 import { ArrowLeft, Thermometer, Droplet, Wind, Activity, Volume2, Camera, TrendingUp } from "lucide-react";
 import { Beehive } from "../types";
 import { ImageWithFallback } from "./figma/ImageWithFallback";
@@ -18,10 +20,12 @@ interface BeehiveDetailProps {
     };
   };
   onBack: () => void;
-  onViewTrends: () => void;
+  onViewTrends: (metric?: "honey" | "temperature" | "humidity" | "beeCount") => void;
 }
 
 export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailProps) {
+  const [imageDialogOpen, setImageDialogOpen] = useState(false);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case "excellent":
@@ -66,28 +70,49 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
         {/* Quick Stats */}
         <div className="grid grid-cols-2 gap-3">
           <Card>
-            <CardContent className="pt-6 text-center">
-              <div className="text-muted-foreground mb-1">Honey Production</div>
-              <div>{beehive.honeyProduction} kg</div>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-muted-foreground mb-1">Honey Production</div>
+                  <div>{beehive.honeyProduction} kg</div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-100"
+                  onClick={() => onViewTrends("honey")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
-          <Card className="cursor-pointer hover:shadow-md transition-shadow">
-            <CardContent className="pt-6 text-center">
-              <div className="text-muted-foreground mb-1 flex items-center justify-center gap-1">
-                Est. Bee Count
-                <Camera className="h-3 w-3" />
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="text-muted-foreground mb-1">Est. Bee Count</div>
+                  <div>{beehive.sensors.beeCount.toLocaleString()}</div>
+                </div>
+                <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                    onClick={() => setImageDialogOpen(true)}
+                  >
+                    <Camera className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-green-600 hover:text-green-700 hover:bg-green-100"
+                    onClick={() => onViewTrends("beeCount")}
+                  >
+                    <TrendingUp className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
-              <div>{beehive.sensors.beeCount.toLocaleString()}</div>
-              <Button 
-                variant="link" 
-                className="text-amber-600 p-0 h-auto mt-1"
-                onClick={() => {
-                  // This would open a modal or navigate to captured image
-                  alert("View captured image - would open image viewer");
-                }}
-              >
-                View Image →
-              </Button>
             </CardContent>
           </Card>
         </div>
@@ -95,21 +120,8 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
         {/* Current Sensor Readings */}
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>Current Readings</CardTitle>
-                <CardDescription>Real-time sensor data</CardDescription>
-              </div>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={onViewTrends}
-                className="flex items-center gap-2"
-              >
-                <TrendingUp className="h-4 w-4" />
-                View Trends
-              </Button>
-            </div>
+            <CardTitle>Current Readings</CardTitle>
+            <CardDescription>Real-time sensor data</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -117,7 +129,17 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
                 <Thermometer className="h-5 w-5 text-red-500" />
                 <div>Temperature</div>
               </div>
-              <div>{beehive.sensors.temperature}°C</div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.temperature}°C</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-100"
+                  onClick={() => onViewTrends("temperature")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -125,7 +147,17 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
                 <Droplet className="h-5 w-5 text-blue-500" />
                 <div>Humidity</div>
               </div>
-              <div>{beehive.sensors.humidity}%</div>
+              <div className="flex items-center gap-2">
+                <div>{beehive.sensors.humidity}%</div>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                  onClick={() => onViewTrends("humidity")}
+                >
+                  <TrendingUp className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
 
             <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -155,33 +187,33 @@ export function BeehiveDetail({ beehive, onBack, onViewTrends }: BeehiveDetailPr
             </div>
           </CardContent>
         </Card>
+      </div>
 
-        {/* Captured Image Section */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
+      {/* Image Popup Dialog */}
+      <Dialog open={imageDialogOpen} onOpenChange={setImageDialogOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
               <Camera className="h-5 w-5" />
               Latest Captured Image
-            </CardTitle>
-            <CardDescription>Image-based bee counting analysis</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="relative rounded-lg overflow-hidden">
-              <ImageWithFallback
-                src="https://images.unsplash.com/photo-1730190168042-3bef4553a8f4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob25leWNvbWIlMjBiZWVoaXZlJTIwY2xvc2UlMjB1cHxlbnwxfHx8fDE3NjAyMjgxMTV8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                alt="Beehive inspection"
-                className="w-full h-48 object-cover"
-              />
-              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-white">
-                <div className="flex items-center justify-between">
-                  <div>Estimated Count: {beehive.sensors.beeCount.toLocaleString()} bees</div>
-                  <Badge className="bg-green-500">Active</Badge>
-                </div>
+            </DialogTitle>
+          </DialogHeader>
+          <div className="relative rounded-lg overflow-hidden">
+            <ImageWithFallback
+              src="https://images.unsplash.com/photo-1730190168042-3bef4553a8f4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob25leWNvbWIlMjBiZWVoaXZlJTIwY2xvc2UlMjB1cHxlbnwxfHx8fDE3NjAyMjgxMTV8MA&ixlib=rb-4.1.0&q=80&w=1080"
+              alt="Beehive inspection"
+              className="w-full h-auto object-cover"
+            />
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
+              <div className="flex items-center justify-between">
+                <div>Estimated Count: {beehive.sensors.beeCount.toLocaleString()} bees</div>
+                <Badge className="bg-green-500">Active</Badge>
               </div>
+              <p className="text-muted-foreground mt-2">Image-based bee counting analysis</p>
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

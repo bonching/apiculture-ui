@@ -47,6 +47,7 @@ export default function App() {
   const [selectedBeehive, setSelectedBeehive] = useState<Beehive | null>(null);
   const [selectedSensor, setSelectedSensor] = useState<Sensor | null>(null);
   const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
+  const [selectedMetric, setSelectedMetric] = useState<"honey" | "temperature" | "humidity" | "beeCount" | undefined>(undefined);
   
   // Filter state
   const [sensorStatusFilter, setSensorStatusFilter] = useState<"online" | "offline" | null>(null);
@@ -274,7 +275,8 @@ export default function App() {
     setSelectedBeehive(null);
   };
 
-  const handleViewTrends = () => {
+  const handleViewTrends = (metric?: "honey" | "temperature" | "humidity" | "beeCount") => {
+    setSelectedMetric(metric);
     setCurrentView("trends");
   };
 
@@ -395,7 +397,11 @@ export default function App() {
       {currentView === "trends" && selectedBeehive && (
         <TrendsPage
           beehive={selectedBeehive}
-          onBack={() => setCurrentView("beehive")}
+          metric={selectedMetric}
+          onBack={() => {
+            setSelectedMetric(undefined);
+            setCurrentView("beehive");
+          }}
         />
       )}
 
