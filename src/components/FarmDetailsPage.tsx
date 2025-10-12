@@ -65,7 +65,7 @@ export function FarmDetailsPage({
             </Button>
             <div>
               <h1>{farm.name}</h1>
-              <div className="opacity-90">{farm.location}</div>
+              <div className="opacity-90">{farm.description}</div>
             </div>
           </div>
           <Button

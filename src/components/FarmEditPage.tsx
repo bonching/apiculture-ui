@@ -16,7 +16,7 @@ interface FarmEditPageProps {
 export function FarmEditPage({ farm, onSave, onBack }: FarmEditPageProps) {
   const [formData, setFormData] = useState({
     name: farm?.name || "",
-    location: farm?.location || "",
+    description: farm?.description || "",
     address: farm?.address || "",
   });
 
@@ -66,12 +66,12 @@ export function FarmEditPage({ farm, onSave, onBack }: FarmEditPageProps) {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="location">Location</Label>
+                <Label htmlFor="description">Description</Label>
                 <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  placeholder="e.g., North Valley"
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  placeholder="e.g., Main production farm with organic certification"
                   required
                 />
               </div>

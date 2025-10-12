@@ -7,20 +7,21 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Checkbox } from "./ui/checkbox";
 import { Badge } from "./ui/badge";
 import { ArrowLeft, Save, Link2, Database, Shield, TrendingUp } from "lucide-react";
-import { Sensor, Beehive, SensorSystem, DataCaptureType } from "../types";
+import { Sensor, Beehive, SensorSystem, DataCaptureType, Farm } from "../types";
 
 interface SensorEditPageProps {
   sensor: Sensor | null;
   beehives: Beehive[];
+  farms: Farm[];
   onSave: (sensor: Partial<Sensor>) => void;
   onBack: () => void;
 }
 
-export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditPageProps) {
+export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: SensorEditPageProps) {
   const [formData, setFormData] = useState({
     name: sensor?.name || "",
     dataCapture: sensor?.dataCapture || ["temperature"] as DataCaptureType[],
-    status: sensor?.status || "online",
+    farmId: sensor?.beehiveId ? beehives.find(b => b.id === sensor.beehiveId)?.farmId || "" : "",
     beehiveId: sensor?.beehiveId || null,
     systems: sensor?.systems || [],
   });
@@ -62,11 +63,12 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
     // Harvesting is mutually exclusive from defense and data_collection
     if (system === "harvesting" && newSystems.includes("harvesting")) {
       newSystems = ["harvesting"];
-      // Clear beehiveId when switching to harvesting
+      // Clear beehiveId and farmId when switching to harvesting
       setFormData({
         ...formData,
         systems: newSystems,
         beehiveId: null,
+        farmId: "",
       });
       return;
     } else if ((system === "defense" || system === "data_collection") && newSystems.includes(system)) {
@@ -81,7 +83,8 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    const { farmId, ...sensorData } = formData;
+    onSave(sensorData);
   };
 
   const isNewSensor = !sensor;
@@ -90,6 +93,11 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
   const isHarvestingOnly = formData.systems.includes("harvesting") && formData.systems.length === 1;
   const requiresBeehiveLink = formData.systems.includes("defense") || formData.systems.includes("data_collection");
   const beehiveLinkingDisabled = isHarvestingOnly;
+
+  // Filter beehives by selected farm
+  const filteredBeehives = formData.farmId 
+    ? beehives.filter(b => b.farmId === formData.farmId)
+    : beehives;
 
   const systemInfo = [
     {
@@ -148,7 +156,7 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g., Temp Sensor Alpha-1"
+                  placeholder="e.g., BME680 Environmental Alpha-1"
                   required
                 />
               </div>
@@ -183,17 +191,35 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
+                <Label htmlFor="farmId">
+                  Farm {!beehiveLinkingDisabled && <span className="text-muted-foreground">(Optional - helps filter beehives)</span>}
+                  {beehiveLinkingDisabled && <span className="text-muted-foreground"> (Disabled for Harvesting System)</span>}
+                </Label>
                 <Select
-                  value={formData.status}
-                  onValueChange={(value) => setFormData({ ...formData, status: value as any })}
+                  value={formData.farmId || "none"}
+                  onValueChange={(value) => {
+                    const newFarmId = value === "none" ? "" : value;
+                    setFormData({ 
+                      ...formData, 
+                      farmId: newFarmId,
+                      // Clear beehive selection if it doesn't belong to the new farm
+                      beehiveId: newFarmId && formData.beehiveId 
+                        ? (beehives.find(b => b.id === formData.beehiveId)?.farmId === newFarmId ? formData.beehiveId : null)
+                        : formData.beehiveId
+                    });
+                  }}
+                  disabled={beehiveLinkingDisabled}
                 >
                   <SelectTrigger>
-                    <SelectValue />
+                    <SelectValue placeholder="Select a farm" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="online">Online</SelectItem>
-                    <SelectItem value="offline">Offline</SelectItem>
+                    <SelectItem value="none">None (Show all beehives)</SelectItem>
+                    {farms.map((farm) => (
+                      <SelectItem key={farm.id} value={farm.id}>
+                        {farm.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
@@ -213,7 +239,7 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">None (Unlinked)</SelectItem>
-                    {beehives.map((beehive) => (
+                    {filteredBeehives.map((beehive) => (
                       <SelectItem key={beehive.id} value={beehive.id}>
                         {beehive.name}
                       </SelectItem>
@@ -249,43 +275,59 @@ export function SensorEditPage({ sensor, beehives, onSave, onBack }: SensorEditP
           </CardContent>
         </Card>
 
-        {/* Assign to Systems */}
+        {/* Assign to System Card - Moved after data capture types */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Link2 className="h-5 w-5" />
-              Assign to Systems
+              Assign to System
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             <p className="text-muted-foreground">
-              Note: Harvesting System is mutually exclusive from Defense and Data Collection systems
+              Select which system(s) this sensor should be assigned to. Harvesting is mutually exclusive from Data Collection and Defense.
             </p>
-            {systemInfo.map((system) => {
-              const Icon = system.icon;
-              return (
-                <div key={system.id} className="flex items-start gap-3 p-3 bg-muted rounded-lg">
+            
+            {systemInfo.map((system) => (
+              <div key={system.id} className="border rounded-lg p-3">
+                <div className="flex items-start gap-3">
                   <Checkbox
                     id={system.id}
                     checked={formData.systems.includes(system.id)}
                     onCheckedChange={() => handleSystemToggle(system.id)}
-                    className="mt-1"
                   />
-                  <Label htmlFor={system.id} className="flex-1 cursor-pointer">
-                    <div className="flex items-center gap-2">
-                      <Icon className={`h-4 w-4 ${system.color}`} />
+                  <div className="flex-1">
+                    <label
+                      htmlFor={system.id}
+                      className="cursor-pointer flex items-center gap-2"
+                    >
+                      <system.icon className={`h-4 w-4 ${system.color}`} />
                       <span>{system.name}</span>
-                      {formData.systems.includes(system.id) && (
-                        <Badge variant="secondary" className="ml-2">Active</Badge>
-                      )}
-                    </div>
-                    <div className="text-muted-foreground mt-1">
+                    </label>
+                    <p className="text-muted-foreground mt-1">
                       {system.description}
-                    </div>
-                  </Label>
+                    </p>
+                    {system.id === "harvesting" && formData.systems.includes("harvesting") && (
+                      <Badge variant="outline" className="mt-2 bg-yellow-100 text-yellow-800 border-yellow-300">
+                        Harvesting sensors do not require beehive linking
+                      </Badge>
+                    )}
+                    {(system.id === "defense" || system.id === "data_collection") && 
+                     formData.systems.includes(system.id) && (
+                      <Badge variant="outline" className="mt-2 bg-blue-100 text-blue-800 border-blue-300">
+                        Requires beehive linking
+                      </Badge>
+                    )}
+                  </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
+            
+            {formData.systems.length === 0 && (
+              <p className="text-red-500">
+                Please select at least one system
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>

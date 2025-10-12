@@ -35,7 +35,7 @@ export function FarmsListPage({ farms, onViewFarmDetails, onEditFarm, onAddFarm 
                     <MapPin className="h-4 w-4 text-amber-500" />
                     <h3>{farm.name}</h3>
                   </div>
-                  <p className="text-muted-foreground">{farm.location}</p>
+                  <p className="text-muted-foreground">{farm.description}</p>
                   <p className="text-muted-foreground">{farm.address}</p>
                 </div>
                 <Badge variant="secondary">{farm.beehiveIds.length} hives</Badge>

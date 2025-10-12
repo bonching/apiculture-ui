@@ -86,8 +86,8 @@ export function ProfilePage({ username, farms, beehives, onLogout }: ProfilePage
           <div className="flex items-center gap-3 p-3 bg-muted rounded-lg">
             <MapPin className="h-5 w-5 text-muted-foreground" />
             <div className="flex-1">
-              <div className="text-muted-foreground">Primary Location</div>
-              <div>{farms.length > 0 ? farms[0].location : "Not set"}</div>
+              <div className="text-muted-foreground">Primary Farm</div>
+              <div>{farms.length > 0 ? farms[0].name : "Not set"}</div>
             </div>
           </div>
         </CardContent>

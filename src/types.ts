@@ -39,6 +39,7 @@ export interface Beehive {
   id: string;
   name: string;
   description: string;
+  location: string;
   farmId: string;
   harvestStatus: "excellent" | "good" | "fair" | "poor" | "critical";
   honeyProduction: number;
@@ -52,7 +53,7 @@ export interface Beehive {
 export interface Farm {
   id: string;
   name: string;
-  location: string;
+  description: string;
   address: string;
   beehiveIds: string[];
 }

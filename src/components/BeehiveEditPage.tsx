@@ -21,8 +21,8 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
   const [formData, setFormData] = useState({
     name: beehive?.name || "",
     description: beehive?.description || "",
+    location: beehive?.location || "",
     farmId: beehive?.farmId || farms[0]?.id || "",
-    harvestStatus: beehive?.harvestStatus || "good",
     honeyProduction: beehive?.honeyProduction?.toString() || "0",
     sensorIds: beehive?.sensorIds || [],
   });
@@ -97,6 +97,17 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="location">Location within Farm</Label>
+                <Input
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="e.g., North sector, Row 3, Position 5"
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="farmId">Farm</Label>
                 <Select value={formData.farmId} onValueChange={(value) => setFormData({ ...formData, farmId: value })}>
                   <SelectTrigger>
@@ -108,25 +119,6 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
                         {farm.name}
                       </SelectItem>
                     ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="harvestStatus">Harvest Status</Label>
-                <Select
-                  value={formData.harvestStatus}
-                  onValueChange={(value) => setFormData({ ...formData, harvestStatus: value as any })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="excellent">Excellent</SelectItem>
-                    <SelectItem value="good">Good</SelectItem>
-                    <SelectItem value="fair">Fair</SelectItem>
-                    <SelectItem value="poor">Poor</SelectItem>
-                    <SelectItem value="critical">Critical</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

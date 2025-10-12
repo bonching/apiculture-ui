@@ -88,7 +88,7 @@ export function Dashboard({ farms, onSelectBeehive, onShowAlerts, onLogout, aler
           <div key={farm.id}>
             <div className="flex items-center justify-between mb-3">
               <h2>{farm.name}</h2>
-              <Badge variant="secondary">{farm.location}</Badge>
+              <Badge variant="secondary">{farm.description}</Badge>
             </div>
             
             <div className="grid grid-cols-1 gap-3">

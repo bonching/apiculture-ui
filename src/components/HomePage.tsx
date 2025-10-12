@@ -197,7 +197,7 @@ export function HomePage({ farms, beehives, sensors, alertCount, onNavigateToSen
               <div key={farm.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
                 <div>
                   <div>{farm.name}</div>
-                  <div className="text-muted-foreground">{farm.location}</div>
+                  <div className="text-muted-foreground">{farm.description}</div>
                 </div>
                 <Badge variant="secondary">{farm.beehiveIds.length} hives</Badge>
               </div>

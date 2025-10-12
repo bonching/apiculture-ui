@@ -92,7 +92,7 @@ export default function App() {
       const newFarm: Farm = {
         id: `farm-${Date.now()}`,
         name: farmData.name || "",
-        location: farmData.location || "",
+        description: farmData.description || "",
         address: farmData.address || "",
         beehiveIds: [],
       };
@@ -143,6 +143,7 @@ export default function App() {
         id: `hive-${Date.now()}`,
         name: beehiveData.name || "",
         description: beehiveData.description || "",
+        location: beehiveData.location || "",
         farmId: beehiveData.farmId || farms[0]?.id || "",
         harvestStatus: beehiveData.harvestStatus || "good",
         honeyProduction: beehiveData.honeyProduction || 0,
@@ -415,6 +416,7 @@ export default function App() {
         <SensorEditPage
           sensor={selectedSensor}
           beehives={beehives}
+          farms={farms}
           onSave={handleSaveSensor}
           onBack={() => {
             setCurrentView("sensors");
