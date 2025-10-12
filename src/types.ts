@@ -26,6 +26,7 @@ export interface Sensor {
   status: "online" | "offline";
   currentValue: number | string;
   beehiveId: string | null;
+  hiveLocation: "brood" | "honey_super" | "external";
   systems: SensorSystem[];
   lastUpdated: string;
 }
@@ -40,7 +41,6 @@ export interface Beehive {
   name: string;
   description: string;
   location: string;
-  hiveLocation: "brood" | "honey_super" | "external";
   farmId: string;
   harvestStatus: "excellent" | "good" | "fair" | "poor" | "critical";
   honeyProduction: number;

@@ -5,6 +5,7 @@ import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Checkbox } from "./ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Badge } from "./ui/badge";
 import { ArrowLeft, Save, Link2, Database, Shield, TrendingUp } from "lucide-react";
 import { Sensor, Beehive, SensorSystem, DataCaptureType, Farm } from "../types";
@@ -23,6 +24,7 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
     dataCapture: sensor?.dataCapture || ["temperature"] as DataCaptureType[],
     farmId: sensor?.beehiveId ? beehives.find(b => b.id === sensor.beehiveId)?.farmId || "" : "",
     beehiveId: sensor?.beehiveId || null,
+    hiveLocation: sensor?.hiveLocation || "brood" as "brood" | "honey_super" | "external",
     systems: sensor?.systems || [],
   });
 
@@ -148,71 +150,50 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
           <CardHeader>
             <CardTitle>Sensor Details</CardTitle>
           </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Sensor Name</Label>
-                <Input
-                  id="name"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  placeholder="e.g., BME680 Environmental Alpha-1"
-                  required
-                />
-              </div>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Sensor Name</Label>
+              <Input
+                id="name"
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="e.g., BME680 Environmental Alpha-1"
+                required
+              />
+            </div>
 
-              <div className="space-y-2">
-                <Label>Data Capture Types</Label>
-                <p className="text-muted-foreground">
-                  Select one or more metrics this sensor can capture (e.g., BME680 captures temperature, humidity, CO2, and VOC)
+            <div className="space-y-2">
+              <Label>Data Capture Types</Label>
+              <p className="text-muted-foreground">
+                Select one or more metrics this sensor can capture (e.g., BME680 captures temperature, humidity, CO2, and VOC)
+              </p>
+              <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto border rounded-lg p-3">
+                {dataCaptureTypes.map((type) => (
+                  <div key={type.value} className="flex items-center space-x-2">
+                    <Checkbox
+                      id={type.value}
+                      checked={formData.dataCapture.includes(type.value)}
+                      onCheckedChange={() => handleDataCaptureToggle(type.value)}
+                    />
+                    <label
+                      htmlFor={type.value}
+                      className="cursor-pointer flex-1"
+                    >
+                      {type.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
+              {formData.dataCapture.length === 0 && (
+                <p className="text-red-500">
+                  Please select at least one data capture type
                 </p>
-                <div className="grid grid-cols-1 gap-2 max-h-64 overflow-y-auto border rounded-lg p-3">
-                  {dataCaptureTypes.map((type) => (
-                    <div key={type.value} className="flex items-center space-x-2">
-                      <Checkbox
-                        id={type.value}
-                        checked={formData.dataCapture.includes(type.value)}
-                        onCheckedChange={() => handleDataCaptureToggle(type.value)}
-                      />
-                      <label
-                        htmlFor={type.value}
-                        className="cursor-pointer flex-1"
-                      >
-                        {type.label}
-                      </label>
-                    </div>
-                  ))}
-                </div>
-                {formData.dataCapture.length === 0 && (
-                  <p className="text-red-500">
-                    Please select at least one data capture type
-                  </p>
-                )}
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={onBack}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="flex-1 bg-amber-500 hover:bg-amber-600"
-                  disabled={(requiresBeehiveLink && !formData.beehiveId) || formData.dataCapture.length === 0}
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Sensor
-                </Button>
-              </div>
-            </form>
+              )}
+            </div>
           </CardContent>
         </Card>
 
-        {/* Assign to System Card - Moved before farm selector */}
+        {/* Assign to System Card */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -265,6 +246,35 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
                 Please select at least one system
               </p>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Hive Location */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Hive Location</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Label>Where in the hive is this sensor placed?</Label>
+              <RadioGroup 
+                value={formData.hiveLocation} 
+                onValueChange={(value) => setFormData({ ...formData, hiveLocation: value as any })}
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="brood" id="brood" />
+                  <Label htmlFor="brood" className="cursor-pointer">Brood</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="honey_super" id="honey_super" />
+                  <Label htmlFor="honey_super" className="cursor-pointer">Honey Super</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="external" id="external" />
+                  <Label htmlFor="external" className="cursor-pointer">External</Label>
+                </div>
+              </RadioGroup>
+            </div>
           </CardContent>
         </Card>
 
@@ -338,6 +348,27 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
             </div>
           </CardContent>
         </Card>
+
+        {/* Action Buttons at Bottom */}
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="flex-1 bg-amber-500 hover:bg-amber-600"
+            onClick={handleSubmit}
+            disabled={(requiresBeehiveLink && !formData.beehiveId) || formData.dataCapture.length === 0}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Save Sensor
+          </Button>
+        </div>
       </div>
     </div>
   );

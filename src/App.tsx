@@ -6,6 +6,7 @@ import { FarmDetailsPage } from "./components/FarmDetailsPage";
 import { FarmEditPage } from "./components/FarmEditPage";
 import { BeehiveDetail } from "./components/BeehiveDetail";
 import { BeehiveEditPage } from "./components/BeehiveEditPage";
+import { TrendsPage } from "./components/TrendsPage";
 import { SensorsListPage } from "./components/SensorsListPage";
 import { SensorEditPage } from "./components/SensorEditPage";
 import { AlertsPanel } from "./components/AlertsPanel";
@@ -24,6 +25,7 @@ type View =
   | "farm-edit"
   | "beehive" 
   | "beehive-edit"
+  | "trends"
   | "sensors"
   | "sensor-edit"
   | "alerts"
@@ -144,7 +146,6 @@ export default function App() {
         name: beehiveData.name || "",
         description: beehiveData.description || "",
         location: beehiveData.location || "",
-        hiveLocation: beehiveData.hiveLocation || "brood",
         farmId: beehiveData.farmId || farms[0]?.id || "",
         harvestStatus: beehiveData.harvestStatus || "good",
         honeyProduction: beehiveData.honeyProduction || 0,
@@ -222,6 +223,7 @@ export default function App() {
         status: sensorData.status || "online",
         currentValue: 0,
         beehiveId: sensorData.beehiveId || null,
+        hiveLocation: sensorData.hiveLocation || "brood",
         systems: sensorData.systems || [],
         lastUpdated: "just now",
       };
@@ -272,12 +274,16 @@ export default function App() {
     setSelectedBeehive(null);
   };
 
+  const handleViewTrends = () => {
+    setCurrentView("trends");
+  };
+
   const handleBackFromFarmDetails = () => {
     setSelectedFarm(null);
     setCurrentView("farms");
   };
 
-  const showBottomNav = !["login", "beehive", "farm-details", "farm-edit", "beehive-edit", "sensor-edit", "alert-detail"].includes(currentView);
+  const showBottomNav = !["login", "beehive", "trends", "farm-details", "farm-edit", "beehive-edit", "sensor-edit", "alert-detail"].includes(currentView);
 
   const getFarmBeehives = (farm: Farm) => {
     return beehives.filter(b => farm.beehiveIds.includes(b.id));
@@ -382,6 +388,14 @@ export default function App() {
             sensors: getBeehiveSensorsData(selectedBeehive),
           }}
           onBack={handleBackFromBeehive}
+          onViewTrends={handleViewTrends}
+        />
+      )}
+
+      {currentView === "trends" && selectedBeehive && (
+        <TrendsPage
+          beehive={selectedBeehive}
+          onBack={() => setCurrentView("beehive")}
         />
       )}
 

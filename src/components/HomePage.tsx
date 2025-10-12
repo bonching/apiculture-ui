@@ -184,24 +184,6 @@ export function HomePage({ farms, beehives, sensors, alertCount, onNavigateToSen
         </CardContent>
       </Card>
 
-      {/* Farm Locations */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Farm Locations</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2">
-          {farms.length === 0 ? (
-            <p className="text-muted-foreground text-center py-4">No farms yet</p>
-          ) : (
-            farms.map((farm) => (
-              <div key={farm.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div>{farm.name}</div>
-                <Badge variant="secondary">{farm.beehiveIds.length} hives</Badge>
-              </div>
-            ))
-          )}
-        </CardContent>
-      </Card>
     </div>
   );
 }

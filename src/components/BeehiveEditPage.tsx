@@ -6,7 +6,6 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Checkbox } from "./ui/checkbox";
-import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { ArrowLeft, Save, Link2 } from "lucide-react";
 import { Beehive, Farm, Sensor } from "../types";
 
@@ -24,7 +23,6 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
     description: beehive?.description || "",
     farmId: beehive?.farmId || farms[0]?.id || "",
     location: beehive?.location || "",
-    hiveLocation: beehive?.hiveLocation || "brood" as "brood" | "honey_super" | "external",
     sensorIds: beehive?.sensorIds || [],
   });
 
@@ -120,45 +118,6 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
                   required
                 />
               </div>
-
-              <div className="space-y-2">
-                <Label>Hive Location</Label>
-                <RadioGroup 
-                  value={formData.hiveLocation} 
-                  onValueChange={(value) => setFormData({ ...formData, hiveLocation: value as any })}
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="brood" id="brood" />
-                    <Label htmlFor="brood" className="cursor-pointer">Brood</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="honey_super" id="honey_super" />
-                    <Label htmlFor="honey_super" className="cursor-pointer">Honey Super</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="external" id="external" />
-                    <Label htmlFor="external" className="cursor-pointer">External</Label>
-                  </div>
-                </RadioGroup>
-              </div>
-
-              <div className="flex gap-3 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={onBack}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  className="flex-1 bg-amber-500 hover:bg-amber-600"
-                >
-                  <Save className="h-4 w-4 mr-2" />
-                  Save Beehive
-                </Button>
-              </div>
             </form>
           </CardContent>
         </Card>
@@ -195,6 +154,26 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
             )}
           </CardContent>
         </Card>
+
+        {/* Action Buttons at Bottom */}
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={onBack}
+            className="flex-1"
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            className="flex-1 bg-amber-500 hover:bg-amber-600"
+            onClick={handleSubmit}
+          >
+            <Save className="h-4 w-4 mr-2" />
+            Save Beehive
+          </Button>
+        </div>
       </div>
     </div>
   );
