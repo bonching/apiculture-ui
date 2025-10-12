@@ -1,12 +1,23 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { ArrowLeft, Thermometer, Droplet, Wind, Activity, Volume2 } from "lucide-react";
+import { ArrowLeft, Thermometer, Droplet, Wind, Activity, Volume2, Camera, TrendingUp } from "lucide-react";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Beehive } from "../types";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 
 interface BeehiveDetailProps {
-  beehive: Beehive;
+  beehive: Beehive & {
+    sensors: {
+      temperature: number;
+      humidity: number;
+      co2: number;
+      beeCount: number;
+      soundLevel: number;
+      activityLevel: "low" | "medium" | "high";
+      status: "online" | "offline";
+    };
+  };
   onBack: () => void;
 }
 
@@ -27,6 +38,15 @@ export function BeehiveDetail({ beehive, onBack }: BeehiveDetailProps) {
         return "bg-gray-500";
     }
   };
+
+  // Generate honey production history from beehive.honeyProduction
+  const honeyProductionHistory = Array.from({ length: 24 }, (_, i) => {
+    const variation = Math.random() * 2 - 1; // Random variation between -1 and 1
+    return {
+      time: i === 23 ? "Now" : `${23 - i}h`,
+      value: Math.max(0, beehive.honeyProduction + variation),
+    };
+  }).reverse();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-yellow-100 pb-6">
@@ -60,10 +80,23 @@ export function BeehiveDetail({ beehive, onBack }: BeehiveDetailProps) {
               <div>{beehive.honeyProduction} kg</div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="cursor-pointer hover:shadow-md transition-shadow">
             <CardContent className="pt-6 text-center">
-              <div className="text-muted-foreground mb-1">Est. Bee Count</div>
+              <div className="text-muted-foreground mb-1 flex items-center justify-center gap-1">
+                Est. Bee Count
+                <Camera className="h-3 w-3" />
+              </div>
               <div>{beehive.sensors.beeCount.toLocaleString()}</div>
+              <Button 
+                variant="link" 
+                className="text-amber-600 p-0 h-auto mt-1"
+                onClick={() => {
+                  // This would open a modal or navigate to captured image
+                  alert("View captured image - would open image viewer");
+                }}
+              >
+                View Image →
+              </Button>
             </CardContent>
           </Card>
         </div>
@@ -119,20 +152,45 @@ export function BeehiveDetail({ beehive, onBack }: BeehiveDetailProps) {
           </CardContent>
         </Card>
 
+        {/* Honey Production Trend */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-amber-500" />
+              Honey Production Trend
+            </CardTitle>
+            <CardDescription>Last 24 hours</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <ResponsiveContainer width="100%" height={200}>
+              <LineChart data={honeyProductionHistory}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
+                <XAxis dataKey="time" stroke="#888" tick={{ fontSize: 12 }} />
+                <YAxis stroke="#888" tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Line type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={2} name="Honey (kg)" />
+              </LineChart>
+            </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
         {/* Temperature Trend */}
         <Card>
           <CardHeader>
-            <CardTitle>Temperature Trend</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Thermometer className="h-5 w-5 text-red-500" />
+              Temperature Trend
+            </CardTitle>
             <CardDescription>Last 24 hours</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
               <LineChart data={beehive.temperatureHistory}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="time" stroke="#888" />
-                <YAxis stroke="#888" />
+                <XAxis dataKey="time" stroke="#888" tick={{ fontSize: 12 }} />
+                <YAxis stroke="#888" tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Line type="monotone" dataKey="value" stroke="#f59e0b" strokeWidth={2} />
+                <Line type="monotone" dataKey="value" stroke="#ef4444" strokeWidth={2} name="Temperature (°C)" />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
@@ -141,38 +199,67 @@ export function BeehiveDetail({ beehive, onBack }: BeehiveDetailProps) {
         {/* Humidity Trend */}
         <Card>
           <CardHeader>
-            <CardTitle>Humidity Trend</CardTitle>
+            <CardTitle className="flex items-center gap-2">
+              <Droplet className="h-5 w-5 text-blue-500" />
+              Humidity Trend
+            </CardTitle>
             <CardDescription>Last 24 hours</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={beehive.humidityHistory}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="time" stroke="#888" />
-                <YAxis stroke="#888" />
+                <XAxis dataKey="time" stroke="#888" tick={{ fontSize: 12 }} />
+                <YAxis stroke="#888" tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Area type="monotone" dataKey="value" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} />
+                <Area type="monotone" dataKey="value" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.3} name="Humidity (%)" />
               </AreaChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        {/* Bee Count Trend */}
+        {/* Bee Population Trend */}
         <Card>
           <CardHeader>
-            <CardTitle>Bee Population</CardTitle>
+            <CardTitle>Bee Population Trend</CardTitle>
             <CardDescription>Estimated count over time</CardDescription>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={200}>
               <AreaChart data={beehive.beeCountHistory}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0" />
-                <XAxis dataKey="time" stroke="#888" />
-                <YAxis stroke="#888" />
+                <XAxis dataKey="time" stroke="#888" tick={{ fontSize: 12 }} />
+                <YAxis stroke="#888" tick={{ fontSize: 12 }} />
                 <Tooltip />
-                <Area type="monotone" dataKey="value" stroke="#10b981" fill="#10b981" fillOpacity={0.3} />
+                <Area type="monotone" dataKey="value" stroke="#10b981" fill="#10b981" fillOpacity={0.3} name="Bee Count" />
               </AreaChart>
             </ResponsiveContainer>
+          </CardContent>
+        </Card>
+
+        {/* Captured Image Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Camera className="h-5 w-5" />
+              Latest Captured Image
+            </CardTitle>
+            <CardDescription>Image-based bee counting analysis</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="relative rounded-lg overflow-hidden">
+              <ImageWithFallback
+                src="https://images.unsplash.com/photo-1730190168042-3bef4553a8f4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob25leWNvbWIlMjBiZWVoaXZlJTIwY2xvc2UlMjB1cHxlbnwxfHx8fDE3NjAyMjgxMTV8MA&ixlib=rb-4.1.0&q=80&w=1080"
+                alt="Beehive inspection"
+                className="w-full h-48 object-cover"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-3 text-white">
+                <div className="flex items-center justify-between">
+                  <div>Estimated Count: {beehive.sensors.beeCount.toLocaleString()} bees</div>
+                  <Badge className="bg-green-500">Active</Badge>
+                </div>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

@@ -40,6 +40,7 @@ export interface Beehive {
   name: string;
   description: string;
   location: string;
+  hiveLocation: "brood" | "honey_super" | "external";
   farmId: string;
   harvestStatus: "excellent" | "good" | "fair" | "poor" | "critical";
   honeyProduction: number;

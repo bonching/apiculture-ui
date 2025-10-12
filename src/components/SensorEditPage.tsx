@@ -190,69 +190,6 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
                 )}
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="farmId">
-                  Farm {!beehiveLinkingDisabled && <span className="text-muted-foreground">(Optional - helps filter beehives)</span>}
-                  {beehiveLinkingDisabled && <span className="text-muted-foreground"> (Disabled for Harvesting System)</span>}
-                </Label>
-                <Select
-                  value={formData.farmId || "none"}
-                  onValueChange={(value) => {
-                    const newFarmId = value === "none" ? "" : value;
-                    setFormData({ 
-                      ...formData, 
-                      farmId: newFarmId,
-                      // Clear beehive selection if it doesn't belong to the new farm
-                      beehiveId: newFarmId && formData.beehiveId 
-                        ? (beehives.find(b => b.id === formData.beehiveId)?.farmId === newFarmId ? formData.beehiveId : null)
-                        : formData.beehiveId
-                    });
-                  }}
-                  disabled={beehiveLinkingDisabled}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a farm" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None (Show all beehives)</SelectItem>
-                    {farms.map((farm) => (
-                      <SelectItem key={farm.id} value={farm.id}>
-                        {farm.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="beehiveId">
-                  Linked Beehive {requiresBeehiveLink && <span className="text-red-500">*</span>}
-                  {beehiveLinkingDisabled && <span className="text-muted-foreground"> (Disabled for Harvesting System)</span>}
-                </Label>
-                <Select
-                  value={formData.beehiveId || "none"}
-                  onValueChange={(value) => setFormData({ ...formData, beehiveId: value === "none" ? null : value })}
-                  disabled={beehiveLinkingDisabled}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a beehive" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">None (Unlinked)</SelectItem>
-                    {filteredBeehives.map((beehive) => (
-                      <SelectItem key={beehive.id} value={beehive.id}>
-                        {beehive.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                {requiresBeehiveLink && !formData.beehiveId && (
-                  <p className="text-red-500">
-                    Beehive linking is required for Defense and Data Collection systems
-                  </p>
-                )}
-              </div>
-
               <div className="flex gap-3 pt-4">
                 <Button
                   type="button"
@@ -275,7 +212,7 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
           </CardContent>
         </Card>
 
-        {/* Assign to System Card - Moved after data capture types */}
+        {/* Assign to System Card - Moved before farm selector */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -328,6 +265,77 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
                 Please select at least one system
               </p>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Farm and Beehive Linking Card */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Beehive Linking</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="farmId">
+                Farm {!beehiveLinkingDisabled && <span className="text-muted-foreground">(Optional - helps filter beehives)</span>}
+                {beehiveLinkingDisabled && <span className="text-muted-foreground"> (Disabled for Harvesting System)</span>}
+              </Label>
+              <Select
+                value={formData.farmId || "none"}
+                onValueChange={(value) => {
+                  const newFarmId = value === "none" ? "" : value;
+                  setFormData({ 
+                    ...formData, 
+                    farmId: newFarmId,
+                    // Clear beehive selection if it doesn't belong to the new farm
+                    beehiveId: newFarmId && formData.beehiveId 
+                      ? (beehives.find(b => b.id === formData.beehiveId)?.farmId === newFarmId ? formData.beehiveId : null)
+                      : formData.beehiveId
+                  });
+                }}
+                disabled={beehiveLinkingDisabled}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a farm" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None (Show all beehives)</SelectItem>
+                  {farms.map((farm) => (
+                    <SelectItem key={farm.id} value={farm.id}>
+                      {farm.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="beehiveId">
+                Linked Beehive {requiresBeehiveLink && <span className="text-red-500">*</span>}
+                {beehiveLinkingDisabled && <span className="text-muted-foreground"> (Disabled for Harvesting System)</span>}
+              </Label>
+              <Select
+                value={formData.beehiveId || "none"}
+                onValueChange={(value) => setFormData({ ...formData, beehiveId: value === "none" ? null : value })}
+                disabled={beehiveLinkingDisabled}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a beehive" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">None (Unlinked)</SelectItem>
+                  {filteredBeehives.map((beehive) => (
+                    <SelectItem key={beehive.id} value={beehive.id}>
+                      {beehive.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {requiresBeehiveLink && !formData.beehiveId && (
+                <p className="text-red-500">
+                  Beehive linking is required for Defense and Data Collection systems
+                </p>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

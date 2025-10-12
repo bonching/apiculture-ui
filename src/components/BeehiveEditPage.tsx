@@ -6,6 +6,7 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
 import { Checkbox } from "./ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { ArrowLeft, Save, Link2 } from "lucide-react";
 import { Beehive, Farm, Sensor } from "../types";
 
@@ -21,9 +22,9 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
   const [formData, setFormData] = useState({
     name: beehive?.name || "",
     description: beehive?.description || "",
-    location: beehive?.location || "",
     farmId: beehive?.farmId || farms[0]?.id || "",
-    honeyProduction: beehive?.honeyProduction?.toString() || "0",
+    location: beehive?.location || "",
+    hiveLocation: beehive?.hiveLocation || "brood" as "brood" | "honey_super" | "external",
     sensorIds: beehive?.sensorIds || [],
   });
 
@@ -38,10 +39,7 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave({
-      ...formData,
-      honeyProduction: parseFloat(formData.honeyProduction),
-    });
+    onSave(formData);
   };
 
   const isNewBeehive = !beehive;
@@ -97,17 +95,6 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="location">Location within Farm</Label>
-                <Input
-                  id="location"
-                  value={formData.location}
-                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                  placeholder="e.g., North sector, Row 3, Position 5"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
                 <Label htmlFor="farmId">Farm</Label>
                 <Select value={formData.farmId} onValueChange={(value) => setFormData({ ...formData, farmId: value })}>
                   <SelectTrigger>
@@ -124,15 +111,35 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="honeyProduction">Honey Production (kg)</Label>
+                <Label htmlFor="location">Location within Farm</Label>
                 <Input
-                  id="honeyProduction"
-                  type="number"
-                  step="0.1"
-                  value={formData.honeyProduction}
-                  onChange={(e) => setFormData({ ...formData, honeyProduction: e.target.value })}
+                  id="location"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  placeholder="e.g., North sector, Row 3, Position 5"
                   required
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Hive Location</Label>
+                <RadioGroup 
+                  value={formData.hiveLocation} 
+                  onValueChange={(value) => setFormData({ ...formData, hiveLocation: value as any })}
+                >
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="brood" id="brood" />
+                    <Label htmlFor="brood" className="cursor-pointer">Brood</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="honey_super" id="honey_super" />
+                    <Label htmlFor="honey_super" className="cursor-pointer">Honey Super</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <RadioGroupItem value="external" id="external" />
+                    <Label htmlFor="external" className="cursor-pointer">External</Label>
+                  </div>
+                </RadioGroup>
               </div>
 
               <div className="flex gap-3 pt-4">

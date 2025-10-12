@@ -144,6 +144,7 @@ export default function App() {
         name: beehiveData.name || "",
         description: beehiveData.description || "",
         location: beehiveData.location || "",
+        hiveLocation: beehiveData.hiveLocation || "brood",
         farmId: beehiveData.farmId || farms[0]?.id || "",
         harvestStatus: beehiveData.harvestStatus || "good",
         honeyProduction: beehiveData.honeyProduction || 0,

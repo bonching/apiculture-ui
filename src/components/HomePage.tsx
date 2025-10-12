@@ -195,10 +195,7 @@ export function HomePage({ farms, beehives, sensors, alertCount, onNavigateToSen
           ) : (
             farms.map((farm) => (
               <div key={farm.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <div>
-                  <div>{farm.name}</div>
-                  <div className="text-muted-foreground">{farm.description}</div>
-                </div>
+                <div>{farm.name}</div>
                 <Badge variant="secondary">{farm.beehiveIds.length} hives</Badge>
               </div>
             ))
