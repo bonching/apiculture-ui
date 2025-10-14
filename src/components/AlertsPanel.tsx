@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { AlertTriangle, Info, AlertCircle, ArrowUpDown, LayoutGrid, BarChart3 } from "lucide-react";
+import { AlertTriangle, Info, AlertCircle, ArrowUpDown, LayoutGrid, BarChart3, Eye } from "lucide-react";
 import { Alert as AlertType } from "../types";
 import { 
   LineChart, 
@@ -415,7 +415,7 @@ export function AlertsPanel({ alerts, onViewDetails }: AlertsPanelProps) {
               </Card>
             ) : (
               sortedAlerts.map((alert) => (
-                <Card key={alert.id} className="cursor-pointer hover:shadow-md transition-shadow" onClick={() => onViewDetails(alert)}>
+                <Card key={alert.id}>
                   <CardHeader>
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 flex-1">
@@ -432,14 +432,18 @@ export function AlertsPanel({ alerts, onViewDetails }: AlertsPanelProps) {
                       </Badge>
                     </div>
                   </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-2">{alert.message}</p>
+                  <CardContent className="space-y-3">
+                    <p className="text-muted-foreground">{alert.message}</p>
                     <div className="flex items-center justify-between">
                       <div className="text-muted-foreground">{alert.timestamp}</div>
-                      <Button variant="link" className="text-amber-600 p-0 h-auto">
-                        View Details →
-                      </Button>
                     </div>
+                    <Button 
+                      className="w-full bg-amber-500 hover:bg-amber-600"
+                      onClick={() => onViewDetails(alert)}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      View Details
+                    </Button>
                   </CardContent>
                 </Card>
               ))

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { ArrowLeft, Edit, Hexagon, AlertTriangle, Wifi, WifiOff, TrendingUp, Plus } from "lucide-react";
+import { ArrowLeft, Edit, Hexagon, AlertTriangle, Wifi, WifiOff, TrendingUp, Plus, Eye } from "lucide-react";
 import { Farm, Beehive, Sensor } from "../types";
 
 interface FarmDetailsPageProps {
@@ -114,8 +114,8 @@ export function FarmDetailsPage({
               <Card key={beehive.id}>
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
-                    <div className="flex-1" onClick={() => onSelectBeehive(beehive)}>
-                      <CardTitle className="flex items-center gap-2 cursor-pointer">
+                    <div className="flex-1">
+                      <CardTitle className="flex items-center gap-2">
                         <Hexagon className="h-4 w-4" />
                         {beehive.name}
                         {beehive.hasAlert && (
@@ -128,18 +128,10 @@ export function FarmDetailsPage({
                       <Badge className={getStatusColor(beehive.harvestStatus)}>
                         {beehive.harvestStatus}
                       </Badge>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() => onEditBeehive(beehive)}
-                      >
-                        <Edit className="h-4 w-4" />
-                      </Button>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-3">
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center">
                       <div className="text-muted-foreground">Sensors</div>
@@ -163,6 +155,24 @@ export function FarmDetailsPage({
                       <div className="text-muted-foreground">ID</div>
                       <div className="truncate">{beehive.id.split('-').pop()}</div>
                     </div>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      className="flex-1"
+                      onClick={() => onEditBeehive(beehive)}
+                    >
+                      <Edit className="h-4 w-4 mr-2" />
+                      Edit
+                    </Button>
+                    <Button
+                      className="flex-1 bg-amber-500 hover:bg-amber-600"
+                      onClick={() => onSelectBeehive(beehive)}
+                    >
+                      <Eye className="h-4 w-4 mr-2" />
+                      View Details
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

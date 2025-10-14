@@ -77,9 +77,12 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
       newSystems = newSystems.filter(s => s !== "harvesting");
     }
 
+    // If defense system is selected, set hive location to external
+    const isDefenseSelected = newSystems.includes("defense");
     setFormData({
       ...formData,
       systems: newSystems,
+      hiveLocation: isDefenseSelected ? "external" : formData.hiveLocation,
     });
   };
 
@@ -95,6 +98,8 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
   const isHarvestingOnly = formData.systems.includes("harvesting") && formData.systems.length === 1;
   const requiresBeehiveLink = formData.systems.includes("defense") || formData.systems.includes("data_collection");
   const beehiveLinkingDisabled = isHarvestingOnly;
+  const isDefenseSelected = formData.systems.includes("defense");
+  const hiveLocationReadonly = isDefenseSelected;
 
   // Filter beehives by selected farm
   const filteredBeehives = formData.farmId 
@@ -327,25 +332,33 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
             <div className="space-y-2">
               <Label>Hive Location</Label>
               <p className="text-muted-foreground">
-                Where in the hive is this sensor placed?
+                {hiveLocationReadonly 
+                  ? "Defense sensors must be placed externally for security monitoring" 
+                  : "Where in the hive is this sensor placed?"}
               </p>
               <RadioGroup 
                 value={formData.hiveLocation} 
-                onValueChange={(value) => setFormData({ ...formData, hiveLocation: value as any })}
+                onValueChange={(value) => !hiveLocationReadonly && setFormData({ ...formData, hiveLocation: value as any })}
+                disabled={hiveLocationReadonly}
               >
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="brood" id="brood" />
-                  <Label htmlFor="brood" className="cursor-pointer">Brood</Label>
+                  <RadioGroupItem value="brood" id="brood" disabled={hiveLocationReadonly} />
+                  <Label htmlFor="brood" className={hiveLocationReadonly ? "opacity-50" : "cursor-pointer"}>Brood</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="honey_super" id="honey_super" />
-                  <Label htmlFor="honey_super" className="cursor-pointer">Honey Super</Label>
+                  <RadioGroupItem value="honey_super" id="honey_super" disabled={hiveLocationReadonly} />
+                  <Label htmlFor="honey_super" className={hiveLocationReadonly ? "opacity-50" : "cursor-pointer"}>Honey Super</Label>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="external" id="external" />
-                  <Label htmlFor="external" className="cursor-pointer">External</Label>
+                  <RadioGroupItem value="external" id="external" disabled={hiveLocationReadonly} />
+                  <Label htmlFor="external" className={hiveLocationReadonly ? "opacity-50" : "cursor-pointer"}>External</Label>
                 </div>
               </RadioGroup>
+              {hiveLocationReadonly && (
+                <Badge variant="outline" className="bg-red-100 text-red-800 border-red-300">
+                  Location locked to External for Defense System
+                </Badge>
+              )}
             </div>
           </CardContent>
         </Card>
