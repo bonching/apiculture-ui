@@ -427,23 +427,24 @@ export function AlertsPanel({ alerts, onViewDetails }: AlertsPanelProps) {
                           </CardDescription>
                         </div>
                       </div>
-                      <Badge className={getSeverityColor(alert.severity)}>
-                        {alert.severity}
-                      </Badge>
+                      <div className="flex items-center gap-1">
+                        <Badge className={getSeverityColor(alert.severity)}>
+                          {alert.severity}
+                        </Badge>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                          onClick={() => onViewDetails(alert)}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-3">
-                    <p className="text-muted-foreground">{alert.message}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="text-muted-foreground">{alert.timestamp}</div>
-                    </div>
-                    <Button 
-                      className="w-full bg-amber-500 hover:bg-amber-600"
-                      onClick={() => onViewDetails(alert)}
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
-                    </Button>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-2">{alert.message}</p>
+                    <div className="text-muted-foreground">{alert.timestamp}</div>
                   </CardContent>
                 </Card>
               ))

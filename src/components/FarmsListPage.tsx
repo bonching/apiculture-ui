@@ -1,7 +1,7 @@
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { MapPin, Edit, ChevronRight, Plus } from "lucide-react";
+import { MapPin, Edit, ChevronRight, Plus, Eye } from "lucide-react";
 import { Farm } from "../types";
 
 interface FarmsListPageProps {
@@ -29,7 +29,7 @@ export function FarmsListPage({ farms, onViewFarmDetails, onEditFarm, onAddFarm 
         {farms.map((farm) => (
           <Card key={farm.id}>
             <CardContent className="pt-6">
-              <div className="flex items-start justify-between gap-3 mb-3">
+              <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
                     <MapPin className="h-4 w-4 text-amber-500" />
@@ -37,26 +37,28 @@ export function FarmsListPage({ farms, onViewFarmDetails, onEditFarm, onAddFarm 
                   </div>
                   <p className="text-muted-foreground">{farm.description}</p>
                   <p className="text-muted-foreground">{farm.address}</p>
+                  <div className="mt-2">
+                    <Badge variant="secondary">{farm.beehiveIds.length} hives</Badge>
+                  </div>
                 </div>
-                <Badge variant="secondary">{farm.beehiveIds.length} hives</Badge>
-              </div>
-
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  className="flex-1"
-                  onClick={() => onEditFarm(farm)}
-                >
-                  <Edit className="h-4 w-4 mr-2" />
-                  Edit
-                </Button>
-                <Button
-                  className="flex-1 bg-amber-500 hover:bg-amber-600"
-                  onClick={() => onViewFarmDetails(farm)}
-                >
-                  View Details
-                  <ChevronRight className="h-4 w-4 ml-2" />
-                </Button>
+                <div className="flex flex-col gap-1">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                    onClick={() => onEditFarm(farm)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                    onClick={() => onViewFarmDetails(farm)}
+                  >
+                    <Eye className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>

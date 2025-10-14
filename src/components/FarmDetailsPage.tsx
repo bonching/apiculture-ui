@@ -124,14 +124,30 @@ export function FarmDetailsPage({
                       </CardTitle>
                       <CardDescription>{beehive.description}</CardDescription>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex items-center gap-1">
                       <Badge className={getStatusColor(beehive.harvestStatus)}>
                         {beehive.harvestStatus}
                       </Badge>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-muted-foreground hover:text-foreground"
+                        onClick={() => onEditBeehive(beehive)}
+                      >
+                        <Edit className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                        onClick={() => onSelectBeehive(beehive)}
+                      >
+                        <Eye className="h-4 w-4" />
+                      </Button>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent>
                   <div className="grid grid-cols-3 gap-4">
                     <div className="text-center">
                       <div className="text-muted-foreground">Sensors</div>
@@ -155,24 +171,6 @@ export function FarmDetailsPage({
                       <div className="text-muted-foreground">ID</div>
                       <div className="truncate">{beehive.id.split('-').pop()}</div>
                     </div>
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      className="flex-1"
-                      onClick={() => onEditBeehive(beehive)}
-                    >
-                      <Edit className="h-4 w-4 mr-2" />
-                      Edit
-                    </Button>
-                    <Button
-                      className="flex-1 bg-amber-500 hover:bg-amber-600"
-                      onClick={() => onSelectBeehive(beehive)}
-                    >
-                      <Eye className="h-4 w-4 mr-2" />
-                      View Details
-                    </Button>
                   </div>
                 </CardContent>
               </Card>
