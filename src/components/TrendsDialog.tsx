@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "./ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { HistoryData } from "../types";
 
@@ -29,6 +29,7 @@ export function TrendsDialog({ open, onOpenChange, title, data, color, unit = ""
       <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
+          <DialogDescription>Historical data visualization over time</DialogDescription>
         </DialogHeader>
         <div ref={chartRef} className="py-4">
           <ResponsiveContainer width="100%" height={300}>

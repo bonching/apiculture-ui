@@ -10,10 +10,10 @@ const generateHistory = (baseValue: number, variance: number, points: number = 2
 
 // Mock Sensors with multi-metric support
 export const mockSensors: Sensor[] = [
-  // Multi-metric BME680 sensors
+  // Alpha Hive sensors (hive-1-1)
   {
     id: "sensor-1",
-    name: "BME680 Environmental Alpha-1",
+    name: "Bosch BME680 Env Sensor",
     dataCapture: ["temperature", "humidity", "co2", "voc"],
     status: "online",
     currentValue: "34.5°C, 58%, 420ppm, 2.1kΩ",
@@ -24,7 +24,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-2",
-    name: "Acoustic Analyzer Alpha-1",
+    name: "MEMS Acoustic Monitor",
     dataCapture: ["sound", "vibration"],
     status: "online",
     currentValue: "68dB, 0.3mm/s",
@@ -35,7 +35,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-3",
-    name: "Bee Counter Alpha-1",
+    name: "OpenCV AI Bee Counter",
     dataCapture: ["bee_count"],
     status: "online",
     currentValue: 45000,
@@ -46,7 +46,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-4",
-    name: "Light & UV Sensor Alpha-1",
+    name: "TSL2591 Light & UV Sensor",
     dataCapture: ["lux", "uv_index"],
     status: "online",
     currentValue: "1200lux, UV4",
@@ -57,7 +57,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-5",
-    name: "Chemical Analyzer Alpha-1",
+    name: "TGS2600 Chemical Sensor",
     dataCapture: ["pheromone", "odor_compounds"],
     status: "online",
     currentValue: "High",
@@ -66,10 +66,10 @@ export const mockSensors: Sensor[] = [
     systems: ["data_collection", "defense"],
     lastUpdated: "6 min ago",
   },
-  // Beta sensors (hive-1-2)
+  // Beta Hive sensors (hive-1-2)
   {
     id: "sensor-6",
-    name: "BME680 Environmental Beta-1",
+    name: "Bosch BME280 Env Sensor",
     dataCapture: ["temperature", "humidity", "co2"],
     status: "online",
     currentValue: "33.8°C, 62%, 410ppm",
@@ -80,7 +80,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-7",
-    name: "Bee Counter Beta-1",
+    name: "IR Beam Bee Counter",
     dataCapture: ["bee_count"],
     status: "online",
     currentValue: 42000,
@@ -91,7 +91,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-8",
-    name: "Weather Station Beta-1",
+    name: "Davis Vantage Weather Station",
     dataCapture: ["rainfall", "wind_speed", "barometric_pressure"],
     status: "online",
     currentValue: "0mm, 5km/h, 1013hPa",
@@ -100,10 +100,10 @@ export const mockSensors: Sensor[] = [
     systems: ["data_collection"],
     lastUpdated: "10 min ago",
   },
-  // Gamma sensors (hive-1-3)
+  // Gamma Hive sensors (hive-1-3)
   {
     id: "sensor-9",
-    name: "Environmental Monitor Gamma-1",
+    name: "DHT22 Temp/Humidity Sensor",
     dataCapture: ["temperature", "humidity"],
     status: "online",
     currentValue: "35.2°C, 55%",
@@ -114,7 +114,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-10",
-    name: "Bee Counter Gamma-1",
+    name: "Raspberry Pi Bee Counter",
     dataCapture: ["bee_count"],
     status: "offline",
     currentValue: 38000,
@@ -125,7 +125,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-11",
-    name: "Image Capture Gamma-1",
+    name: "Arducam 8MP Camera Module",
     dataCapture: ["image"],
     status: "online",
     currentValue: "Active",
@@ -134,10 +134,10 @@ export const mockSensors: Sensor[] = [
     systems: ["data_collection"],
     lastUpdated: "15 min ago",
   },
-  // Delta sensors (hive-2-1)
+  // Delta Hive sensors (hive-2-1)
   {
     id: "sensor-12",
-    name: "BME680 Environmental Delta-1",
+    name: "Sensirion SHT85 Env Monitor",
     dataCapture: ["temperature", "humidity", "co2", "voc"],
     status: "online",
     currentValue: "35.1°C, 60%, 430ppm, 2.3kΩ",
@@ -148,7 +148,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-13",
-    name: "Bee Counter Delta-1",
+    name: "AI Vision Bee Counter Pro",
     dataCapture: ["bee_count"],
     status: "online",
     currentValue: 48000,
@@ -159,7 +159,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-14",
-    name: "Pollen Monitor Delta-1",
+    name: "Alphasense OPC-N3 Pollen Monitor",
     dataCapture: ["pollen_concentration"],
     status: "online",
     currentValue: "Medium",
@@ -168,10 +168,10 @@ export const mockSensors: Sensor[] = [
     systems: ["data_collection"],
     lastUpdated: "20 min ago",
   },
-  // Epsilon sensors (hive-2-2) - some offline
+  // Epsilon Hive sensors (hive-2-2) - some offline
   {
     id: "sensor-15",
-    name: "Environmental Monitor Epsilon-1",
+    name: "AM2302 Temp/Humidity Sensor",
     dataCapture: ["temperature", "humidity"],
     status: "offline",
     currentValue: "36.5°C, 65%",
@@ -182,7 +182,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-16",
-    name: "Bee Counter Epsilon-1",
+    name: "Infrared Bee Counter v2",
     dataCapture: ["bee_count"],
     status: "offline",
     currentValue: 40000,
@@ -191,10 +191,10 @@ export const mockSensors: Sensor[] = [
     systems: ["data_collection"],
     lastUpdated: "3 hours ago",
   },
-  // Zeta sensors (hive-3-1)
+  // Zeta Hive sensors (hive-3-1)
   {
     id: "sensor-17",
-    name: "BME680 Environmental Zeta-1",
+    name: "SenseAir K30 CO2 Sensor",
     dataCapture: ["temperature", "humidity", "co2"],
     status: "online",
     currentValue: "34.2°C, 59%, 415ppm",
@@ -205,7 +205,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-18",
-    name: "Bee Counter Zeta-1",
+    name: "TensorFlow Bee Counter",
     dataCapture: ["bee_count"],
     status: "online",
     currentValue: 52000,
@@ -216,7 +216,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-19",
-    name: "Multi-Spectrum Analyzer Zeta-1",
+    name: "AS7341 Multi-Spectrum Analyzer",
     dataCapture: ["lux", "uv_index", "vibration"],
     status: "online",
     currentValue: "1100lux, UV3, 0.2mm/s",
@@ -228,7 +228,7 @@ export const mockSensors: Sensor[] = [
   // Harvesting System Sensors (not linked to beehives)
   {
     id: "sensor-20",
-    name: "Harvest Monitor H1",
+    name: "LoadCell HX711 Scale Sensor",
     dataCapture: ["activity", "image"],
     status: "online",
     currentValue: "Medium",
@@ -239,7 +239,7 @@ export const mockSensors: Sensor[] = [
   },
   {
     id: "sensor-21",
-    name: "Harvest Monitor H2",
+    name: "Harvest Readiness Monitor Pro",
     dataCapture: ["activity"],
     status: "online",
     currentValue: "High",
@@ -251,7 +251,7 @@ export const mockSensors: Sensor[] = [
   // Unmapped sensors
   {
     id: "sensor-22",
-    name: "Spare Environmental Sensor",
+    name: "Si7021 Humidity Sensor",
     dataCapture: ["temperature", "humidity"],
     status: "online",
     currentValue: "25°C, 45%",

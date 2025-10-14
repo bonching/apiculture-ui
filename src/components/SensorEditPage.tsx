@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
@@ -250,9 +250,14 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
         </Card>
 
         {/* Farm and Beehive Linking Card */}
-        <Card>
+        <Card className={beehiveLinkingDisabled ? "opacity-60" : ""}>
           <CardHeader>
             <CardTitle>Beehive Linking</CardTitle>
+            {beehiveLinkingDisabled && (
+              <CardDescription className="text-yellow-600">
+                Beehive linking is disabled for Harvesting System sensors
+              </CardDescription>
+            )}
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">

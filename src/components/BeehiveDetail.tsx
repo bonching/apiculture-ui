@@ -54,13 +54,16 @@ export function BeehiveDetail({ beehive, onBack }: BeehiveDetailProps) {
   };
 
   const generateHoneyHistory = () => {
-    return Array.from({ length: 24 }, (_, i) => {
-      const variation = Math.random() * 2 - 1;
+    // Generate 10-14 weeks of honey production data
+    const weeksCount = 12; // 12 weeks of data
+    return Array.from({ length: weeksCount }, (_, i) => {
+      // Simulate gradual honey production increase over weeks
+      const weeklyProduction = (beehive.honeyProduction / weeksCount) * (i + 1) + (Math.random() - 0.5) * 3;
       return {
-        time: i === 23 ? "Now" : `${23 - i}h`,
-        value: Math.max(0, beehive.honeyProduction + variation),
+        time: i === weeksCount - 1 ? "Now" : `Week ${i + 1}`,
+        value: Math.max(0, weeklyProduction),
       };
-    }).reverse();
+    });
   };
 
   return (
@@ -456,7 +459,7 @@ export function BeehiveDetail({ beehive, onBack }: BeehiveDetailProps) {
       <TrendsDialog
         open={trendMetric === "honey"}
         onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Honey Production Trend"
+        title="Honey Production Trend (12 Weeks)"
         data={generateHoneyHistory()}
         color="#f59e0b"
         unit=" kg"

@@ -295,11 +295,14 @@ export default function App() {
     return beehives.filter(b => farm.beehiveIds.includes(b.id));
   };
 
-  // Get sensors for a beehive (for alert details)
-  const getBeehiveSensors = (beehiveName: string) => {
+  // Get beehive data for alert details
+  const getBeehiveForAlert = (beehiveName: string) => {
     const beehive = beehives.find(b => b.name === beehiveName);
-    if (!beehive) return [];
-    return sensors.filter(s => beehive.sensorIds.includes(s.id));
+    if (!beehive) return null;
+    return {
+      ...beehive,
+      sensors: getBeehiveSensorsData(beehive),
+    };
   };
 
   // Helper to get sensor data for a beehive (for BeehiveDetail)
@@ -463,7 +466,7 @@ export default function App() {
       {currentView === "alert-detail" && selectedAlert && (
         <AlertDetailPage
           alert={selectedAlert}
-          sensors={getBeehiveSensors(selectedAlert.beehiveName)}
+          beehive={getBeehiveForAlert(selectedAlert.beehiveName)}
           onBack={() => {
             setSelectedAlert(null);
             setCurrentView("alerts");
