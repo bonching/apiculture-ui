@@ -15,6 +15,8 @@ import { BottomNavigation } from "./components/BottomNavigation";
 import { mockFarms, mockAlerts, mockBeehives, mockSensors } from "./data/mockData";
 import { Beehive, Farm, Sensor, Alert } from "./types";
 import { toast } from "sonner@2.0.3";
+import { useFetch } from "./hooks/useFetch";
+import { API_ROUTES } from "./util/ApiRoutes";
 
 type View = 
   | "login" 
@@ -35,11 +37,14 @@ export default function App() {
   const [username, setUsername] = useState<string>("");
   
   // Data state
-  const [farms, setFarms] = useState(mockFarms);
+  // const [farms, setFarms] = useState([]);
   const [beehives, setBeehives] = useState(mockBeehives);
   const [sensors, setSensors] = useState(mockSensors);
   const [alerts] = useState(mockAlerts);
-  
+
+  // Fetch API data
+  const { data: farms, loading, error } = useFetch(API_ROUTES.farmRoutes);
+
   // Selection state
   const [selectedFarm, setSelectedFarm] = useState<Farm | null>(null);
   const [selectedBeehive, setSelectedBeehive] = useState<Beehive | null>(null);
