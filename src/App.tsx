@@ -99,9 +99,10 @@ export default function App() {
         name: farmData.name || "",
         description: farmData.description || "",
         address: farmData.address || "",
-        beehiveIds: [],
+        beehiveIds: farmData.beehiveIds || [],
       };
       setFarms([...farms, newFarm]);
+      console.log('newFarm: ', newFarm);
       toast.success("Farm added successfully");
     }
     setCurrentView("farms");

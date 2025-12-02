@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 
 export function usePost<T = unknown>(
-    url: string | null,
     options: {
         extractData?: boolean;
         headers?: Record<string, string>;
@@ -10,19 +9,24 @@ export function usePost<T = unknown>(
     data: T | null;
     loading: boolean;
     error: Error | null;
-    mutate: (body: any) => Promise<T | void>;
+    mutate: (url: string, body: any, mutateOptions?: { method?: 'POST' | 'PUT' }) => Promise<T | void>;
 } {
     const { extractData = true, headers = {} } = options;
     const [data, setData] = useState<T | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
 
-    const mutate = useCallback(async (body: any): Promise<T | void> => {
+    const mutate = useCallback(async (
+        url: string,
+        body: any,
+        mutateOptions: { method?: 'POST' | 'PUT' } = {}
+    ): Promise<T | void> => {
         if (!url || !body) {
             setLoading(false);
             return Promise.reject(new Error('URL or body missing'));
         }
 
+        const { method = 'POST' } = mutateOptions;
         const controller = new AbortController();
         setError(null);
         setData(null); // Reset previous data
@@ -30,7 +34,7 @@ export function usePost<T = unknown>(
 
         try {
             const response = await fetch(url, {
-                method: 'POST',
+                method,
                 headers: {
                     'Content-Type': 'application/json',
                     ...headers,
@@ -54,7 +58,7 @@ export function usePost<T = unknown>(
         } finally {
             setLoading(false);
         }
-    }, [url, extractData, headers]); // Stable deps; no body
+    }, [extractData, headers]); // Stable deps
 
     return { data, loading, error, mutate };
 }

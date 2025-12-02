@@ -17,22 +17,30 @@ interface FarmEditPageProps {
 
 export function FarmEditPage({ farm, onSave, onBack }: FarmEditPageProps) {
   const [formData, setFormData] = useState({
+    id: farm?.id || "",
     name: farm?.name || "",
     description: farm?.description || "",
     address: farm?.address || "",
-    beehiveIds: []
+    beehiveIds: farm?.beehiveIds || []
   });
 
-  const { data: newFarm, loading, error, mutate } = usePost<Farm>(
-    API_ROUTES.farmRoutes,
-    { extractData: true } // If API returns user directly
-  );
+  const { data: newFarm, loading, error, mutate } = usePost<Farm>({ extractData: true });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const result = await mutate([formData]);
-    setFormData({ ...formData, id: result[0] });
-    onSave(formData);
+    if(farm?.id) {
+        await mutate(API_ROUTES.farmRoutes + '/' + farm.id, formData, { method: 'PUT' });
+        onSave(formData);
+    } else {
+        const result = await mutate(API_ROUTES.farmRoutes, [formData]);
+        console.log('result: ', result[0]);
+        setFormData((prevFormData) => {
+            const updatedFormData = { ...prevFormData, id: result[0] };
+            // Pass updated data immediately to onSave
+            onSave(updatedFormData);
+            return updatedFormData;
+        });
+    }
   };
 
   const isNewFarm = !farm;
