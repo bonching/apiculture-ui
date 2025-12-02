@@ -6,6 +6,8 @@ import { Label } from "./ui/label";
 import { Textarea } from "./ui/textarea";
 import { ArrowLeft, Save } from "lucide-react";
 import { Farm } from "../types";
+import { usePost } from "../hooks/usePost";
+import { API_ROUTES } from "../util/ApiRoutes";
 
 interface FarmEditPageProps {
   farm: Farm | null;
@@ -18,10 +20,18 @@ export function FarmEditPage({ farm, onSave, onBack }: FarmEditPageProps) {
     name: farm?.name || "",
     description: farm?.description || "",
     address: farm?.address || "",
+    beehiveIds: []
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data: newFarm, loading, error, mutate } = usePost<Farm>(
+    API_ROUTES.farmRoutes,
+    { extractData: true } // If API returns user directly
+  );
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const result = await mutate([formData]);
+    setFormData({ ...formData, id: result[0] });
     onSave(formData);
   };
 

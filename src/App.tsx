@@ -43,7 +43,7 @@ export default function App() {
   const [alerts] = useState(mockAlerts);
 
   // Fetch API data
-  const { data: farms, loading, error } = useFetch(API_ROUTES.farmRoutes);
+  const { data: farms, setData: setFarms, loading, error } = useFetch(API_ROUTES.farmRoutes);
 
   // Selection state
   const [selectedFarm, setSelectedFarm] = useState<Farm | null>(null);
@@ -95,7 +95,7 @@ export default function App() {
     } else {
       // Add new farm
       const newFarm: Farm = {
-        id: `farm-${Date.now()}`,
+        id: farmData.id || "",
         name: farmData.name || "",
         description: farmData.description || "",
         address: farmData.address || "",
