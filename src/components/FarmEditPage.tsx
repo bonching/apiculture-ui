@@ -34,12 +34,9 @@ export function FarmEditPage({ farm, onSave, onBack }: FarmEditPageProps) {
     } else {
         const result = await mutate(API_ROUTES.farmRoutes, [formData]);
         console.log('result: ', result[0]);
-        setFormData((prevFormData) => {
-            const updatedFormData = { ...prevFormData, id: result[0] };
-            // Pass updated data immediately to onSave
-            onSave(updatedFormData);
-            return updatedFormData;
-        });
+        const updatedFormData = { ...formData, id: result[0] };
+        onSave(updatedFormData);
+        setFormData(updatedFormData)
     }
   };
 

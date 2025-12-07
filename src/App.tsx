@@ -38,12 +38,13 @@ export default function App() {
   
   // Data state
   // const [farms, setFarms] = useState([]);
-  const [beehives, setBeehives] = useState(mockBeehives);
+  // const [beehives, setBeehives] = useState(mockBeehives);
   const [sensors, setSensors] = useState(mockSensors);
   const [alerts] = useState(mockAlerts);
 
   // Fetch API data
   const { data: farms, setData: setFarms, loading, error } = useFetch(API_ROUTES.farmRoutes);
+  const { data: beehives, setData: setBeehives, loading: loadingHives, error: errorHives } = useFetch(API_ROUTES.hiveRoutes);
 
   // Selection state
   const [selectedFarm, setSelectedFarm] = useState<Farm | null>(null);
@@ -146,7 +147,7 @@ export default function App() {
     } else {
       // Add new beehive
       const newBeehive: Beehive = {
-        id: `hive-${Date.now()}`,
+        id: beehiveData.id || "",
         name: beehiveData.name || "",
         description: beehiveData.description || "",
         location: beehiveData.location || "",
@@ -298,6 +299,8 @@ export default function App() {
   const showBottomNav = !["login", "beehive", "farm-details", "farm-edit", "beehive-edit", "sensor-edit", "alert-detail"].includes(currentView);
 
   const getFarmBeehives = (farm: Farm) => {
+      console.log('beehive ids', farm.beehiveIds)
+      console.log('beehives', beehives.filter(b => farm.beehiveIds.includes(b.id)))
     return beehives.filter(b => farm.beehiveIds.includes(b.id));
   };
 

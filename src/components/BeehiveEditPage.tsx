@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from ".
 import { Checkbox } from "./ui/checkbox";
 import { ArrowLeft, Save, Link2 } from "lucide-react";
 import { Beehive, Farm, Sensor } from "../types";
+import { usePost } from "../hooks/usePost";
+import { API_ROUTES } from "../util/ApiRoutes";
 
 interface BeehiveEditPageProps {
   beehive: Beehive | null;
@@ -19,6 +21,7 @@ interface BeehiveEditPageProps {
 
 export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: BeehiveEditPageProps) {
   const [formData, setFormData] = useState({
+    id: beehive?.id || "",
     name: beehive?.name || "",
     description: beehive?.description || "",
     farmId: beehive?.farmId || farms[0]?.id || "",
@@ -35,9 +38,20 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data: newFarm, loading, error, mutate } = usePost<Farm>({ extractData: true });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    if(beehive?.id) {
+      await mutate(API_ROUTES.hiveRoutes + '/' + beehive.id, formData, { method: 'PUT' });
+      onSave(formData);
+    } else {
+      const result = await mutate(API_ROUTES.hiveRoutes, [formData]);
+      console.log('result: ', result[0]);
+      const updatedFormData = { ...formData, id: result[0] };
+      onSave(updatedFormData);
+      setFormData(updatedFormData)
+    }
   };
 
   const isNewBeehive = !beehive;
