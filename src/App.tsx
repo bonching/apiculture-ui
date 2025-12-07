@@ -121,8 +121,12 @@ export default function App() {
     setCurrentView("beehive-edit");
   };
 
-  const handleAddBeehive = () => {
+  const handleAddBeehive = (farmId?: string) => {
     setSelectedBeehive(null);
+    // Store the farm context if provided
+    if (farmId) {
+      setSelectedFarm(farms.find(f => f.id === farmId) || null);
+    }
     setCurrentView("beehive-edit");
   };
 
@@ -175,11 +179,20 @@ export default function App() {
       setBeehives([...beehives, newBeehive]);
       
       // Update farm's beehiveIds
-      setFarms(farms.map(f => 
+      const updatedFarms = farms.map(f => 
         f.id === newBeehive.farmId 
           ? { ...f, beehiveIds: [...f.beehiveIds, newBeehive.id] }
           : f
-      ));
+      );
+      setFarms(updatedFarms);
+      
+      // Update selectedFarm if we're adding to the selected farm
+      if (selectedFarm && selectedFarm.id === newBeehive.farmId) {
+        setSelectedFarm({
+          ...selectedFarm,
+          beehiveIds: [...selectedFarm.beehiveIds, newBeehive.id]
+        });
+      }
       
       // Update sensors' beehiveId
       if (beehiveData.sensorIds) {
@@ -433,6 +446,7 @@ export default function App() {
           farms={farms}
           allSensors={sensors}
           onSave={handleSaveBeehive}
+          contextFarmId={selectedFarm?.id}
           onBack={() => {
             if (selectedFarm) {
               setCurrentView("farm-details");

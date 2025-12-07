@@ -10,7 +10,7 @@ interface FarmDetailsPageProps {
   sensors: Sensor[];
   onBack: () => void;
   onEditFarm: () => void;
-  onAddBeehive: () => void;
+  onAddBeehive: (farmId: string) => void;
   onEditBeehive: (beehive: Beehive) => void;
   onSelectBeehive: (beehive: Beehive) => void;
 }
@@ -100,7 +100,7 @@ export function FarmDetailsPage({
         {/* Beehives Header */}
         <div className="flex items-center justify-between">
           <h2>Beehives</h2>
-          <Button onClick={onAddBeehive} size="sm" className="bg-amber-500 hover:bg-amber-600">
+          <Button onClick={() => onAddBeehive(farm.id)} size="sm" className="bg-amber-500 hover:bg-amber-600">
             <Plus className="h-4 w-4 mr-1" />
             Add Hive
           </Button>
@@ -182,7 +182,7 @@ export function FarmDetailsPage({
               <CardContent className="pt-6 text-center text-muted-foreground">
                 <Hexagon className="h-12 w-12 mx-auto mb-2 opacity-50" />
                 <p>No beehives in this farm yet</p>
-                <Button onClick={onAddBeehive} className="mt-4 bg-amber-500 hover:bg-amber-600">
+                <Button onClick={() => onAddBeehive(farm.id)} className="mt-4 bg-amber-500 hover:bg-amber-600">
                   <Plus className="h-4 w-4 mr-2" />
                   Add First Beehive
                 </Button>

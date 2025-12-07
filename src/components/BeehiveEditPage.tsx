@@ -17,14 +17,15 @@ interface BeehiveEditPageProps {
   allSensors: Sensor[];
   onSave: (beehive: Partial<Beehive>) => void;
   onBack: () => void;
+  contextFarmId?: string; // Farm ID when adding from farm details
 }
 
-export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: BeehiveEditPageProps) {
+export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack, contextFarmId }: BeehiveEditPageProps) {
   const [formData, setFormData] = useState({
     id: beehive?.id || "",
     name: beehive?.name || "",
     description: beehive?.description || "",
-    farmId: beehive?.farmId || farms[0]?.id || "",
+    farmId: beehive?.farmId || contextFarmId || farms[0]?.id || "",
     location: beehive?.location || "",
     sensorIds: beehive?.sensorIds || [],
   });
@@ -56,6 +57,7 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
 
   const isNewBeehive = !beehive;
   const availableSensors = allSensors.filter(s => !s.beehiveId || s.beehiveId === beehive?.id);
+  const isFarmLocked = isNewBeehive && !!contextFarmId; // Lock farm when adding from farm context
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-yellow-100 pb-24">
@@ -108,7 +110,11 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
 
               <div className="space-y-2">
                 <Label htmlFor="farmId">Farm</Label>
-                <Select value={formData.farmId} onValueChange={(value) => setFormData({ ...formData, farmId: value })}>
+                <Select 
+                  value={formData.farmId} 
+                  onValueChange={(value) => setFormData({ ...formData, farmId: value })}
+                  disabled={isFarmLocked}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a farm" />
                   </SelectTrigger>
@@ -120,6 +126,11 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack }: 
                     ))}
                   </SelectContent>
                 </Select>
+                {isFarmLocked && (
+                  <p className="text-muted-foreground">
+                    Farm is locked to the current context
+                  </p>
+                )}
               </div>
 
               <div className="space-y-2">
