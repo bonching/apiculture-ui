@@ -1,4 +1,4 @@
-const API_SERVER = 'http://localhost:8080/api'
+const API_SERVER = 'http://172.20.10.5:8080/api'
 
 export const API_ROUTES = {
     farmRoutes: `${API_SERVER}/farms`,
