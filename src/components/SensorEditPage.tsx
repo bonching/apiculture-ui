@@ -68,14 +68,23 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
     // Harvesting is mutually exclusive from defense and data_collection
     if (system === "harvesting" && newSystems.includes("harvesting")) {
       newSystems = ["harvesting"];
-      // Clear beehiveId and farmId when switching to harvesting
-      setFormData({
-        ...formData,
-        systems: newSystems,
-        beehiveId: null,
-        farmId: "",
-      });
-      return;
+      // Only clear beehiveId and farmId for NEW sensors (not when editing existing ones)
+      if (isNewSensor) {
+        setFormData({
+          ...formData,
+          systems: newSystems,
+          beehiveId: null,
+          farmId: "",
+        });
+        return;
+      } else {
+        // For existing sensors, keep the farm/beehive link but change system
+        setFormData({
+          ...formData,
+          systems: newSystems,
+        });
+        return;
+      }
     } else if ((system === "defense" || system === "data_collection") && newSystems.includes(system)) {
       newSystems = newSystems.filter(s => s !== "harvesting");
     }
