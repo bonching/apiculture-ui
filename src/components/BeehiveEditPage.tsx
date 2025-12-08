@@ -58,6 +58,7 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack, co
   const isNewBeehive = !beehive;
   const availableSensors = allSensors.filter(s => !s.beehiveId || s.beehiveId === beehive?.id);
   const isFarmLocked = isNewBeehive && !!contextFarmId; // Lock farm when adding from farm context
+  const isFarmLockedForEdit = !isNewBeehive; // Lock farm when editing existing beehive
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-yellow-100 pb-24">
@@ -113,7 +114,7 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack, co
                 <Select 
                   value={formData.farmId} 
                   onValueChange={(value) => setFormData({ ...formData, farmId: value })}
-                  disabled={isFarmLocked}
+                  disabled={isFarmLocked || isFarmLockedForEdit}
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select a farm" />
@@ -129,6 +130,11 @@ export function BeehiveEditPage({ beehive, farms, allSensors, onSave, onBack, co
                 {isFarmLocked && (
                   <p className="text-muted-foreground">
                     Farm is locked to the current context
+                  </p>
+                )}
+                {isFarmLockedForEdit && (
+                  <p className="text-muted-foreground">
+                    Farm is locked for editing
                   </p>
                 )}
               </div>

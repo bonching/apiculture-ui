@@ -100,6 +100,9 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
   const beehiveLinkingDisabled = isHarvestingOnly;
   const isDefenseSelected = formData.systems.includes("defense");
   const hiveLocationReadonly = isDefenseSelected;
+  
+  // Lock farm and beehive when editing an existing sensor
+  const isFarmAndBeehiveLocked = !isNewSensor;
 
   // Filter beehives by selected farm
   const filteredBeehives = formData.farmId 
@@ -283,7 +286,7 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
                       : formData.beehiveId
                   });
                 }}
-                disabled={beehiveLinkingDisabled}
+                disabled={beehiveLinkingDisabled || isFarmAndBeehiveLocked}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a farm" />
@@ -297,6 +300,11 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
                   ))}
                 </SelectContent>
               </Select>
+              {isFarmAndBeehiveLocked && (
+                <p className="text-muted-foreground">
+                  Farm and beehive cannot be changed for existing sensors
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -307,7 +315,7 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
               <Select
                 value={formData.beehiveId || "none"}
                 onValueChange={(value) => setFormData({ ...formData, beehiveId: value === "none" ? null : value })}
-                disabled={beehiveLinkingDisabled}
+                disabled={beehiveLinkingDisabled || isFarmAndBeehiveLocked}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a beehive" />
