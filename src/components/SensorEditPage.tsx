@@ -9,6 +9,8 @@ import { RadioGroup, RadioGroupItem } from "./ui/radio-group";
 import { Badge } from "./ui/badge";
 import { ArrowLeft, Save, Link2, Database, Shield, TrendingUp } from "lucide-react";
 import { Sensor, Beehive, SensorSystem, DataCaptureType, Farm } from "../types";
+import { API_ROUTES } from "../util/ApiRoutes";
+import { usePost } from "../hooks/usePost";
 
 interface SensorEditPageProps {
   sensor: Sensor | null;
@@ -20,6 +22,7 @@ interface SensorEditPageProps {
 
 export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: SensorEditPageProps) {
   const [formData, setFormData] = useState({
+    id: sensor?.id || "",
     name: sensor?.name || "",
     dataCapture: sensor?.dataCapture || ["temperature"] as DataCaptureType[],
     farmId: sensor?.beehiveId ? beehives.find(b => b.id === sensor.beehiveId)?.farmId || "" : "",
@@ -86,10 +89,20 @@ export function SensorEditPage({ sensor, beehives, farms, onSave, onBack }: Sens
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const { data: newSensor, loading, error, mutate } = usePost<Sensor>({ extractData: true });
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const { farmId, ...sensorData } = formData;
-    onSave(sensorData);
+    if(sensor?.id) {
+      await mutate(API_ROUTES.sensorRoutes + '/' + sensor.id, formData, { method: 'PUT' });
+      onSave(formData);
+    } else {
+      const result = await mutate(API_ROUTES.sensorRoutes, [formData]);
+      console.log('result: ', result[0]);
+      const updatedFormData = { ...formData, id: result[0] };
+      onSave(updatedFormData);
+      setFormData(updatedFormData)
+    }
   };
 
   const isNewSensor = !sensor;

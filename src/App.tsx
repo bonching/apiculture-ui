@@ -39,12 +39,13 @@ export default function App() {
   // Data state
   // const [farms, setFarms] = useState([]);
   // const [beehives, setBeehives] = useState(mockBeehives);
-  const [sensors, setSensors] = useState(mockSensors);
+  // const [sensors, setSensors] = useState(mockSensors);
   const [alerts] = useState(mockAlerts);
 
   // Fetch API data
-  const { data: farms, setData: setFarms, loading, error } = useFetch(API_ROUTES.farmRoutes);
+  const { data: farms, setData: setFarms, loading: loadingFarms, error: errorFarms } = useFetch(API_ROUTES.farmRoutes);
   const { data: beehives, setData: setBeehives, loading: loadingHives, error: errorHives } = useFetch(API_ROUTES.hiveRoutes);
+  const { data: sensors, setData: setSensors, loading: loadingSensors, error: errorSensors } = useFetch(API_ROUTES.sensorRoutes);
 
   // Selection state
   const [selectedFarm, setSelectedFarm] = useState<Farm | null>(null);
@@ -247,7 +248,7 @@ export default function App() {
     } else {
       // Add new sensor
       const newSensor: Sensor = {
-        id: `sensor-${Date.now()}`,
+        id: sensorData.id || "",
         name: sensorData.name || "",
         dataCapture: sensorData.dataCapture || ["temperature"],
         status: sensorData.status || "online",
