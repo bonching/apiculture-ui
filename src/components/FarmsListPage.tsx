@@ -1,7 +1,7 @@
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { MapPin, Edit, ChevronRight, Plus, Eye } from "lucide-react";
+import { MapPin, Edit, ChevronRight, Plus, Eye, Trash2 } from "lucide-react";
 import { Farm } from "../types";
 
 interface FarmsListPageProps {
@@ -9,9 +9,10 @@ interface FarmsListPageProps {
   onViewFarmDetails: (farm: Farm) => void;
   onEditFarm: (farm: Farm) => void;
   onAddFarm: () => void;
+  onDeleteFarm: (farmId: string) => void;
 }
 
-export function FarmsListPage({ farms, onViewFarmDetails, onEditFarm, onAddFarm }: FarmsListPageProps) {
+export function FarmsListPage({ farms, onViewFarmDetails, onEditFarm, onAddFarm, onDeleteFarm }: FarmsListPageProps) {
   return (
     <div className="p-4 pb-24 space-y-4 bg-gradient-to-b from-amber-50 to-yellow-100 min-h-screen">
       <div className="flex items-center justify-between">
@@ -57,6 +58,14 @@ export function FarmsListPage({ farms, onViewFarmDetails, onEditFarm, onAddFarm 
                     onClick={() => onViewFarmDetails(farm)}
                   >
                     <Eye className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-red-600 hover:text-red-700 hover:bg-red-50"
+                    onClick={() => onDeleteFarm(farm.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </div>

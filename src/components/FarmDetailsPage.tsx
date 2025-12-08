@@ -1,7 +1,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { ArrowLeft, Edit, Hexagon, AlertTriangle, Wifi, WifiOff, TrendingUp, Plus, Eye } from "lucide-react";
+import { ArrowLeft, Edit, Hexagon, AlertTriangle, Wifi, WifiOff, TrendingUp, Plus, Eye, Trash2 } from "lucide-react";
 import { Farm, Beehive, Sensor } from "../types";
 
 interface FarmDetailsPageProps {
@@ -13,6 +13,7 @@ interface FarmDetailsPageProps {
   onAddBeehive: (farmId: string) => void;
   onEditBeehive: (beehive: Beehive) => void;
   onSelectBeehive: (beehive: Beehive) => void;
+  onDeleteBeehive: (beehiveId: string) => void;
 }
 
 export function FarmDetailsPage({
@@ -24,6 +25,7 @@ export function FarmDetailsPage({
   onAddBeehive,
   onEditBeehive,
   onSelectBeehive,
+  onDeleteBeehive,
 }: FarmDetailsPageProps) {
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -143,6 +145,14 @@ export function FarmDetailsPage({
                         onClick={() => onSelectBeehive(beehive)}
                       >
                         <Eye className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 text-red-500 hover:text-red-600 hover:bg-red-50"
+                        onClick={() => onDeleteBeehive(beehive.id)}
+                      >
+                        <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>

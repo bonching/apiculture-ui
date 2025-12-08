@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "./ui/select";
-import { Wifi, WifiOff, Edit, Plus, Database, Shield, TrendingUp, Filter } from "lucide-react";
+import { Wifi, WifiOff, Edit, Plus, Database, Shield, TrendingUp, Filter, Trash2 } from "lucide-react";
 import { Sensor, Beehive, Farm } from "../types";
 
 interface SensorsListPageProps {
@@ -13,9 +13,10 @@ interface SensorsListPageProps {
   onEditSensor: (sensor: Sensor) => void;
   onAddSensor: () => void;
   initialStatusFilter?: "online" | "offline" | null;
+  onDeleteSensor: (sensorId: string) => void;
 }
 
-export function SensorsListPage({ sensors, beehives, farms, onEditSensor, onAddSensor, initialStatusFilter }: SensorsListPageProps) {
+export function SensorsListPage({ sensors, beehives, farms, onEditSensor, onAddSensor, initialStatusFilter, onDeleteSensor }: SensorsListPageProps) {
   const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter || "all");
   const [farmFilter, setFarmFilter] = useState<string>("all");
   const [beehiveFilter, setBeehiveFilter] = useState<string>("all");
@@ -191,13 +192,22 @@ export function SensorsListPage({ sensors, beehives, farms, onEditSensor, onAddS
                     {getDataCaptureDisplay(sensor.dataCapture)} • {getBeehiveName(sensor.beehiveId)}
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => onEditSensor(sensor)}
-                >
-                  <Edit className="h-4 w-4" />
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onEditSensor(sensor)}
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onDeleteSensor(sensor.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             </CardHeader>
             <CardContent className="space-y-3">

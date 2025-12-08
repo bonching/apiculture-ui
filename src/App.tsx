@@ -306,15 +306,87 @@ export default function App() {
   };
 
   const handleBackFromFarmDetails = () => {
-    setSelectedFarm(null);
     setCurrentView("farms");
+    setSelectedFarm(null);
+  };
+
+  // Delete handlers
+  const handleDeleteFarm = (farmId: string) => {
+    const farm = farms.find(f => f.id === farmId);
+    if (!farm) return;
+
+    // Check if farm has linked beehives
+    if (farm.beehiveIds.length > 0) {
+      toast.error("Cannot delete farm with linked beehives. Please delete all beehives first.");
+      return;
+    }
+
+    setFarms(farms.filter(f => f.id !== farmId));
+    toast.success("Farm deleted successfully");
+    setCurrentView("farms");
+    setSelectedFarm(null);
+  };
+
+  const handleDeleteBeehive = (beehiveId: string) => {
+    const beehive = beehives.find(b => b.id === beehiveId);
+    if (!beehive) return;
+
+    // Check if beehive has linked sensors
+    if (beehive.sensorIds.length > 0) {
+      toast.error("Cannot delete beehive with linked sensors. Please delete or unlink all sensors first.");
+      return;
+    }
+
+    // Remove beehive
+    setBeehives(beehives.filter(b => b.id !== beehiveId));
+
+    // Remove beehive ID from farm
+    setFarms(farms.map(f => ({
+      ...f,
+      beehiveIds: f.beehiveIds.filter(id => id !== beehiveId),
+    })));
+
+    toast.success("Beehive deleted successfully");
+    
+    // Navigate back to farm details or farms list
+    if (selectedFarm) {
+      // Update selectedFarm to remove the beehive ID
+      setSelectedFarm({
+        ...selectedFarm,
+        beehiveIds: selectedFarm.beehiveIds.filter(id => id !== beehiveId),
+      });
+      setCurrentView("farm-details");
+    } else {
+      setCurrentView("farms");
+    }
+    setSelectedBeehive(null);
+  };
+
+  const handleDeleteSensor = (sensorId: string) => {
+    const sensor = sensors.find(s => s.id === sensorId);
+    if (!sensor) return;
+
+    // Remove sensor
+    setSensors(sensors.filter(s => s.id !== sensorId));
+
+    // Remove sensor ID from beehive if it was linked
+    if (sensor.beehiveId) {
+      setBeehives(beehives.map(b => ({
+        ...b,
+        sensorIds: b.sensorIds.filter(id => id !== sensorId),
+      })));
+    }
+
+    toast.success("Sensor deleted successfully");
+    setCurrentView("sensors");
+    setSelectedSensor(null);
   };
 
   const showBottomNav = !["login", "beehive", "farm-details", "farm-edit", "beehive-edit", "sensor-edit", "alert-detail"].includes(currentView);
 
   const getFarmBeehives = (farm: Farm) => {
-      console.log('beehive ids', farm.beehiveIds)
-      console.log('beehives', beehives.filter(b => farm.beehiveIds.includes(b.id)))
+    console.log('beehive ids', farm.beehiveIds)
+    console.log('beehives', beehives.filter(b => farm.beehiveIds.includes(b.id)))
     return beehives.filter(b => farm.beehiveIds.includes(b.id));
   };
 
@@ -400,6 +472,7 @@ export default function App() {
           onViewFarmDetails={handleViewFarmDetails}
           onEditFarm={(farm) => handleEditFarm(farm)}
           onAddFarm={handleAddFarm}
+          onDeleteFarm={handleDeleteFarm}
         />
       )}
 
@@ -413,6 +486,7 @@ export default function App() {
           onAddBeehive={handleAddBeehive}
           onEditBeehive={handleEditBeehive}
           onSelectBeehive={handleSelectBeehive}
+          onDeleteBeehive={handleDeleteBeehive}
         />
       )}
 
@@ -467,6 +541,7 @@ export default function App() {
           onEditSensor={handleEditSensor}
           onAddSensor={handleAddSensor}
           initialStatusFilter={sensorStatusFilter}
+          onDeleteSensor={handleDeleteSensor}
         />
       )}
 
