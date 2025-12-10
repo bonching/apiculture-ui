@@ -41,12 +41,13 @@ export default function App() {
   // const [farms, setFarms] = useState([]);
   // const [beehives, setBeehives] = useState(mockBeehives);
   // const [sensors, setSensors] = useState(mockSensors);
-  const [alerts] = useState(mockAlerts);
+  // const [alerts] = useState(mockAlerts);
 
   // Fetch API data
   const { data: farms, setData: setFarms, loading: loadingFarms, error: errorFarms } = useFetch(API_ROUTES.farmRoutes);
   const { data: beehives, setData: setBeehives, loading: loadingHives, error: errorHives } = useFetch(API_ROUTES.hiveRoutes);
   const { data: sensors, setData: setSensors, loading: loadingSensors, error: errorSensors } = useFetch(API_ROUTES.sensorRoutes);
+  const { data: alerts, setData: setAlerts, loading: loadingAlerts, error: errorAlerts } = useFetch(API_ROUTES.alertRoutes);
 
   // Delete API
   const { data: farm, loading: deletingFarm, error: errorDeletingFarm, mutate: deleteFarm } = usePost<Farm>({ extractData: true });
