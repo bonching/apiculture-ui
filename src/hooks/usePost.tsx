@@ -9,7 +9,7 @@ export function usePost<T = unknown>(
     data: T | null;
     loading: boolean;
     error: Error | null;
-    mutate: (url: string, body: any, mutateOptions?: { method?: 'POST' | 'PUT' }) => Promise<T | void>;
+    mutate: (url: string, body: any, mutateOptions?: { method?: 'POST' | 'PUT' | 'DELETE' }) => Promise<T | void>;
 } {
     const { extractData = true, headers = {} } = options;
     const [data, setData] = useState<T | null>(null);

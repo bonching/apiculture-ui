@@ -17,6 +17,7 @@ import { Beehive, Farm, Sensor, Alert } from "./types";
 import { toast, Toaster } from "sonner@2.0.3";
 import { useFetch } from "./hooks/useFetch";
 import { API_ROUTES } from "./util/ApiRoutes";
+import {usePost} from "./hooks/usePost";
 
 type View = 
   | "login" 
@@ -46,6 +47,11 @@ export default function App() {
   const { data: farms, setData: setFarms, loading: loadingFarms, error: errorFarms } = useFetch(API_ROUTES.farmRoutes);
   const { data: beehives, setData: setBeehives, loading: loadingHives, error: errorHives } = useFetch(API_ROUTES.hiveRoutes);
   const { data: sensors, setData: setSensors, loading: loadingSensors, error: errorSensors } = useFetch(API_ROUTES.sensorRoutes);
+
+  // Delete API
+  const { data: farm, loading: deletingFarm, error: errorDeletingFarm, mutate: deleteFarm } = usePost<Farm>({ extractData: true });
+  const { data: hive, loading: deletingHive, error: errorDeletingHive, mutate: deleteHive } = usePost<Farm>({ extractData: true });
+  const { data: sensor, loading: deletingSensor, error: errorDeletingSensor, mutate: deleteSensor } = usePost<Farm>({ extractData: true });
 
   // Selection state
   const [selectedFarm, setSelectedFarm] = useState<Farm | null>(null);
@@ -311,7 +317,7 @@ export default function App() {
   };
 
   // Delete handlers
-  const handleDeleteFarm = (farmId: string) => {
+  const handleDeleteFarm = async (farmId: string) => {
     const farm = farms.find(f => f.id === farmId);
     if (!farm) return;
 
@@ -322,12 +328,13 @@ export default function App() {
     }
 
     setFarms(farms.filter(f => f.id !== farmId));
+    await deleteFarm(API_ROUTES.farmRoutes + '/' + farmId, {}, { method: 'DELETE' });
     toast.success("Farm deleted successfully");
     setCurrentView("farms");
     setSelectedFarm(null);
   };
 
-  const handleDeleteBeehive = (beehiveId: string) => {
+  const handleDeleteBeehive = async (beehiveId: string) => {
     const beehive = beehives.find(b => b.id === beehiveId);
     if (!beehive) return;
 
@@ -346,6 +353,7 @@ export default function App() {
       beehiveIds: f.beehiveIds.filter(id => id !== beehiveId),
     })));
 
+    await deleteHive(API_ROUTES.hiveRoutes + '/' + beehiveId, {}, { method: 'DELETE' });
     toast.success("Beehive deleted successfully");
     
     // Navigate back to farm details or farms list
@@ -362,7 +370,7 @@ export default function App() {
     setSelectedBeehive(null);
   };
 
-  const handleDeleteSensor = (sensorId: string) => {
+  const handleDeleteSensor = async (sensorId: string) => {
     const sensor = sensors.find(s => s.id === sensorId);
     if (!sensor) return;
 
@@ -377,6 +385,7 @@ export default function App() {
       })));
     }
 
+    await deleteSensor(API_ROUTES.sensorRoutes + '/' + sensorId, {}, { method: 'DELETE' });
     toast.success("Sensor deleted successfully");
     setCurrentView("sensors");
     setSelectedSensor(null);
