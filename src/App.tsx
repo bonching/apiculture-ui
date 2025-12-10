@@ -14,7 +14,7 @@ import { ProfilePage } from "./components/ProfilePage";
 import { BottomNavigation } from "./components/BottomNavigation";
 import { mockFarms, mockAlerts, mockBeehives, mockSensors } from "./data/mockData";
 import { Beehive, Farm, Sensor, Alert } from "./types";
-import { toast } from "sonner@2.0.3";
+import { toast, Toaster } from "sonner@2.0.3";
 import { useFetch } from "./hooks/useFetch";
 import { API_ROUTES } from "./util/ApiRoutes";
 
@@ -589,6 +589,7 @@ export default function App() {
           alertCount={alerts.length}
         />
       )}
+      <Toaster />
     </div>
   );
 }
