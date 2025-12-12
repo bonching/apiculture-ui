@@ -1,8 +1,8 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
-import { AlertTriangle, Info, AlertCircle, ArrowUpDown, LayoutGrid, BarChart3, Eye } from "lucide-react";
+import { AlertTriangle, Info, AlertCircle, ArrowUpDown, LayoutGrid, BarChart3, Eye, Radio } from "lucide-react";
 import { Alert as AlertType } from "../types";
 import { 
   LineChart, 
@@ -29,6 +29,15 @@ export function AlertsPanel({ alerts, onViewDetails }: AlertsPanelProps) {
   const [sortBy, setSortBy] = useState<"criticality" | "timestamp">("criticality");
   const [viewMode, setViewMode] = useState<"card" | "graph">("card");
   const [graphType, setGraphType] = useState<"line" | "bar" | "pie" | "stacked">("line");
+  const [isLive, setIsLive] = useState(true);
+
+  // Pulse animation for live indicator
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsLive(prev => !prev);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const getAlertIcon = (severity: string) => {
     switch (severity) {
@@ -162,6 +171,16 @@ export function AlertsPanel({ alerts, onViewDetails }: AlertsPanelProps) {
   return (
     <div className="min-h-screen bg-gradient-to-b from-amber-50 to-yellow-100 pb-24">
       <div className="p-4 space-y-4">
+        {/* Live indicator banner */}
+        <Card className="bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-200">
+          <CardContent className="py-3">
+            <div className="flex items-center justify-center gap-2">
+              <Radio className={`h-4 w-4 text-emerald-600 ${isLive ? 'animate-pulse' : ''}`} />
+              <span className="text-emerald-700">Real-time monitoring active</span>
+            </div>
+          </CardContent>
+        </Card>
+
         <div className="flex items-center justify-between">
           <div>
             <h1>Alerts & Notifications</h1>

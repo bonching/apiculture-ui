@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LoginPage } from "./components/LoginPage";
 import { HomePage } from "./components/HomePage";
 import { FarmsListPage } from "./components/FarmsListPage";
@@ -12,7 +12,7 @@ import { AlertsPanel } from "./components/AlertsPanel";
 import { AlertDetailPage } from "./components/AlertDetailPage";
 import { ProfilePage } from "./components/ProfilePage";
 import { BottomNavigation } from "./components/BottomNavigation";
-import { mockFarms, mockAlerts, mockBeehives, mockSensors } from "./data/mockData";
+import { mockFarms, mockAlerts, mockBeehives, mockSensors, generateRandomAlert } from "./data/mockData";
 import { Beehive, Farm, Sensor, Alert } from "./types";
 import { toast, Toaster } from "sonner@2.0.3";
 import { useFetch } from "./hooks/useFetch";
@@ -62,6 +62,60 @@ export default function App() {
   
   // Filter state
   const [sensorStatusFilter, setSensorStatusFilter] = useState<"online" | "offline" | null>(null);
+
+  // Simulated SSE for real-time alerts
+  useEffect(() => {
+    // Only start SSE simulation when user is logged in
+    if (username === "") return;
+
+    // Check for new alerts every 8-15 seconds (random interval)
+    const checkInterval = () => {
+      const randomInterval = Math.floor(Math.random() * 7000) + 8000; // 8-15 seconds
+      return randomInterval;
+    };
+
+    const startSSE = () => {
+      const interval = setInterval(() => {
+        const newAlert = generateRandomAlert();
+        
+        if (newAlert) {
+          setAlerts(prevAlerts => [newAlert, ...prevAlerts]);
+          
+          // Show toast notification if not on alerts page
+          if (currentView !== "alerts") {
+            if (newAlert.severity === "critical") {
+              toast.error(`${newAlert.title}: ${newAlert.beehiveName}`, {
+                description: newAlert.message,
+                duration: 5000,
+              });
+            } else if (newAlert.severity === "warning") {
+              toast.warning(`${newAlert.title}: ${newAlert.beehiveName}`, {
+                description: newAlert.message,
+                duration: 4000,
+              });
+            } else {
+              toast.info(`${newAlert.title}: ${newAlert.beehiveName}`, {
+                description: newAlert.message,
+                duration: 3000,
+              });
+            }
+          }
+        }
+        
+        // Reset interval with new random time
+        clearInterval(interval);
+        startSSE();
+      }, checkInterval());
+
+      return interval;
+    };
+
+    const intervalId = startSSE();
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [username, currentView]);
 
   const handleLogin = (user: string) => {
     setUsername(user);

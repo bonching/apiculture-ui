@@ -530,3 +530,73 @@ export const mockAlerts: Alert[] = [
     timestampMs: now - 5 * 60 * 1000, // 5 minutes ago
   },
 ];
+
+// Function to generate random defense system alerts for predators
+export const generateRandomAlert = (): Alert | null => {
+  const now = Date.now();
+  const random = Math.random();
+  
+  // 30% chance to generate an alert
+  if (random > 0.3) return null;
+  
+  const alertTypes = [
+    {
+      severity: "critical" as const,
+      title: "Predator Detected - Bird",
+      getMessage: (hive: string) => `Defense sensor detected a bird near ${hive}. MEMS Acoustic Monitor registered unusual vibration patterns.`,
+      beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
+      farms: ["Ising Farm", "Alveare Farm", "BoJayHan Farm"],
+    },
+    {
+      severity: "critical" as const,
+      title: "Predator Detected - Lizard",
+      getMessage: (hive: string) => `Defense sensor detected a lizard approaching ${hive}. TGS2600 Chemical Sensor picked up foreign pheromones.`,
+      beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
+      farms: ["Ising Farm", "Alveare Farm", "BoJayHan Farm"],
+    },
+    {
+      severity: "warning" as const,
+      title: "Unusual Activity Detected",
+      getMessage: (hive: string) => `Defense system detected unusual vibration patterns near ${hive}. Possible predator in vicinity.`,
+      beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
+      farms: ["Ising Farm", "Alveare Farm", "BoJayHan Farm"],
+    },
+    {
+      severity: "warning" as const,
+      title: "High Temperature Detected",
+      getMessage: () => "Temperature exceeds normal range",
+      beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
+      farms: ["Ising Farm", "Alveare Farm", "BoJayHan Farm"],
+    },
+    {
+      severity: "warning" as const,
+      title: "Elevated VOC Levels",
+      getMessage: () => "Volatile organic compounds above threshold",
+      beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
+      farms: ["Ising Farm", "Alveare Farm", "BoJayHan Farm"],
+    },
+    {
+      severity: "info" as const,
+      title: "Bee Activity Spike",
+      getMessage: (hive: string) => `${hive} showing increased foraging activity`,
+      beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
+      farms: ["Ising Farm", "Alveare Farm", "BoJayHan Farm"],
+    },
+  ];
+  
+  const alertType = alertTypes[Math.floor(Math.random() * alertTypes.length)];
+  const beehiveIndex = Math.floor(Math.random() * alertType.beehives.length);
+  const beehiveName = alertType.beehives[beehiveIndex];
+  const farmName = alertType.farms[beehiveIndex % alertType.farms.length];
+  
+  return {
+    id: `alert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+    severity: alertType.severity,
+    title: alertType.title,
+    message: alertType.getMessage(beehiveName),
+    beehiveName,
+    farmName,
+    timestamp: "just now",
+    timestampMs: now,
+  };
+};
