@@ -34,7 +34,7 @@ interface BeehiveDetailProps {
 
 export function BeehiveDetail({ beehive, onBack }: BeehiveDetailProps) {
   const [imageDialogOpen, setImageDialogOpen] = useState(false);
-  const [trendMetric, setTrendMetric] = useState<string | null>(null);
+  const [trendMetric, setTrendMetric] = useState<"honey" | "temperature" | "humidity" | "beeCount" | "co2" | "sound" | "activity" | "voc" | "vibration" | "lux" | "uvIndex" | "rainfall" | "windSpeed" | "barometricPressure" | "pheromone" | "pollenConcentration" | null>(null);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -51,19 +51,6 @@ export function BeehiveDetail({ beehive, onBack }: BeehiveDetailProps) {
       default:
         return "bg-gray-500";
     }
-  };
-
-  const generateHoneyHistory = () => {
-    // Generate 10-14 weeks of honey production data
-    const weeksCount = 12; // 12 weeks of data
-    return Array.from({ length: weeksCount }, (_, i) => {
-      // Simulate gradual honey production increase over weeks
-      const weeklyProduction = (beehive.honeyProduction / weeksCount) * (i + 1) + (Math.random() - 0.5) * 3;
-      return {
-        time: i === weeksCount - 1 ? "Now" : `Week ${i + 1}`,
-        value: Math.max(0, weeklyProduction),
-      };
-    });
   };
 
   return (
@@ -455,135 +442,12 @@ export function BeehiveDetail({ beehive, onBack }: BeehiveDetailProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Trend Dialogs */}
+      {/* Single Trend Dialog - Lazy Loading */}
       <TrendsDialog
-        open={trendMetric === "honey"}
+        open={trendMetric !== null}
         onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Honey Production Trend (12 Weeks)"
-        data={generateHoneyHistory()}
-        color="#f59e0b"
-        unit=" kg"
-      />
-      <TrendsDialog
-        open={trendMetric === "temperature"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Temperature Trend"
-        data={beehive.temperatureHistory}
-        color="#ef4444"
-        unit="°C"
-      />
-      <TrendsDialog
-        open={trendMetric === "humidity"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Humidity Trend"
-        data={beehive.humidityHistory}
-        color="#3b82f6"
-        unit="%"
-        chartType="area"
-      />
-      <TrendsDialog
-        open={trendMetric === "beeCount"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Bee Population Trend"
-        data={beehive.beeCountHistory}
-        color="#10b981"
-        chartType="area"
-      />
-      <TrendsDialog
-        open={trendMetric === "co2"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="CO₂ Level Trend"
-        data={beehive.co2History}
-        color="#6b7280"
-        unit=" ppm"
-      />
-      <TrendsDialog
-        open={trendMetric === "sound"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Sound Level Trend"
-        data={beehive.soundHistory}
-        color="#a855f7"
-        unit=" dB"
-      />
-      <TrendsDialog
-        open={trendMetric === "activity"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Activity Level Trend"
-        data={beehive.activityHistory}
-        color="#22c55e"
-        unit="%"
-      />
-      <TrendsDialog
-        open={trendMetric === "voc"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="VOC Level Trend"
-        data={beehive.vocHistory}
-        color="#f97316"
-        unit=" kΩ"
-      />
-      <TrendsDialog
-        open={trendMetric === "vibration"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Vibration Trend"
-        data={beehive.vibrationHistory}
-        color="#06b6d4"
-        unit=" mm/s"
-      />
-      <TrendsDialog
-        open={trendMetric === "lux"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Light Intensity Trend"
-        data={beehive.luxHistory}
-        color="#eab308"
-        unit=" lux"
-      />
-      <TrendsDialog
-        open={trendMetric === "uvIndex"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="UV Index Trend"
-        data={beehive.uvIndexHistory}
-        color="#f97316"
-      />
-      <TrendsDialog
-        open={trendMetric === "rainfall"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Rainfall Trend"
-        data={beehive.rainfallHistory}
-        color="#3b82f6"
-        unit=" mm"
-        chartType="area"
-      />
-      <TrendsDialog
-        open={trendMetric === "windSpeed"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Wind Speed Trend"
-        data={beehive.windSpeedHistory}
-        color="#14b8a6"
-        unit=" km/h"
-      />
-      <TrendsDialog
-        open={trendMetric === "barometricPressure"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Barometric Pressure Trend"
-        data={beehive.barometricPressureHistory}
-        color="#6366f1"
-        unit=" hPa"
-      />
-      <TrendsDialog
-        open={trendMetric === "pheromone"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Pheromone Level Trend"
-        data={beehive.pheromoneHistory}
-        color="#ec4899"
-        unit="%"
-      />
-      <TrendsDialog
-        open={trendMetric === "pollenConcentration"}
-        onOpenChange={(open) => !open && setTrendMetric(null)}
-        title="Pollen Concentration Trend"
-        data={beehive.pollenConcentrationHistory}
-        color="#ca8a04"
-        unit="%"
+        beehive={beehive}
+        metric={trendMetric}
       />
     </div>
   );
