@@ -2,6 +2,8 @@ import { useEffect, useRef, useMemo } from "react";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "./ui/dialog";
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
 import { Beehive, HistoryData } from "../types";
+import { useFetch } from "../hooks/useFetch";
+import { API_ROUTES } from "../util/ApiRoutes";
 
 type TrendMetric = 
   | "honey"
@@ -56,30 +58,32 @@ const metricConfig: Record<TrendMetric, {
 export function TrendsDialog({ open, onOpenChange, beehive, metric }: TrendsDialogProps) {
   const chartRef = useRef<HTMLDivElement>(null);
 
+  const { data, setData, loading, error } = useFetch(API_ROUTES.metricRoutes + '/' + beehive['id'] + '/' + metric);
+
   // Lazy load data only when dialog is open
-  const data = useMemo<HistoryData[]>(() => {
-    if (!open || !beehive || !metric) return [];
-
-    // Special case for honey production - generate synthetic data
-    if (metric === "honey") {
-      const weeksCount = 12;
-      return Array.from({ length: weeksCount }, (_, i) => {
-        const weeklyProduction = (beehive.honeyProduction / weeksCount) * (i + 1) + (Math.random() - 0.5) * 3;
-        return {
-          time: i === weeksCount - 1 ? "Now" : `Week ${i + 1}`,
-          value: Math.max(0, weeklyProduction),
-        };
-      });
-    }
-
-    // Get history data from beehive
-    const config = metricConfig[metric];
-    if (config.historyKey && config.historyKey in beehive) {
-      return beehive[config.historyKey] as HistoryData[];
-    }
-
-    return [];
-  }, [open, beehive, metric]);
+  // const data = useMemo<HistoryData[]>(() => {
+  //   if (!open || !beehive || !metric) return [];
+  //
+  //   // Special case for honey production - generate synthetic data
+  //   if (metric === "honey") {
+  //     const weeksCount = 12;
+  //     return Array.from({ length: weeksCount }, (_, i) => {
+  //       const weeklyProduction = (beehive.honeyProduction / weeksCount) * (i + 1) + (Math.random() - 0.5) * 3;
+  //       return {
+  //         time: i === weeksCount - 1 ? "Now" : `Week ${i + 1}`,
+  //         value: Math.max(0, weeklyProduction),
+  //       };
+  //     });
+  //   }
+  //
+  //   // Get history data from beehive
+  //   const config = metricConfig[metric];
+  //   if (config.historyKey && config.historyKey in beehive) {
+  //     return beehive[config.historyKey] as HistoryData[];
+  //   }
+  //
+  //   return [];
+  // }, [open, beehive, metric]);
 
   const config = metric ? metricConfig[metric] : null;
 
