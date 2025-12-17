@@ -16,8 +16,8 @@ import { mockFarms, mockAlerts, mockBeehives, mockSensors, generateRandomAlert }
 import { Beehive, Farm, Sensor, Alert } from "./types";
 import { toast, Toaster } from "sonner@2.0.3";
 import { useFetch } from "./hooks/useFetch";
-import { API_ROUTES } from "./util/ApiRoutes";
-import {usePost} from "./hooks/usePost";
+import { API_ROUTES, SSE_ROUTES } from "./util/ApiRoutes";
+import { usePost } from "./hooks/usePost";
 
 type View = 
   | "login" 
@@ -65,56 +65,70 @@ export default function App() {
 
   // Simulated SSE for real-time alerts
   useEffect(() => {
-    // Only start SSE simulation when user is logged in
+    // Only start SSE when user is logged in
     if (username === "") return;
 
     // Check for new alerts every 8-15 seconds (random interval)
-    const checkInterval = () => {
-      const randomInterval = Math.floor(Math.random() * 7000) + 8000; // 8-15 seconds
-      return randomInterval;
-    };
+    // const checkInterval = () => {
+    //   const randomInterval = Math.floor(Math.random() * 7000) + 8000; // 8-15 seconds
+    //   return randomInterval;
+    // };
+    //
+    // const startSSE = () => {
+    //   const interval = setInterval(() => {
+    //     const newAlert = generateRandomAlert();
+    //
+    //     if (newAlert) {
+    //       setAlerts(prevAlerts => [newAlert, ...prevAlerts]);
+    //
+    //       // Show toast notification if not on alerts page
+    //       if (currentView !== "alerts") {
+    //         if (newAlert.severity === "critical") {
+    //           toast.error(`${newAlert.title}: ${newAlert.beehiveName}`, {
+    //             description: newAlert.message,
+    //             duration: 5000,
+    //           });
+    //         } else if (newAlert.severity === "warning") {
+    //           toast.warning(`${newAlert.title}: ${newAlert.beehiveName}`, {
+    //             description: newAlert.message,
+    //             duration: 4000,
+    //           });
+    //         } else {
+    //           toast.info(`${newAlert.title}: ${newAlert.beehiveName}`, {
+    //             description: newAlert.message,
+    //             duration: 3000,
+    //           });
+    //         }
+    //       }
+    //     }
+    //
+    //     // Reset interval with new random time
+    //     clearInterval(interval);
+    //     startSSE();
+    //   }, checkInterval());
+    //
+    //   return interval;
+    // };
+    //
+    // const intervalId = startSSE();
+    //
+    // return () => {
+    //   clearInterval(intervalId);
+    // };
 
-    const startSSE = () => {
-      const interval = setInterval(() => {
-        const newAlert = generateRandomAlert();
-        
-        if (newAlert) {
-          setAlerts(prevAlerts => [newAlert, ...prevAlerts]);
-          
-          // Show toast notification if not on alerts page
-          if (currentView !== "alerts") {
-            if (newAlert.severity === "critical") {
-              toast.error(`${newAlert.title}: ${newAlert.beehiveName}`, {
-                description: newAlert.message,
-                duration: 5000,
-              });
-            } else if (newAlert.severity === "warning") {
-              toast.warning(`${newAlert.title}: ${newAlert.beehiveName}`, {
-                description: newAlert.message,
-                duration: 4000,
-              });
-            } else {
-              toast.info(`${newAlert.title}: ${newAlert.beehiveName}`, {
-                description: newAlert.message,
-                duration: 3000,
-              });
-            }
-          }
-        }
-        
-        // Reset interval with new random time
-        clearInterval(interval);
-        startSSE();
-      }, checkInterval());
-
-      return interval;
-    };
-
-    const intervalId = startSSE();
-
-    return () => {
-      clearInterval(intervalId);
-    };
+      const eventSource = new EventSource(SSE_ROUTES.alertRoutes);
+      eventSource.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          setAlerts([...alerts, data]);
+      };
+      eventSource.onerror = (err) => {
+          // setError('SSE connection error');
+          console.error('SSE Error:', err);
+          eventSource.close();  // Close on error
+      };
+      return () => {
+          eventSource.close();
+      };
   }, [username, currentView]);
 
   const handleLogin = (user: string) => {
