@@ -80,4 +80,5 @@ export interface Alert {
   farmName: string;
   timestamp: string;
   timestampMs: number;
+  read?: boolean;
 }

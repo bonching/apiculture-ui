@@ -468,6 +468,7 @@ export const mockAlerts: Alert[] = [
     farmName: "Ising Farm",
     timestamp: "2 hours ago",
     timestampMs: now - 2 * 60 * 60 * 1000, // 2 hours ago
+    read: false
   },
   {
     id: "alert-2",
@@ -478,6 +479,7 @@ export const mockAlerts: Alert[] = [
     farmName: "Alveare Farm",
     timestamp: "3 hours ago",
     timestampMs: now - 3 * 60 * 60 * 1000, // 3 hours ago
+    read: false
   },
   {
     id: "alert-3",
@@ -488,6 +490,7 @@ export const mockAlerts: Alert[] = [
     farmName: "Ising Farm",
     timestamp: "45 minutes ago",
     timestampMs: now - 45 * 60 * 1000, // 45 minutes ago
+    read: false
   },
   {
     id: "alert-4",
@@ -498,6 +501,7 @@ export const mockAlerts: Alert[] = [
     farmName: "Alveare Farm",
     timestamp: "1 hour ago",
     timestampMs: now - 1 * 60 * 60 * 1000, // 1 hour ago
+    read: false
   },
   {
     id: "alert-5",
@@ -508,6 +512,7 @@ export const mockAlerts: Alert[] = [
     farmName: "Alveare Farm",
     timestamp: "30 minutes ago",
     timestampMs: now - 30 * 60 * 1000, // 30 minutes ago
+    read: false
   },
   {
     id: "alert-6",
@@ -518,6 +523,7 @@ export const mockAlerts: Alert[] = [
     farmName: "Ising Farm",
     timestamp: "15 minutes ago",
     timestampMs: now - 15 * 60 * 1000, // 15 minutes ago
+    read: false
   },
   {
     id: "alert-7",
@@ -528,6 +534,7 @@ export const mockAlerts: Alert[] = [
     farmName: "Ising Farm",
     timestamp: "5 minutes ago",
     timestampMs: now - 5 * 60 * 1000, // 5 minutes ago
+    read: false
   },
 ];
 
@@ -598,5 +605,6 @@ export const generateRandomAlert = (): Alert | null => {
     farmName,
     timestamp: "just now",
     timestampMs: now,
+    read: false
   };
 };

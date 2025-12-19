@@ -23,9 +23,10 @@ import {
 interface AlertsPanelProps {
   alerts: AlertType[];
   onViewDetails: (alert: AlertType) => void;
+  onMarkAsRead?: (alertId: string) => void;
 }
 
-export function AlertsPanel({ alerts, onViewDetails }: AlertsPanelProps) {
+export function AlertsPanel({ alerts, onViewDetails, onMarkAsRead }: AlertsPanelProps) {
   const [sortBy, setSortBy] = useState<"criticality" | "timestamp">("criticality");
   const [viewMode, setViewMode] = useState<"card" | "graph">("card");
   const [graphType, setGraphType] = useState<"line" | "bar" | "pie" | "stacked">("line");
@@ -93,6 +94,15 @@ export function AlertsPanel({ alerts, onViewDetails }: AlertsPanelProps) {
   const toggleSort = () => {
     setSortBy(sortBy === "criticality" ? "timestamp" : "criticality");
   };
+
+  const handleViewDetails = (alert: AlertType) => {
+      if (onMarkAsRead && !alert.read) {
+          onMarkAsRead(alert.id);
+      }
+      onViewDetails(alert);
+  }
+
+  const unreadCount = alerts.filter(a => !a.read).length;
 
   // Generate trend data for line chart - alerts over time
   const alertTrendData = useMemo(() => {
@@ -184,7 +194,9 @@ export function AlertsPanel({ alerts, onViewDetails }: AlertsPanelProps) {
         <div className="flex items-center justify-between">
           <div>
             <h1>Alerts & Notifications</h1>
-            <p className="text-muted-foreground">{alerts.length} total alerts</p>
+            <p className="text-muted-foreground">
+                {alerts.length} total alerts ({unreadCount} unread)
+            </p>
           </div>
           <div className="flex gap-2">
             {viewMode === "card" && (
@@ -434,13 +446,24 @@ export function AlertsPanel({ alerts, onViewDetails }: AlertsPanelProps) {
               </Card>
             ) : (
               sortedAlerts.map((alert) => (
-                <Card key={alert.id}>
+                <Card
+                    key={alert.id}
+                    className={!alert.read ? "!border-l-4 !border-l-orange-600 !border !border-orange-300 shadow-lg" : ""}
+                    style={!alert.read ? { backgroundColor: '#fed7aa' } : {}}
+                >
                   <CardHeader>
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-start gap-3 flex-1">
                         {getAlertIcon(alert.severity)}
                         <div className="flex-1">
-                          <CardTitle>{alert.title}</CardTitle>
+                          <div className="flex items-center gap-2">
+                              <CardTitle>{alert.title}</CardTitle>
+                              {!alert.read && (
+                                  <Badge variant="outline" className="bg-orange-200 text-orange-800 border-orange-400 font-semibold" >
+                                      New
+                                  </Badge>
+                              )}
+                          </div>
                           <CardDescription className="mt-1">
                             {alert.beehiveName} - {alert.farmName}
                           </CardDescription>
@@ -454,7 +477,7 @@ export function AlertsPanel({ alerts, onViewDetails }: AlertsPanelProps) {
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
-                          onClick={() => onViewDetails(alert)}
+                          onClick={() => handleViewDetails(alert)}
                         >
                           <Eye className="h-4 w-4" />
                         </Button>

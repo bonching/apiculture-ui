@@ -371,6 +371,12 @@ export default function App() {
     setCurrentView("alert-detail");
   };
 
+  const handleMarkAlertAsRead = (alertId: string) => {
+      setAlerts(alerts.map(alert =>
+          alert.id === alertId ? { ...alert, read: true } : alert
+      ));
+  };
+
   const handleBackFromBeehive = () => {
     if (selectedFarm) {
       setCurrentView("farm-details");
@@ -637,7 +643,11 @@ export default function App() {
       )}
       
       {currentView === "alerts" && (
-        <AlertsPanel alerts={alerts} onViewDetails={handleViewAlertDetails} />
+        <AlertsPanel
+            alerts={alerts}
+            onViewDetails={handleViewAlertDetails}
+            onMarkAsRead={handleMarkAlertAsRead}
+        />
       )}
 
       {currentView === "alert-detail" && selectedAlert && (
@@ -664,7 +674,7 @@ export default function App() {
         <BottomNavigation
           currentView={currentView}
           onNavigate={handleNavigate}
-          alertCount={alerts.length}
+          alertCount={alerts.filter(a => !a.read).length}
         />
       )}
       <Toaster />
