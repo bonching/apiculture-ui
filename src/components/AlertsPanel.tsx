@@ -19,6 +19,8 @@ import {
   Legend, 
   ResponsiveContainer 
 } from "recharts";
+import { API_ROUTES } from "../util/ApiRoutes";
+import { usePost } from "../hooks/usePost";
 
 interface AlertsPanelProps {
   alerts: AlertType[];
@@ -95,9 +97,12 @@ export function AlertsPanel({ alerts, onViewDetails, onMarkAsRead }: AlertsPanel
     setSortBy(sortBy === "criticality" ? "timestamp" : "criticality");
   };
 
-  const handleViewDetails = (alert: AlertType) => {
+  const { data: newAlert, loading, error, mutate } = usePost<AlertType>({ extractData: true });
+
+  const handleViewDetails = async (alert: AlertType) => {
       if (onMarkAsRead && !alert.read) {
           onMarkAsRead(alert.id);
+          await mutate(API_ROUTES.alertRoutes + '/' + alert.id, {'read': true}, { method: 'PUT' });
       }
       onViewDetails(alert);
   }
