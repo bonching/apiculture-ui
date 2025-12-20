@@ -21,6 +21,7 @@ import {
 } from "recharts";
 import { API_ROUTES } from "../util/ApiRoutes";
 import { usePost } from "../hooks/usePost";
+import { useTimeAgo } from "../hooks/useTimeAgo";
 
 interface AlertsPanelProps {
   alerts: AlertType[];
@@ -491,7 +492,7 @@ export function AlertsPanel({ alerts, onViewDetails, onMarkAsRead }: AlertsPanel
                   </CardHeader>
                   <CardContent>
                     <p className="text-muted-foreground mb-2">{alert.message}</p>
-                    <div className="text-muted-foreground">{alert.timestamp}</div>
+                    <div className="text-muted-foreground">{useTimeAgo(alert.timestampMs)}</div>
                   </CardContent>
                 </Card>
               ))
