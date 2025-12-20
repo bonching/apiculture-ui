@@ -119,7 +119,7 @@ export default function App() {
       const eventSource = new EventSource(SSE_ROUTES.alertRoutes);
       eventSource.onmessage = (event) => {
           const data = JSON.parse(event.data);
-          setAlerts([...alerts, data]);
+          setAlerts(prev => [...prev, data]);
       };
       eventSource.onerror = (err) => {
           // setError('SSE connection error');
@@ -545,7 +545,7 @@ export default function App() {
           farms={farms}
           beehives={beehives}
           sensors={sensors}
-          alertCount={alerts.length}
+          alertCount={alerts.filter(a => !a.read).length}
           onNavigateToSensors={handleNavigateToSensors}
         />
       )}
