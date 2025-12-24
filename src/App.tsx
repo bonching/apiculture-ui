@@ -369,12 +369,16 @@ export default function App() {
   const handleViewAlertDetails = (alert: Alert) => {
     setSelectedAlert(alert);
     setCurrentView("alert-detail");
+    // Mark this alert as read when viewing details
+    handleMarkAlertAsRead(alert.id)
   };
 
   const handleMarkAlertAsRead = (alertId: string) => {
+    if (alerts) {
       setAlerts(alerts.map(alert =>
           alert.id === alertId ? { ...alert, read: true } : alert
       ));
+    }
   };
 
   const handleBackFromBeehive = () => {
@@ -644,7 +648,7 @@ export default function App() {
       
       {currentView === "alerts" && (
         <AlertsPanel
-            alerts={alerts}
+            alerts={alerts || []}
             onViewDetails={handleViewAlertDetails}
             onMarkAsRead={handleMarkAlertAsRead}
         />
@@ -674,7 +678,7 @@ export default function App() {
         <BottomNavigation
           currentView={currentView}
           onNavigate={handleNavigate}
-          alertCount={alerts.filter(a => !a.read).length}
+          alertCount={alerts.filter(a => !a.read).length || 0}
         />
       )}
       <Toaster />

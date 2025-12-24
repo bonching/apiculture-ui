@@ -454,8 +454,8 @@ export function AlertsPanel({ alerts, onViewDetails, onMarkAsRead }: AlertsPanel
               sortedAlerts.map((alert) => (
                 <Card
                     key={alert.id}
-                    className={!alert.read ? "!border-l-4 !border-l-orange-600 !border !border-orange-300 shadow-lg" : ""}
-                    style={!alert.read ? { backgroundColor: '#fed7aa' } : {}}
+                    className={!alert.read ? "!border-l-4 !border-l-orange-700 !border !border-orange-400 shadow-lg" : ""}
+                    style={!alert.read ? { backgroundColor: '#fb923c' } : {}}
                 >
                   <CardHeader>
                     <div className="flex items-start justify-between gap-3">
