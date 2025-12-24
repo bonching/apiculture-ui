@@ -248,9 +248,20 @@ export const mockSensors: Sensor[] = [
     systems: ["harvesting"],
     lastUpdated: "3 min ago",
   },
-  // Unmapped sensors
   {
     id: "sensor-22",
+    name: "Digital Honey Scale HX711",
+    dataCapture: ["honey_harvested"],
+    status: "online",
+    currentValue: "15500g",
+    beehiveId: 'hive-1-1',
+    hiveLocation: "honey_super",
+    systems: ["harvesting"],
+    lastUpdated: "10 min ago",
+  },
+  // Unmapped sensors
+  {
+    id: "sensor-23",
     name: "Si7021 Humidity Sensor",
     dataCapture: ["temperature", "humidity"],
     status: "online",
@@ -260,7 +271,7 @@ export const mockSensors: Sensor[] = [
     lastUpdated: "12 min ago",
   },
   {
-    id: "sensor-23",
+    id: "sensor-24",
     name: "Backup Weather Station",
     dataCapture: ["rainfall", "wind_speed", "barometric_pressure", "uv_index"],
     status: "offline",
@@ -534,6 +545,17 @@ export const mockAlerts: Alert[] = [
     farmName: "Ising Farm",
     timestamp: "5 minutes ago",
     timestampMs: now - 5 * 60 * 1000, // 5 minutes ago
+    read: false
+  },
+  {
+    id: "alert-8",
+    severity: "info",
+    title: "Honey Harvested",
+    message: "Successfully harvested 15.5kg of honey from Alpha Hive",
+    beehiveName: "Alpha Hive",
+    farmName: "Ising Farm",
+    timestamp: "10 minutes ago",
+    timestampMs: now - 10 * 60 * 1000, // 10 minutes ago
     read: false
   },
 ];

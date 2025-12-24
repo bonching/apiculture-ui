@@ -17,7 +17,8 @@ export type DataCaptureType =
   | "odor_compounds"
   | "pollen_concentration"
   | "bee_count" 
-  | "activity";
+  | "activity"
+  | "honey_harvested";
 
 export interface Sensor {
   id: string;
