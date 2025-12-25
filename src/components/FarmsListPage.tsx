@@ -33,12 +33,14 @@ export function FarmsListPage({farms, onViewFarmDetails, onEditFarm, onAddFarm, 
                             <div className="flex items-start justify-between gap-3">
                                 <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-1">
-                                        <MapPin className="h-4 w-4 text-amber-500"/>
                                         <h3>{farm.name}</h3>
                                     </div>
-                                    <p className="text-muted-foreground">{farm.description}</p>
-                                    <p className="text-muted-foreground">{farm.address}</p>
-                                    <div className="mt-2">
+                                    <p className="text-muted-foreground mb-3">{farm.description}</p>
+                                    <div className="flex items-start gap-2 mb-3">
+                                        <MapPin className="h-4 w-4 text-amber-500"/>
+                                        <p className="text-xs text-gray-600">{farm.address}</p>
+                                    </div>
+                                    <div>
                                         <Badge variant="secondary">{farm.beehiveIds.length} hives</Badge>
                                     </div>
                                 </div>
