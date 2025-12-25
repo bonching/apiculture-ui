@@ -19,6 +19,7 @@ import {
     Zap
 } from "lucide-react";
 import {Alert as AlertType, Beehive} from "../types";
+import {useTimeAgo} from "../hooks/useTimeAgo";
 
 interface AlertDetailPageProps {
     alert: AlertType;
@@ -118,7 +119,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                         </div>
                         <div>
                             <div className="text-muted-foreground">Timestamp</div>
-                            <div>{alert.timestamp}</div>
+                            <div>{new Date(alert.timestampMs).toLocaleString()}</div>
                         </div>
                     </CardContent>
                 </Card>
