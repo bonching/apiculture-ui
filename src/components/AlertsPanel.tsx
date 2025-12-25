@@ -30,10 +30,18 @@ interface AlertsPanelProps {
 }
 
 export function AlertsPanel({ alerts, onViewDetails, onMarkAsRead }: AlertsPanelProps) {
-  const [sortBy, setSortBy] = useState<"criticality" | "timestamp">("criticality");
+  const [sortBy, setSortBy] = useState<"criticality" | "timestamp">(() => {
+      const saved = localStorage.getItem("alertsSortBy");
+      return (saved === "criticality" || saved === "timestamp") ? saved : "criticality";
+  });
   const [viewMode, setViewMode] = useState<"card" | "graph">("card");
   const [graphType, setGraphType] = useState<"line" | "bar" | "pie" | "stacked">("line");
   const [isLive, setIsLive] = useState(true);
+
+  // Save sort preference to localStorage
+  useEffect(() => {
+      localStorage.setItem("alertsSortBy", sortBy);
+  }, [sortBy]);
 
   // Pulse animation for live indicator
   useEffect(() => {
