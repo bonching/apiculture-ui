@@ -1,5 +1,3 @@
-import React from 'react';
-
 /**
  * Convert a Unix timestamp to a relative time string like 'N seconds ago'.
  * The timestamp is treated as UTC (Unix timestamp in seconds since epoch).

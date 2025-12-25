@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import {useCallback, useState} from "react";
 
 export function usePost<T = unknown>(
     options: {
@@ -11,7 +11,7 @@ export function usePost<T = unknown>(
     error: Error | null;
     mutate: (url: string, body: any, mutateOptions?: { method?: 'POST' | 'PUT' | 'DELETE' }) => Promise<T | void>;
 } {
-    const { extractData = true, headers = {} } = options;
+    const {extractData = true, headers = {}} = options;
     const [data, setData] = useState<T | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<Error | null>(null);
@@ -26,7 +26,7 @@ export function usePost<T = unknown>(
             return Promise.reject(new Error('URL or body missing'));
         }
 
-        const { method = 'POST' } = mutateOptions;
+        const {method = 'POST'} = mutateOptions;
         const controller = new AbortController();
         setError(null);
         setData(null); // Reset previous data
@@ -60,5 +60,5 @@ export function usePost<T = unknown>(
         }
     }, [extractData, headers]); // Stable deps
 
-    return { data, loading, error, mutate };
+    return {data, loading, error, mutate};
 }
