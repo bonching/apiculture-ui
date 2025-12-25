@@ -82,4 +82,7 @@ export interface Alert {
   timestamp: string;
   timestampMs: number;
   read?: boolean;
+  beehiveId?: string;
+  dataType?: DataCaptureType;
+  sensorValue?: number | string;
 }

@@ -556,7 +556,10 @@ export const mockAlerts: Alert[] = [
         farmName: "Ising Farm",
         timestamp: "10 minutes ago",
         timestampMs: now - 10 * 60 * 1000, // 10 minutes ago
-        read: false
+        read: false,
+        beehiveId: "hive-1-1",
+        dataType: "honey_harvested",
+        sensorValue: 300
     },
 ];
 

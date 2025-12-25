@@ -149,6 +149,16 @@ export default function App() {
         eventSource.onmessage = (event) => {
             const data = JSON.parse(event.data);
             setAlerts(prev => [...prev, data]);
+
+            if (data.dataType === "honey_harvested" && data.beehiveId && data.sensorValue) {
+                setBeehives(prevBeehives =>
+                    prevBeehives.map(hive =>
+                        hive.id === data.beehiveId
+                            ? { ...hive, honeyProduction: hive.honeyProduction + Number(data.sensorValue)}
+                            : hive
+                    )
+                );
+            }
         };
         eventSource.onerror = (err) => {
             // setError('SSE connection error');
