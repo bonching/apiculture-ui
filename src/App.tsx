@@ -550,29 +550,48 @@ export default function App() {
 
         const hasOfflineSensor = beehiveSensors.some(s => s.status === "offline");
 
-        // Extract numeric values from multi-value strings
-        const extractFirstNumber = (value: number | string): number => {
-            if (typeof value === "number") return value;
-            const match = String(value).match(/[\d.]+/);
-            return match ? parseFloat(match[0]) : 0;
+        // Extract numeric value from sensor based on dataCapture type
+        const extractSensorValue = (sensor: typeof beehiveSensors[0] | undefined, dataType: string): number => {
+            if (!sensor) return 0;
+            if (typeof sensor.currentValue === "number") return sensor.currentValue;
+
+            // For multi-value sensors, find the index of the dataType in dataCapture array
+            const valueString = String(sensor.currentValue);
+            const dataIndex = sensor.dataCapture.indexOf(dataType as any);
+            console.log('dataIndex', dataIndex);
+
+            if (dataIndex === -1) {
+                // Datatype not found in this sensor, try to extract first number
+                const match = valueString.match(/[\d.]+/);
+                return match ? Number.parseFloat(match[0]) : 0;
+            }
+
+            // Split by comma and extract the value at the correct index
+            const values = valueString.split(",").map(v => v.trim());
+            if (dataIndex < values.length) {
+                const match = values[dataIndex].match(/[\d.]+/);
+                return match ? Number.parseFloat(match[0]) : 0;
+            }
+
+            return 0;
         };
 
         return {
-            temperature: tempSensor ? extractFirstNumber(tempSensor.currentValue) : 0,
-            humidity: humiditySensor ? extractFirstNumber(humiditySensor.currentValue) : 0,
-            co2: co2Sensor ? extractFirstNumber(co2Sensor.currentValue) : 0,
+            temperature: extractSensorValue(tempSensor, "temperature"),
+            humidity: extractSensorValue(humiditySensor, "humidity"),
+            co2: extractSensorValue(co2Sensor, "c02"),
             beeCount: beeCountSensor ? Number(beeCountSensor.currentValue) : 0,
-            soundLevel: soundSensor ? extractFirstNumber(soundSensor.currentValue) : 0,
-            activityLevel: activitySensor ? extractFirstNumber(activitySensor.currentValue) : 0,
-            voc: vocSensor ? extractFirstNumber(vocSensor.currentValue) : 0,
-            vibration: vibrationSensor ? extractFirstNumber(vibrationSensor.currentValue) : 0,
-            lux: luxSensor ? extractFirstNumber(luxSensor.currentValue) : 0,
-            pheromone: pheromoneSensor ? extractFirstNumber(pheromoneSensor.currentValue) : 0,
-            uvIndex: uvIndexSensor ? extractFirstNumber(uvIndexSensor.currentValue) : 0,
-            rainfall: rainfallSensor ? extractFirstNumber(rainfallSensor.currentValue) : 0,
-            windSpeed: windSpeedSensor ? extractFirstNumber(windSpeedSensor.currentValue) : 0,
-            barometricPressure: barometricPressureSensor ? extractFirstNumber(barometricPressureSensor.currentValue) : 0,
-            pollenConcentration: pollenConcentrationSensor ? extractFirstNumber(pollenConcentrationSensor.currentValue) : 0,
+            soundLevel: extractSensorValue(soundSensor, "sound"),
+            activityLevel: extractSensorValue(activitySensor, "activity"),
+            voc: extractSensorValue(vocSensor, "voc"),
+            vibration: extractSensorValue(vibrationSensor, "vibration"),
+            lux: luxSensor ? extractSensorValue(luxSensor, "lux") : 0,
+            pheromone: pheromoneSensor ? extractSensorValue(pheromoneSensor, "pheromone") : 0,
+            uvIndex: uvIndexSensor ? extractSensorValue(uvIndexSensor, "uv_index") : 0,
+            rainfall: rainfallSensor ? extractSensorValue(rainfallSensor, "rainfall") : 0,
+            windSpeed: windSpeedSensor ? extractSensorValue(windSpeedSensor, "wind_speed") : 0,
+            barometricPressure: barometricPressureSensor ? extractSensorValue(barometricPressureSensor, "barometric_pressure") : 0,
+            pollenConcentration: pollenConcentrationSensor ? extractSensorValue(pollenConcentrationSensor, "pollen_concentration") : 0,
             status: hasOfflineSensor ? "offline" as const : "online" as const,
         };
     };

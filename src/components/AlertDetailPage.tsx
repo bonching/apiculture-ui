@@ -19,7 +19,6 @@ import {
     Zap
 } from "lucide-react";
 import {Alert as AlertType, Beehive} from "../types";
-import {useTimeAgo} from "../hooks/useTimeAgo";
 
 interface AlertDetailPageProps {
     alert: AlertType;
