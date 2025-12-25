@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import {Beehive} from "../types";
 import {ImageWithFallback} from "./figma/ImageWithFallback";
+import {formatHoneyWeight} from "../hooks/useHoneyWeight";
 
 interface BeehiveDetailProps {
     beehive: Beehive & {
@@ -99,7 +100,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <div className="text-muted-foreground mb-1">Honey Production</div>
-                                    <div>{beehive.honeyProduction} kg</div>
+                                    <div>{formatHoneyWeight(beehive.honeyProduction)}</div>
                                 </div>
                                 <Button
                                     variant="ghost"

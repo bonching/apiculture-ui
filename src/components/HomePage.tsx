@@ -2,6 +2,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "./ui/ca
 import {Badge} from "./ui/badge";
 import {AlertTriangle, Droplets, Hexagon, MapPin, TrendingUp, Wifi, WifiOff} from "lucide-react";
 import {Beehive, Farm, Sensor} from "../types";
+import {formatHoneyWeight} from "../hooks/useHoneyWeight";
 
 interface HomePageProps {
     farms: Farm[];
@@ -99,7 +100,7 @@ export function HomePage({farms, beehives, sensors, alertCount, onNavigateToSens
                             <Droplets className="h-8 w-8 text-yellow-600"/>
                             <div>
                                 <div className="text-muted-foreground">Total Honey</div>
-                                <div>{totalHoneyProduction.toFixed(1)} kg</div>
+                                <div>{formatHoneyWeight(totalHoneyProduction)}</div>
                             </div>
                         </div>
                     </CardContent>

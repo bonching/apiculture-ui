@@ -3,6 +3,7 @@ import {Button} from "./ui/button";
 import {Badge} from "./ui/badge";
 import {AlertTriangle, ArrowLeft, Edit, Eye, Hexagon, Plus, Trash2, TrendingUp, Wifi, WifiOff} from "lucide-react";
 import {Beehive, Farm, Sensor} from "../types";
+import {formatHoneyWeight} from "../hooks/useHoneyWeight";
 
 interface FarmDetailsPageProps {
     farm: Farm;
@@ -174,7 +175,7 @@ export function FarmDetailsPage({
                                             <div className="text-muted-foreground">Harvest</div>
                                             <div className="flex items-center justify-center gap-1">
                                                 <TrendingUp className="h-3 w-3"/>
-                                                {beehive.honeyProduction}kg
+                                                {formatHoneyWeight(beehive.honeyProduction)}
                                             </div>
                                         </div>
                                         <div className="text-center">

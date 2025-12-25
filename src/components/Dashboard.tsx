@@ -3,6 +3,7 @@ import {Badge} from "./ui/badge";
 import {Button} from "./ui/button";
 import {AlertTriangle, Bell, Droplet, LogOut, TrendingUp} from "lucide-react";
 import {Beehive, Farm} from "../types";
+import {formatHoneyWeight} from "../hooks/useHoneyWeight";
 
 interface DashboardProps {
     farms: Farm[];
@@ -134,7 +135,7 @@ export function Dashboard({farms, onSelectBeehive, onShowAlerts, onLogout, alert
                                                 <div className="text-muted-foreground">Harvest</div>
                                                 <div className="flex items-center justify-center gap-1">
                                                     <TrendingUp className="h-3 w-3"/>
-                                                    {beehive.honeyProduction}kg
+                                                    {formatHoneyWeight(beehive.honeyProduction)}
                                                 </div>
                                             </div>
                                         </div>
