@@ -607,7 +607,7 @@ export default function App() {
                     farms={farms}
                     beehives={beehives}
                     sensors={sensors}
-                    alertCount={alerts.filter(a => !a.read).length}
+                    alertCount={alerts?.filter(a => !a.read).length || 0}
                     onNavigateToSensors={handleNavigateToSensors}
                 />
             )}
@@ -736,7 +736,7 @@ export default function App() {
                 <BottomNavigation
                     currentView={currentView}
                     onNavigate={handleNavigate}
-                    alertCount={alerts.filter(a => !a.read).length || 0}
+                    alertCount={alerts?.filter(a => !a.read).length || 0}
                 />
             )}
             <Toaster/>
