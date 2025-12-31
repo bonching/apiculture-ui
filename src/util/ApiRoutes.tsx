@@ -6,7 +6,8 @@ export const API_ROUTES = {
     hiveRoutes: `${API_SERVER}/hives`,
     sensorRoutes: `${API_SERVER}/sensors`,
     alertRoutes: `${API_SERVER}/alerts`,
-    metricRoutes: `${API_SERVER}/metrics`
+    metricRoutes: `${API_SERVER}/metrics`,
+    harvestRoutes: `${API_SERVER}/harvest`,
 }
 
 export const SSE_ROUTES = {
