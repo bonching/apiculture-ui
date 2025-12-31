@@ -8,6 +8,7 @@ import {BeehiveDetail} from "./components/BeehiveDetail";
 import {BeehiveEditPage} from "./components/BeehiveEditPage";
 import {SensorsListPage} from "./components/SensorsListPage";
 import {SensorEditPage} from "./components/SensorEditPage";
+import {HarvestPage} from "./components/HarvestPage";
 import {AlertsPanel} from "./components/AlertsPanel";
 import {AlertDetailPage} from "./components/AlertDetailPage";
 import {ProfilePage} from "./components/ProfilePage";
@@ -17,6 +18,7 @@ import {toast, Toaster} from "sonner@2.0.3";
 import {useFetch} from "./hooks/useFetch";
 import {API_ROUTES, SSE_ROUTES} from "./util/ApiRoutes";
 import {usePost} from "./hooks/usePost";
+import {mockHarvestDevices} from "./data/mockData";
 
 type View =
     | "login"
@@ -29,6 +31,7 @@ type View =
     | "sensors"
     | "sensor-edit"
     | "alerts"
+    | "harvest"
     | "alert-detail"
     | "profile";
 
@@ -701,6 +704,15 @@ export default function App() {
                         setCurrentView("sensors");
                         setSelectedSensor(null);
                     }}
+                />
+            )}
+
+            {currentView === "harvest" && (
+                <HarvestPage
+                    farms={farms}
+                    beehives={beehives}
+                    harvestDevices={mockHarvestDevices}
+                    onBack={() => setCurrentView("home")}
                 />
             )}
 

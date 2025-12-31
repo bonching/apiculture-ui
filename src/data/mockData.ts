@@ -1,4 +1,4 @@
-import {Alert, Beehive, Farm, Sensor} from "../types";
+import {Alert, Beehive, Farm, HarvestDevice, Sensor} from "../types";
 
 // Generate mock history data
 const generateHistory = (baseValue: number, variance: number, points: number = 24) => {
@@ -633,3 +633,13 @@ export const generateRandomAlert = (): Alert | null => {
         read: false
     };
 };
+
+// Mock Harvest Devices
+export const mockHarvestDevices: HarvestDevice[] = [
+    {
+        id: "harvest-1",
+        name: "Honey Extractor Pro X1",
+        status: "available",
+        lastUsed: "2025-12-25"
+    }
+]

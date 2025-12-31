@@ -86,3 +86,10 @@ export interface Alert {
   dataType?: DataCaptureType;
   sensorValue?: number | string;
 }
+
+export interface HarvestDevice {
+    id: string;
+    name: string;
+    status: "available" | "in_use" | "offline";
+    lastUsed?: string
+}
