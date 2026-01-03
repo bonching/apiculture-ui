@@ -1,5 +1,5 @@
-import {useState, useEffect, useRef, useMemo} from "react";
-import {Loader2, Check, ArrowLeft} from "lucide-react";
+import {useState, useEffect, useRef} from "react";
+import {Loader2, Check, ArrowLeft, X} from "lucide-react";
 import { Button } from "./ui/button"
 import {Beehive, Farm, HarvestDevice} from "../types";
 import {usePost} from "../hooks/usePost";
@@ -9,7 +9,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "./ui/ca
 import {Label} from "./ui/label";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "./ui/select";
 
-type HarvestState = "idle" | "calibrating" | "starting_smoker" | "capturing_images" | "analyzing_honeypots" | "harvesting" | "completed"
+type HarvestState = "idle" | "calibrating" | "starting_smoker" | "capturing_images" | "analyzing_honeypots" | "harvesting" | "completed" | "failed"
 
 interface HarvestPageProps {
     farms: Farm[];
@@ -31,7 +31,7 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
 
     // Poll harvest status from api
     useEffect(() => {
-        if (!harvestId || harvestState === "idle" || harvestState === "completed") {
+        if (!harvestId || harvestState === "idle" || harvestState === "completed" || harvestState === "failed") {
             return;
         }
 
@@ -53,11 +53,17 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                     setProgress(data.progress);
                 }
 
-                // Stop polling if completed
-                if (data.state === "completed") {
+                // Stop polling if completed or failed
+                if (data.state === "completed" || data.state === "failed") {
                     if (pollingIntervalRef.current) {
                         clearInterval(pollingIntervalRef.current);
                         pollingIntervalRef.current = null;
+                    }
+
+                    // Show error toast if failed
+                    if (data.state === "idle") {
+                        const errorMessage = data.message || data.error || "Harvest failed. Please try again later.";
+                        toast.error(errorMessage);
                     }
                 }
             } catch (error) {
@@ -289,6 +295,8 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                         ? "bg-indigo-50 border-indigo-200 dark:bg-indigo-950 dark:indigo-purple-800"
                                         : harvestState === "harvesting"
                                         ? "bg-amber-50 border-amber-200 dark:bg-amber-950 dark:amber-purple-800"
+                                        : harvestState === "failed"
+                                        ? "bg-amber-50 border-red-200 dark:bg-red-950 dark:red-purple-800"
                                         : "bg-green-50 border-green-200 dark:bg-green-950 dark:green-purple-800"
                                 }`}>
                                     {/* Animated background gradient */}
@@ -344,6 +352,14 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                                         <div className="absolute inset-0 h-5 w-5 rounded-full bg-green-400 animate-ping" />
                                                     </div>
                                                 )}
+                                                {harvestState === "failed" && (
+                                                    <div className="relative">
+                                                        <div className="h-5 w-5 rounded-full bg-red-600 flex items-center justify-center animate-in zoom-in duration-300">
+                                                            <X className="h-3 w-3 text-white" />
+                                                        </div>
+                                                        <div className="absolute inset-0 h-5 w-5 rounded-full bg-red-400 animate-ping" />
+                                                    </div>
+                                                )}
                                                 <span className={`text-sm font-semibold transition-colors duration-300 ${
                                                     harvestState === "calibrating"
                                                         ? "text-blue-700 dark:text-blue-300"
@@ -355,6 +371,8 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                                         ? "text-indigo-700 dark:text-indigo-300"
                                                         : harvestState === "harvesting"
                                                         ? "text-amber-700 dark:text-amber-300"
+                                                        : harvestState === "failed"
+                                                        ? "text-red-700 dark:text-red-300"
                                                         : "text-green-700 dark:text-green-300"
                                                 }`}>
                                                     {harvestState === "calibrating" && "Calibrating the device..."}
@@ -363,6 +381,7 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                                     {harvestState === "analyzing_honeypots" && "Analyzing honeypots..."}
                                                     {harvestState === "harvesting" && "Harvesting honey..."}
                                                     {harvestState === "completed" && "Harvest completed!"}
+                                                    {harvestState === "failed" && "Harvest failed!"}
                                                 </span>
                                             </div>
                                             <span className={`text-lg font-bold tabular-nums transition-all duration-300 ${
@@ -387,6 +406,8 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                                         ? "bg-gradient-to-r from-indigo-400 to-indigo-600"
                                                         : harvestState === "harvesting"
                                                         ? "bg-gradient-to-r from-amber-400 to-amber-600"
+                                                        : harvestState === "failed"
+                                                        ? "bg-gradient-to-r from-red-400 to-red-600"
                                                         : "bg-gradient-to-r from-green-400 to-green-600"
                                                     }`}
                                                     style={{ width: `${progress}%` }}
@@ -426,6 +447,7 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                             {harvestState === "analyzing_honeypots" && "AI analyzing honeycomb cells for optimal extraction..."}
                                             {harvestState === "harvesting" && "Extracting honey from frames. Please wait..."}
                                             {harvestState === "completed" && "Honey extraction complete. Ready for collection..."}
+                                            {harvestState === "failed" && "An error occurred during the harvest process. Please check the device and try again."}
                                         </p>
                                     </div>
                                 </div>
@@ -438,6 +460,17 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                     >
                                         <Check className="h-4 w-4 mr-2" />
                                         Start New Harvest
+                                    </Button>
+                                )}
+
+                                {harvestState === "failed" && (
+                                    <Button
+                                        onClick={handleReset}
+                                        variant="outline"
+                                        className="w-full animate-in fade-in slide-in-from-bottom-2 duration-300 delay-150 border-red-300 hover:bg-red-50 hover:border-red-400 dark:border-red-800 dark:hover:bg-red-950"
+                                    >
+                                        <X className="h-4 w-4 mr-2" />
+                                        Try Again
                                     </Button>
                                 )}
                             </div>
