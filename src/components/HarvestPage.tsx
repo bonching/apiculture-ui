@@ -9,7 +9,7 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "./ui/ca
 import {Label} from "./ui/label";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "./ui/select";
 
-type HarvestState = "idle" | "calibrating" | "starting_smoker" | "capturing_images" | "analyzing_honeypots" | "harvesting" | "completed" | "failed"
+type HarvestState = "idle" | "calibrating" | "starting_smoker" | "capturing_images" | "analyzing_honeypots" | "harvesting" | "cleanup" | "completed" | "failed"
 
 interface HarvestPageProps {
     farms: Farm[];
@@ -295,6 +295,8 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                         ? "bg-indigo-50 border-indigo-200 dark:bg-indigo-950 dark:indigo-purple-800"
                                         : harvestState === "harvesting"
                                         ? "bg-amber-50 border-amber-200 dark:bg-amber-950 dark:amber-purple-800"
+                                        : harvestState === "cleanup"
+                                        ? "bg-cyan-50 border-cyan-200 dark:bg-cyan-950 dark:border-cyan-800"
                                         : harvestState === "failed"
                                         ? "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800"
                                         : "bg-green-50 border-green-200 dark:bg-green-950 dark:green-purple-800"
@@ -344,6 +346,12 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                                         <div className="absolute inset-0 h-5 w-5 rounded-full bg-amber-400 animate-ping opacity-20" />
                                                     </div>
                                                 )}
+                                                {harvestState === "cleanup" && (
+                                                    <div className="relative">
+                                                        <Loader2 className="h-5 w-5 text-cyan-600 animate-spin" />
+                                                        <div className="absolute inset-0 h-5 w-5 rounded-full bg-cyan-400 animate-ping opacity-20" />
+                                                    </div>
+                                                )}
                                                 {harvestState === "completed" && (
                                                     <div className="relative">
                                                         <div className="h-5 w-5 rounded-full bg-green-600 flex items-center justify-center animate-in zoom-in duration-300">
@@ -371,6 +379,8 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                                         ? "text-indigo-700 dark:text-indigo-300"
                                                         : harvestState === "harvesting"
                                                         ? "text-amber-700 dark:text-amber-300"
+                                                        : harvestState === "cleanup"
+                                                        ? "text-cyan-700 dark:text-cyan-300"
                                                         : harvestState === "failed"
                                                         ? "text-red-700 dark:text-red-300"
                                                         : "text-green-700 dark:text-green-300"
@@ -380,6 +390,7 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                                     {harvestState === "capturing_images" && "Capturing beehive interior images..."}
                                                     {harvestState === "analyzing_honeypots" && "Analyzing honeypots..."}
                                                     {harvestState === "harvesting" && "Harvesting honey..."}
+                                                    {harvestState === "cleanup" && "Cleaning up..."}
                                                     {harvestState === "completed" && "Harvest completed!"}
                                                     {harvestState === "failed" && "Harvest failed!"}
                                                 </span>
@@ -406,6 +417,8 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                                         ? "bg-gradient-to-r from-indigo-400 to-indigo-600"
                                                         : harvestState === "harvesting"
                                                         ? "bg-gradient-to-r from-amber-400 to-amber-600"
+                                                        : harvestState === "cleanup"
+                                                        ? "bg-gradient-to-r from-cyan-400 to-cyan-600"
                                                         : harvestState === "failed"
                                                         ? "bg-gradient-to-r from-red-400 to-red-600"
                                                         : "bg-gradient-to-r from-green-400 to-green-600"
@@ -424,9 +437,9 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                                 </div>
                                             </div>
 
-                                            {/* Progress milestone markers - now 6 stages */}
+                                            {/* Progress milestone markers - now 7 stages */}
                                             <div className="absolute top-1/2 -translate-y-1/2 left-0 right-0 flex justify-between px-0.5">
-                                                {[16.67, 33.33, 50, 66.67, 83.33].map((milestone, index) => (
+                                                {[14.29, 28.57, 42.86, 57.14, 71.43, 85.71].map((milestone, index) => (
                                                     <div
                                                         key={index}
                                                         className={`w-0.5 h-4 rounded-full transition-full duration-300 ${
@@ -446,6 +459,7 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                             {harvestState === "capturing_images" && "Taking high-resolution photos of honeycomb frames..."}
                                             {harvestState === "analyzing_honeypots" && "AI analyzing honeycomb cells for optimal extraction..."}
                                             {harvestState === "harvesting" && "Extracting honey from frames. Please wait..."}
+                                            {harvestState === "cleanup" && "Cleaning equipment and sealing the hive..."}
                                             {harvestState === "completed" && "Honey extraction complete. Ready for collection..."}
                                             {harvestState === "failed" && "An error occurred during the harvest process. Please check the device and try again."}
                                         </p>
