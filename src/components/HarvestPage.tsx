@@ -62,7 +62,7 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
 
                     // Show error toast if failed
                     if (data.state === "failed") {
-                        const errorMessage = data.message || data.error || "Harvest failed. Please try again later.";
+                        const errorMessage = data.message || data.error || "Harvest failed. Please try again.";
                         toast.error(errorMessage);
                     }
                 }
@@ -296,7 +296,7 @@ export function HarvestPage({ farms, beehives, harvestDevices, onBack }: Harvest
                                         : harvestState === "harvesting"
                                         ? "bg-amber-50 border-amber-200 dark:bg-amber-950 dark:amber-purple-800"
                                         : harvestState === "failed"
-                                        ? "bg-red-50 border-red-200 dark:bg-red-950 dark:red-purple-800"
+                                        ? "bg-red-50 border-red-200 dark:bg-red-950 dark:border-red-800"
                                         : "bg-green-50 border-green-200 dark:bg-green-950 dark:green-purple-800"
                                 }`}>
                                     {/* Animated background gradient */}
