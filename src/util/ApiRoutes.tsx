@@ -1,5 +1,5 @@
-const API_SERVER = 'http://172.20.10.5:8080/api'
-const SSE_SERVER = 'http://172.20.10.5:8080/sse'
+const API_SERVER = 'http://172.20.10.5:8081/api'
+const SSE_SERVER = 'http://172.20.10.5:8081/sse'
 
 export const API_ROUTES = {
     farmRoutes: `${API_SERVER}/farms`,
