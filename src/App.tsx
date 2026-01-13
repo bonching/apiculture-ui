@@ -66,9 +66,9 @@ export default function App() {
         error: errorAlerts
     } = useFetch(API_ROUTES.alertRoutes);
 
-    // Treat the first farms/hives/sensors loads as the "bootstraps" gate for the reload spinner.
+    // Treat the first farms/hives/sensors loads as the "bootstrap" gate for the reload spinner.
     // Hide the spinner only after all three have completed (success or error).
-    const bootstraploading = loadingFarms || loadingHives || loadingSensors;
+    const bootstrapLoading = loadingFarms || loadingHives || loadingSensors;
 
     // Delete API
     const {
@@ -605,7 +605,7 @@ export default function App() {
 
     return (
         <div className="size-full">
-            {bootstraploading ? (
+            {bootstrapLoading ? (
                 <div
                     className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/80 backdrop-blur-md"
                     role="status"
@@ -616,21 +616,21 @@ export default function App() {
                         <div className="flex items-center gap-4">
                             <div className="relative w-12 h-12">
                                 {/* Honeycomb-ish animated dots */}
-                                <div className="absolute left-1 top-1 h-3 w-3 animate-ping rounded-full bg-amber-400/70" />
-                                <div className="absolute right-1 top-1 h-3 w-3 animate-ping rounded-full bg-yellow-300/70" />
-                                <div className="absolute left-1 bottom-1 h-3 w-3 animate-ping rounded-full bg-amber-300/70 [animation-delay;300ms]" />
-                                <div className="absolute right-1 bottom-1 h-3 w-3 animate-ping rounded-full bg-yellow-400/70 [animation-delay;450ms]" />
+                                <span className="absolute left-1 top-1 h-3 w-3 animate-ping rounded-full bg-amber-400/70" />
+                                <span className="absolute right-1 top-1 h-3 w-3 animate-ping rounded-full bg-yellow-300/70" />
+                                <span className="absolute left-1 bottom-1 h-3 w-3 animate-ping rounded-full bg-amber-300/70 [animation-delay:300ms]" />
+                                <span className="absolute right-1 bottom-1 h-3 w-3 animate-ping rounded-full bg-yellow-400/70 [animation-delay:450ms]" />
 
-                                <div className="absolute left-1 top-1 h-3 w-3 rounded-full bg-amber-500" />
-                                <div className="absolute right-1 top-1 h-3 w-3 rounded-full bg-yellow-400" />
-                                <div className="absolute left-1 bottom-1 h-3 w-3 rounded-full bg-yellow-500" />
-                                <div className="absolute right-1 bottom-1 h-3 w-3 rounded-full bg-amber-400" />
+                                <span className="absolute left-1 top-1 h-3 w-3 rounded-full bg-amber-500" />
+                                <span className="absolute right-1 top-1 h-3 w-3 rounded-full bg-yellow-400" />
+                                <span className="absolute left-1 bottom-1 h-3 w-3 rounded-full bg-yellow-500" />
+                                <span className="absolute right-1 bottom-1 h-3 w-3 rounded-full bg-amber-400" />
 
-                                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-amber-500/10 to-yellow-300/10" />
+                                <span className="absolute inset-0 rounded-xl bg-gradient-to-br from-amber-500/10 to-yellow-300/10" />
                             </div>
 
                             <div className="min-w-0">
-                                <div className="text-base font-semibold text-foreground">Loading...</div>
+                                <div className="text-base font-semibold text-foreground">Loading your apiary</div>
                                 <div className="mt-0.5 text-sm text-muted-foreground">
                                     Fetching farms, beehives, and sensors...
                                 </div>
@@ -642,7 +642,7 @@ export default function App() {
                         </div>
 
                         <style>
-                            {`@keyframes loading { 0% { transform: translateX(-40%); } 50% { transform: translateX(140$); } }`}
+                            {`@keyframes loading { 0% { transform: translateX(-40%); } 50% { transform: translateX(140%); } }`}
                         </style>
                     </div>
                 </div>
