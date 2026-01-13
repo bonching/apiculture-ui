@@ -14,7 +14,7 @@ import {AlertDetailPage} from "./components/AlertDetailPage";
 import {ProfilePage} from "./components/ProfilePage";
 import {BottomNavigation} from "./components/BottomNavigation";
 import {Alert, Beehive, Farm, Sensor} from "./types";
-import {toast, Toaster} from "sonner@2.0.3";
+import {toast, Toaster} from "sonner";
 import {useFetch} from "./hooks/useFetch";
 import {API_ROUTES, SSE_ROUTES} from "./util/ApiRoutes";
 import {usePost} from "./hooks/usePost";
@@ -65,6 +65,10 @@ export default function App() {
         loading: loadingAlerts,
         error: errorAlerts
     } = useFetch(API_ROUTES.alertRoutes);
+
+    // Treat the first farms/hives/sensors loads as the "bootstraps" gate for the reload spinner.
+    // Hide the spinner only after all three have completed (success or error).
+    const bootstraploading = loadingFarms || loadingHives || loadingSensors;
 
     // Delete API
     const {
@@ -601,157 +605,202 @@ export default function App() {
 
     return (
         <div className="size-full">
-            {currentView === "login" && (
-                <LoginPage onLogin={handleLogin}/>
-            )}
+            {bootstraploading ? (
+                <div
+                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/80 backdrop-blur-md"
+                    role="status"
+                    aria-live="polite"
+                    aria-busy="true"
+                >
+                    <div className="w-[min(22rem,90vw)] rounded-2xl border bg-card/80 p-6 shadow-lg">
+                        <div className="flex items-center gap-4">
+                            <div className="relative w-12 h-12">
+                                {/* Honeycomb-ish animated dots */}
+                                <div className="absolute left-1 top-1 h-3 w-3 animate-ping rounded-full bg-amber-400/70" />
+                                <div className="absolute right-1 top-1 h-3 w-3 animate-ping rounded-full bg-yellow-300/70" />
+                                <div className="absolute left-1 bottom-1 h-3 w-3 animate-ping rounded-full bg-amber-300/70 [animation-delay;300ms]" />
+                                <div className="absolute right-1 bottom-1 h-3 w-3 animate-ping rounded-full bg-yellow-400/70 [animation-delay;450ms]" />
 
-            {currentView === "home" && (
-                <HomePage
-                    farms={farms}
-                    beehives={beehives}
-                    sensors={sensors}
-                    alertCount={alerts?.filter(a => !a.read).length || 0}
-                    onNavigateToSensors={handleNavigateToSensors}
-                />
-            )}
+                                <div className="absolute left-1 top-1 h-3 w-3 rounded-full bg-amber-500" />
+                                <div className="absolute right-1 top-1 h-3 w-3 rounded-full bg-yellow-400" />
+                                <div className="absolute left-1 bottom-1 h-3 w-3 rounded-full bg-yellow-500" />
+                                <div className="absolute right-1 bottom-1 h-3 w-3 rounded-full bg-amber-400" />
 
-            {currentView === "farms" && (
-                <FarmsListPage
-                    farms={farms}
-                    onViewFarmDetails={handleViewFarmDetails}
-                    onEditFarm={(farm) => handleEditFarm(farm)}
-                    onAddFarm={handleAddFarm}
-                    onDeleteFarm={handleDeleteFarm}
-                />
-            )}
+                                <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-amber-500/10 to-yellow-300/10" />
+                            </div>
 
-            {currentView === "farm-details" && selectedFarm && (
-                <FarmDetailsPage
-                    farm={selectedFarm}
-                    beehives={getFarmBeehives(selectedFarm)}
-                    sensors={sensors}
-                    onBack={handleBackFromFarmDetails}
-                    onEditFarm={() => handleEditFarm(selectedFarm)}
-                    onAddBeehive={handleAddBeehive}
-                    onEditBeehive={handleEditBeehive}
-                    onSelectBeehive={handleSelectBeehive}
-                    onDeleteBeehive={handleDeleteBeehive}
-                />
-            )}
+                            <div className="min-w-0">
+                                <div className="text-base font-semibold text-foreground">Loading...</div>
+                                <div className="mt-0.5 text-sm text-muted-foreground">
+                                    Fetching farms, beehives, and sensors...
+                                </div>
+                            </div>
+                        </div>
 
-            {currentView === "farm-edit" && (
-                <FarmEditPage
-                    farm={selectedFarm}
-                    onSave={handleSaveFarm}
-                    onBack={() => {
-                        if (selectedFarm) {
-                            setSelectedFarm(selectedFarm);
-                            setCurrentView("farm-details");
-                        } else {
-                            setCurrentView("farms");
-                        }
-                    }}
-                />
-            )}
+                        <div className="mt-5 h-2 w-full overflow-hidden rounded-full bg-muted">
+                            <div className="h-full w-1/3 animate-[loading_1.25s_ease-in-out_infinite] rounded-full bg-gradient-to-r from-amber-400 via-yellow-300 to-amber-500" />
+                        </div>
 
-            {currentView === "beehive" && selectedBeehive && (
-                <BeehiveDetail
-                    beehive={{
-                        ...selectedBeehive,
-                        sensors: getBeehiveSensorsData(selectedBeehive),
-                    }}
-                    onBack={handleBackFromBeehive}
-                />
-            )}
+                        <style>
+                            {`@keyframes loading { 0% { transform: translateX(-40%); } 50% { transform: translateX(140$); } }`}
+                        </style>
+                    </div>
+                </div>
+            ) : (
+                <>
+                    {currentView === "login" && (
+                        <LoginPage onLogin={handleLogin}/>
+                    )}
 
-            {currentView === "beehive-edit" && (
-                <BeehiveEditPage
-                    beehive={selectedBeehive}
-                    farms={farms}
-                    allSensors={sensors}
-                    onSave={handleSaveBeehive}
-                    contextFarmId={selectedFarm?.id}
-                    onBack={() => {
-                        if (selectedFarm) {
-                            setCurrentView("farm-details");
-                        } else {
-                            setCurrentView("farms");
-                        }
-                        setSelectedBeehive(null);
-                    }}
-                />
-            )}
+                    {currentView === "home" && (
+                        <HomePage
+                            farms={farms}
+                            beehives={beehives}
+                            sensors={sensors}
+                            alertCount={alerts?.filter(a => !a.read).length || 0}
+                            onNavigateToSensors={handleNavigateToSensors}
+                        />
+                    )}
 
-            {currentView === "sensors" && (
-                <SensorsListPage
-                    sensors={sensors}
-                    beehives={beehives}
-                    farms={farms}
-                    onEditSensor={handleEditSensor}
-                    onAddSensor={handleAddSensor}
-                    initialStatusFilter={sensorStatusFilter}
-                    onDeleteSensor={handleDeleteSensor}
-                />
-            )}
+                    {currentView === "farms" && (
+                        <FarmsListPage
+                            farms={farms}
+                            onViewFarmDetails={handleViewFarmDetails}
+                            onEditFarm={(farm) => handleEditFarm(farm)}
+                            onAddFarm={handleAddFarm}
+                            onDeleteFarm={handleDeleteFarm}
+                        />
+                    )}
 
-            {currentView === "sensor-edit" && (
-                <SensorEditPage
-                    sensor={selectedSensor}
-                    beehives={beehives}
-                    farms={farms}
-                    onSave={handleSaveSensor}
-                    onBack={() => {
-                        setCurrentView("sensors");
-                        setSelectedSensor(null);
-                    }}
-                />
-            )}
+                    {currentView === "farm-details" && selectedFarm && (
+                        <FarmDetailsPage
+                            farm={selectedFarm}
+                            beehives={getFarmBeehives(selectedFarm)}
+                            sensors={sensors}
+                            onBack={handleBackFromFarmDetails}
+                            onEditFarm={() => handleEditFarm(selectedFarm)}
+                            onAddBeehive={handleAddBeehive}
+                            onEditBeehive={handleEditBeehive}
+                            onSelectBeehive={handleSelectBeehive}
+                            onDeleteBeehive={handleDeleteBeehive}
+                        />
+                    )}
 
-            {currentView === "harvest" && (
-                <HarvestPage
-                    farms={farms}
-                    beehives={beehives}
-                    harvestDevices={mockHarvestDevices}
-                    onBack={() => setCurrentView("home")}
-                />
-            )}
+                    {currentView === "farm-edit" && (
+                        <FarmEditPage
+                            farm={selectedFarm}
+                            onSave={handleSaveFarm}
+                            onBack={() => {
+                                if (selectedFarm) {
+                                    setSelectedFarm(selectedFarm);
+                                    setCurrentView("farm-details");
+                                } else {
+                                    setCurrentView("farms");
+                                }
+                            }}
+                        />
+                    )}
 
-            {currentView === "alerts" && (
-                <AlertsPanel
-                    alerts={alerts || []}
-                    onViewDetails={handleViewAlertDetails}
-                    onMarkAsRead={handleMarkAlertAsRead}
-                />
-            )}
+                    {currentView === "beehive" && selectedBeehive && (
+                        <BeehiveDetail
+                            beehive={{
+                                ...selectedBeehive,
+                                sensors: getBeehiveSensorsData(selectedBeehive),
+                            }}
+                            onBack={handleBackFromBeehive}
+                        />
+                    )}
 
-            {currentView === "alert-detail" && selectedAlert && (
-                <AlertDetailPage
-                    alert={selectedAlert}
-                    beehive={getBeehiveForAlert(selectedAlert.beehiveName)}
-                    onBack={() => {
-                        setSelectedAlert(null);
-                        setCurrentView("alerts");
-                    }}
-                />
-            )}
+                    {currentView === "beehive-edit" && (
+                        <BeehiveEditPage
+                            beehive={selectedBeehive}
+                            farms={farms}
+                            allSensors={sensors}
+                            onSave={handleSaveBeehive}
+                            contextFarmId={selectedFarm?.id}
+                            onBack={() => {
+                                if (selectedFarm) {
+                                    setCurrentView("farm-details");
+                                } else {
+                                    setCurrentView("farms");
+                                }
+                                setSelectedBeehive(null);
+                            }}
+                        />
+                    )}
 
-            {currentView === "profile" && (
-                <ProfilePage
-                    username={username}
-                    farms={farms}
-                    beehives={beehives}
-                    onLogout={handleLogout}
-                />
-            )}
+                    {currentView === "sensors" && (
+                        <SensorsListPage
+                            sensors={sensors}
+                            beehives={beehives}
+                            farms={farms}
+                            onEditSensor={handleEditSensor}
+                            onAddSensor={handleAddSensor}
+                            initialStatusFilter={sensorStatusFilter}
+                            onDeleteSensor={handleDeleteSensor}
+                        />
+                    )}
 
-            {showBottomNav && (
-                <BottomNavigation
-                    currentView={currentView}
-                    onNavigate={handleNavigate}
-                    alertCount={alerts?.filter(a => !a.read).length || 0}
-                />
+                    {currentView === "sensor-edit" && (
+                        <SensorEditPage
+                            sensor={selectedSensor}
+                            beehives={beehives}
+                            farms={farms}
+                            onSave={handleSaveSensor}
+                            onBack={() => {
+                                setCurrentView("sensors");
+                                setSelectedSensor(null);
+                            }}
+                        />
+                    )}
+
+                    {currentView === "harvest" && (
+                        <HarvestPage
+                            farms={farms}
+                            beehives={beehives}
+                            harvestDevices={mockHarvestDevices}
+                            onBack={() => setCurrentView("home")}
+                        />
+                    )}
+
+                    {currentView === "alerts" && (
+                        <AlertsPanel
+                            alerts={alerts || []}
+                            onViewDetails={handleViewAlertDetails}
+                            onMarkAsRead={handleMarkAlertAsRead}
+                        />
+                    )}
+
+                    {currentView === "alert-detail" && selectedAlert && (
+                        <AlertDetailPage
+                            alert={selectedAlert}
+                            beehive={getBeehiveForAlert(selectedAlert.beehiveName)}
+                            onBack={() => {
+                                setSelectedAlert(null);
+                                setCurrentView("alerts");
+                            }}
+                        />
+                    )}
+
+                    {currentView === "profile" && (
+                        <ProfilePage
+                            username={username}
+                            farms={farms}
+                            beehives={beehives}
+                            onLogout={handleLogout}
+                        />
+                    )}
+
+                    {showBottomNav && (
+                        <BottomNavigation
+                            currentView={currentView}
+                            onNavigate={handleNavigate}
+                            alertCount={alerts?.filter(a => !a.read).length || 0}
+                        />
+                    )}
+                    <Toaster/>
+                </>
             )}
-            <Toaster/>
         </div>
     );
 }
