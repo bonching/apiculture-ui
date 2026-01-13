@@ -642,7 +642,7 @@ export default function App() {
                         </div>
 
                         <style>
-                            {`@keyframes loading { 0% { transform: translateX(-40%); } 50% { transform: translateX(140%); } }`}
+                            {`@keyframes loading { 0% { transform: translateX(-40%); } 50% { transform: translateX(40%); } 100% { transform: translateX(140%); } }`}
                         </style>
                     </div>
                 </div>
