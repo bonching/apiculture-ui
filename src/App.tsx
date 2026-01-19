@@ -155,7 +155,11 @@ export default function App() {
         const eventSource = new EventSource(SSE_ROUTES.alertRoutes);
         eventSource.onmessage = (event) => {
             const data = JSON.parse(event.data);
-            setAlerts(prev => [...prev, data]);
+            // Only add the alert if it doesn't already exist (prevent duplicates)
+            setAlerts(prev => {
+                const exists = prev.some(alert => alert.id === data.id);
+                return exists ? prev : [...prev, data];
+            });
 
             if (data.dataType === "honey_harvested" && data.beehiveId && data.sensorValue) {
                 setBeehives(prevBeehives =>

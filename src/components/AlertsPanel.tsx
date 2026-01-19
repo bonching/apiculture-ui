@@ -460,9 +460,9 @@ export function AlertsPanel({alerts, onViewDetails, onMarkAsRead}: AlertsPanelPr
                                 </CardContent>
                             </Card>
                         ) : (
-                            sortedAlerts.map((alert) => (
+                            sortedAlerts.map((alert, index) => (
                                 <Card
-                                    key={alert.id}
+                                    key={`${alert.id}-${index}`}
                                     className={!alert.read ? "!border-l-4 !border-l-orange-700 !border !border-orange-400 shadow-lg" : ""}
                                     style={!alert.read ? {backgroundColor: '#fb923c'} : {}}
                                 >
