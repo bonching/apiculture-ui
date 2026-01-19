@@ -653,154 +653,182 @@ export default function App() {
             ) : (
                 <>
                     {currentView === "login" && (
-                        <LoginPage onLogin={handleLogin}/>
+                        <div className="animate-in fade-in duration-200">
+                            <LoginPage onLogin={handleLogin}/>
+                        </div>
                     )}
 
                     {currentView === "home" && (
-                        <HomePage
-                            farms={farms}
-                            beehives={beehives}
-                            sensors={sensors}
-                            alertCount={alerts?.filter(a => !a.read).length || 0}
-                            onNavigateToSensors={handleNavigateToSensors}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <HomePage
+                                farms={farms}
+                                beehives={beehives}
+                                sensors={sensors}
+                                alertCount={alerts?.filter(a => !a.read).length || 0}
+                                onNavigateToSensors={handleNavigateToSensors}
+                            />
+                        </div>
                     )}
 
                     {currentView === "farms" && (
-                        <FarmsListPage
-                            farms={farms}
-                            onViewFarmDetails={handleViewFarmDetails}
-                            onEditFarm={(farm) => handleEditFarm(farm)}
-                            onAddFarm={handleAddFarm}
-                            onDeleteFarm={handleDeleteFarm}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <FarmsListPage
+                                farms={farms}
+                                onViewFarmDetails={handleViewFarmDetails}
+                                onEditFarm={(farm) => handleEditFarm(farm)}
+                                onAddFarm={handleAddFarm}
+                                onDeleteFarm={handleDeleteFarm}
+                            />
+                        </div>
                     )}
 
                     {currentView === "farm-details" && selectedFarm && (
-                        <FarmDetailsPage
-                            farm={selectedFarm}
-                            beehives={getFarmBeehives(selectedFarm)}
-                            sensors={sensors}
-                            onBack={handleBackFromFarmDetails}
-                            onEditFarm={() => handleEditFarm(selectedFarm)}
-                            onAddBeehive={handleAddBeehive}
-                            onEditBeehive={handleEditBeehive}
-                            onSelectBeehive={handleSelectBeehive}
-                            onDeleteBeehive={handleDeleteBeehive}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <FarmDetailsPage
+                                farm={selectedFarm}
+                                beehives={getFarmBeehives(selectedFarm)}
+                                sensors={sensors}
+                                onBack={handleBackFromFarmDetails}
+                                onEditFarm={() => handleEditFarm(selectedFarm)}
+                                onAddBeehive={handleAddBeehive}
+                                onEditBeehive={handleEditBeehive}
+                                onSelectBeehive={handleSelectBeehive}
+                                onDeleteBeehive={handleDeleteBeehive}
+                            />
+                        </div>
                     )}
 
                     {currentView === "farm-edit" && (
-                        <FarmEditPage
-                            farm={selectedFarm}
-                            onSave={handleSaveFarm}
-                            onBack={() => {
-                                if (selectedFarm) {
-                                    setSelectedFarm(selectedFarm);
-                                    setCurrentView("farm-details");
-                                } else {
-                                    setCurrentView("farms");
-                                }
-                            }}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <FarmEditPage
+                                farm={selectedFarm}
+                                onSave={handleSaveFarm}
+                                onBack={() => {
+                                    if (selectedFarm) {
+                                        setSelectedFarm(selectedFarm);
+                                        setCurrentView("farm-details");
+                                    } else {
+                                        setCurrentView("farms");
+                                    }
+                                }}
+                            />
+                        </div>
                     )}
 
                     {currentView === "beehive" && selectedBeehive && (
-                        <BeehiveDetail
-                            beehive={{
-                                ...selectedBeehive,
-                                sensors: getBeehiveSensorsData(selectedBeehive),
-                            }}
-                            onBack={handleBackFromBeehive}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <BeehiveDetail
+                                beehive={{
+                                    ...selectedBeehive,
+                                    sensors: getBeehiveSensorsData(selectedBeehive),
+                                }}
+                                onBack={handleBackFromBeehive}
+                            />
+                        </div>
                     )}
 
                     {currentView === "beehive-edit" && (
-                        <BeehiveEditPage
-                            beehive={selectedBeehive}
-                            farms={farms}
-                            allSensors={sensors}
-                            onSave={handleSaveBeehive}
-                            contextFarmId={selectedFarm?.id}
-                            onBack={() => {
-                                if (selectedFarm) {
-                                    setCurrentView("farm-details");
-                                } else {
-                                    setCurrentView("farms");
-                                }
-                                setSelectedBeehive(null);
-                            }}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <BeehiveEditPage
+                                beehive={selectedBeehive}
+                                farms={farms}
+                                allSensors={sensors}
+                                onSave={handleSaveBeehive}
+                                contextFarmId={selectedFarm?.id}
+                                onBack={() => {
+                                    if (selectedFarm) {
+                                        setCurrentView("farm-details");
+                                    } else {
+                                        setCurrentView("farms");
+                                    }
+                                    setSelectedBeehive(null);
+                                }}
+                            />
+                        </div>
                     )}
 
                     {currentView === "sensors" && (
-                        <SensorsListPage
-                            sensors={sensors}
-                            beehives={beehives}
-                            farms={farms}
-                            onEditSensor={handleEditSensor}
-                            onAddSensor={handleAddSensor}
-                            initialStatusFilter={sensorStatusFilter}
-                            onDeleteSensor={handleDeleteSensor}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <SensorsListPage
+                                sensors={sensors}
+                                beehives={beehives}
+                                farms={farms}
+                                onEditSensor={handleEditSensor}
+                                onAddSensor={handleAddSensor}
+                                initialStatusFilter={sensorStatusFilter}
+                                onDeleteSensor={handleDeleteSensor}
+                            />
+                        </div>
                     )}
 
                     {currentView === "sensor-edit" && (
-                        <SensorEditPage
-                            sensor={selectedSensor}
-                            beehives={beehives}
-                            farms={farms}
-                            onSave={handleSaveSensor}
-                            onBack={() => {
-                                setCurrentView("sensors");
-                                setSelectedSensor(null);
-                            }}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <SensorEditPage
+                                sensor={selectedSensor}
+                                beehives={beehives}
+                                farms={farms}
+                                onSave={handleSaveSensor}
+                                onBack={() => {
+                                    setCurrentView("sensors");
+                                    setSelectedSensor(null);
+                                }}
+                            />
+                        </div>
                     )}
 
                     {currentView === "harvest" && (
-                        <HarvestPage
-                            farms={farms}
-                            beehives={beehives}
-                            harvestDevices={mockHarvestDevices}
-                            onBack={() => setCurrentView("home")}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <HarvestPage
+                                farms={farms}
+                                beehives={beehives}
+                                harvestDevices={mockHarvestDevices}
+                                onBack={() => setCurrentView("home")}
+                            />
+                        </div>
                     )}
 
                     {currentView === "alerts" && (
-                        <AlertsPanel
-                            alerts={alerts || []}
-                            onViewDetails={handleViewAlertDetails}
-                            onMarkAsRead={handleMarkAlertAsRead}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <AlertsPanel
+                                alerts={alerts || []}
+                                onViewDetails={handleViewAlertDetails}
+                                onMarkAsRead={handleMarkAlertAsRead}
+                            />
+                        </div>
                     )}
 
                     {currentView === "alert-detail" && selectedAlert && (
-                        <AlertDetailPage
-                            alert={selectedAlert}
-                            beehive={getBeehiveForAlert(selectedAlert.beehiveName)}
-                            onBack={() => {
-                                setSelectedAlert(null);
-                                setCurrentView("alerts");
-                            }}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <AlertDetailPage
+                                alert={selectedAlert}
+                                beehive={getBeehiveForAlert(selectedAlert.beehiveName)}
+                                onBack={() => {
+                                    setSelectedAlert(null);
+                                    setCurrentView("alerts");
+                                }}
+                            />
+                        </div>
                     )}
 
                     {currentView === "profile" && (
-                        <ProfilePage
-                            username={username}
-                            farms={farms}
-                            beehives={beehives}
-                            onLogout={handleLogout}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <ProfilePage
+                                username={username}
+                                farms={farms}
+                                beehives={beehives}
+                                onLogout={handleLogout}
+                            />
+                        </div>
                     )}
 
                     {showBottomNav && (
-                        <BottomNavigation
-                            currentView={currentView}
-                            onNavigate={handleNavigate}
-                            alertCount={alerts?.filter(a => !a.read).length || 0}
-                        />
+                        <div className="animate-in fade-in duration-200">
+                            <BottomNavigation
+                                currentView={currentView}
+                                onNavigate={handleNavigate}
+                                alertCount={alerts?.filter(a => !a.read).length || 0}
+                            />
+                        </div>
                     )}
                     <Toaster/>
                 </>

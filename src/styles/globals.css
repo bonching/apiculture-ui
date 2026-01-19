@@ -185,3 +185,25 @@
 html {
   font-size: var(--font-size);
 }
+
+/* Smooth page transition animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-in {
+  animation-fill-mode: both;
+}
+
+.fade-in {
+  animation-name: fadeIn;
+}
+
+.duration-200 {
+  animation-duration: 200ms;
+}

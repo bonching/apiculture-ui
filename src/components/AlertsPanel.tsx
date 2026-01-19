@@ -109,11 +109,16 @@ export function AlertsPanel({alerts, onViewDetails, onMarkAsRead}: AlertsPanelPr
     const {data: newAlert, loading, error, mutate} = usePost<AlertType>({extractData: true});
 
     const handleViewDetails = async (alert: AlertType) => {
+        // Immediately navigate to details page for smooth transition
+        onViewDetails(alert);
+
+        // Handle mark-as-read asynchronously in the background
         if (onMarkAsRead && !alert.read) {
             onMarkAsRead(alert.id);
-            await mutate(API_ROUTES.alertRoutes + '/' + alert.id, {'read': true}, {method: 'PUT'});
+            mutate(API_ROUTES.alertRoutes + '/' + alert.id, {'read': true}, {method: 'PUT'}).catch(err => {
+                console.error('Failed to mark alert as read', err);
+            });
         }
-        onViewDetails(alert);
     }
 
     const unreadCount = alerts.filter(a => !a.read).length;
