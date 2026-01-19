@@ -1,4 +1,4 @@
-import {useState} from "react";
+import React, {useState} from "react";
 import {Button} from "./ui/button";
 import {Input} from "./ui/input";
 import {Label} from "./ui/label";
@@ -12,11 +12,21 @@ interface LoginPageProps {
 export function LoginPage({onLogin}: LoginPageProps) {
     const [username, setUsername] = useState("beekeeper");
     const [password, setPassword] = useState("apiculture");
+    const [error, setError] = useState("");
+
+    // Dummy account credentials
+    const DUMMY_USERNAME = "beekeeper";
+    const DUMMY_PASSWORD = "apiculture";
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (username && password) {
+        setError("");
+
+        // Validate credentials against dummy account
+        if (username === DUMMY_USERNAME && password === DUMMY_PASSWORD) {
             onLogin(username);
+        } else {
+            setError("Invalid username or password");
         }
     };
 
@@ -56,6 +66,11 @@ export function LoginPage({onLogin}: LoginPageProps) {
                                 required
                             />
                         </div>
+                        {error && (
+                            <div className="text-red-500 text-sm text-center">
+                                {error}
+                            </div>
+                        )}
                         <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-600">
                             Login
                         </Button>
