@@ -52,7 +52,7 @@ export function BottomNavigation({currentView, onNavigate, alertCount}: BottomNa
                     <Icon className={compact ? "h-5 w-5" : "h-6 w-6"} />
                     {item.badge !== undefined && item.badge > 0 && (
                         <Badge className="absolute -top-2 -right-2 h5 w5 p0 flex items-center justify-center bg-red-500">
-                            {item.badge > 9 ? "9+" : item.badge}
+                            {item.badge > 99 ? "99+" : item.badge}
                         </Badge>
                     )}
                 </div>
