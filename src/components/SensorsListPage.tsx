@@ -1,9 +1,9 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {Card, CardContent, CardHeader, CardTitle} from "./ui/card";
 import {Button} from "./ui/button";
 import {Badge} from "./ui/badge";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "./ui/select";
-import {Database, Edit, Filter, Plus, Shield, Trash2, TrendingUp, Wifi, WifiOff} from "lucide-react";
+import {Database, Edit, Filter, FilterX, Plus, Shield, Trash2, TrendingUp, Wifi, WifiOff} from "lucide-react";
 import {Beehive, Farm, Sensor} from "../types";
 
 interface SensorsListPageProps {
@@ -25,9 +25,40 @@ export function SensorsListPage({
                                     initialStatusFilter,
                                     onDeleteSensor
                                 }: SensorsListPageProps) {
-    const [statusFilter, setStatusFilter] = useState<string>(initialStatusFilter || "all");
-    const [farmFilter, setFarmFilter] = useState<string>("all");
-    const [beehiveFilter, setBeehiveFilter] = useState<string>("all");
+    // Load filter values from localStorage, with fallback to defaults
+    const getInitialStatusFilter = () => {
+        if (initialStatusFilter) return initialStatusFilter;
+        const saved = localStorage.getItem("sensorStatusFilter");
+        return saved || "all";
+    };
+
+    const getInitialFarmFilter = () => {
+        const saved = localStorage.getItem("sensorFarmFilter");
+        return saved || "all";
+    };
+
+    const getInitialBeehiveFilter = () => {
+        const saved = localStorage.getItem("sensorBeehiveFilter");
+        return saved || "all";
+    };
+
+    const [statusFilter, setStatusFilter] = useState<string>(getInitialStatusFilter());
+    const [farmFilter, setFarmFilter] = useState<string>(getInitialFarmFilter());
+    const [beehiveFilter, setBeehiveFilter] = useState<string>(getInitialBeehiveFilter());
+
+    // Save filter selections to localStorage whenever they change
+    useEffect(() => {
+        localStorage.setItem("sensorStatusFilter", getInitialStatusFilter());
+    }, [statusFilter]);
+
+    useEffect(() => {
+        localStorage.setItem("sensorFarmFilter", getInitialFarmFilter());
+    }, [farmFilter]);
+
+    useEffect(() => {
+        localStorage.setItem("sensorBeehiveFilter", getInitialBeehiveFilter());
+    }, [beehiveFilter]);
+
     const getBeehiveName = (beehiveId: string | null) => {
         if (!beehiveId) return "Unlinked";
         const beehive = beehives.find(b => b.id === beehiveId);
@@ -95,6 +126,18 @@ export function SensorsListPage({
             const farm = farms.find(f => f.beehiveIds.includes(b.id));
             return farm?.id === farmFilter;
         });
+
+    // Reset all filters and clear localStorage
+    const handleResetFilters = () => {
+        setStatusFilter("all");
+        setFarmFilter("all");
+        setBeehiveFilter("all");
+        localStorage.removeItem("sensorStatusFilter");
+        localStorage.removeItem("sensorFarmFilter");
+        localStorage.removeItem("sensorBeehiveFilter");
+    };
+
+    const hasActiveFilters = statusFilter !== "all" || farmFilter !== "all" || beehiveFilter !== "all";
 
     return (
         <div className="p-4 pb-24 space-y-4 bg-gradient-to-b from-amber-50 to-yellow-100 min-h-screen">
@@ -166,17 +209,14 @@ export function SensorsListPage({
                         </Select>
                     </div>
 
-                    {(statusFilter !== "all" || farmFilter !== "all" || beehiveFilter !== "all") && (
+                    {hasActiveFilters && (
                         <Button
                             variant="outline"
                             className="w-full"
-                            onClick={() => {
-                                setStatusFilter("all");
-                                setFarmFilter("all");
-                                setBeehiveFilter("all");
-                            }}
-                        >
-                            Clear Filters
+                            onClick={handleResetFilters}
+                            >
+                            <FilterX className="h-4 w-4 mr-2"/>
+                            Reset Filters
                         </Button>
                     )}
                 </CardContent>
