@@ -169,13 +169,13 @@ export function TrendsDialog({open, onOpenChange, beehive, metric}: TrendsDialog
                     {loading ? (
                         <div className="flex items-center justify-center h-[300px]">
                             <div className="flex flex-col items-center gap-3">
-                                <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+                                <Loader2 className="h-8 w-8 animate-spin text-amber-500"/>
                                 <p className="text-sm text-muted-foreground">Loading trend data...</p>
                             </div>
                         </div>
                     ) : error ? (
                         <Alert className="border-red-200 bg-red-50">
-                            <AlertCircle className="h-5 w-5 text-red-500" />
+                            <AlertCircle className="h-5 w-5 text-red-500"/>
                             <AlertTitle className="text-red-900">Failed to Load Data</AlertTitle>
                             <AlertDescription className="text-red-700">
                                 {error}
@@ -183,10 +183,10 @@ export function TrendsDialog({open, onOpenChange, beehive, metric}: TrendsDialog
                         </Alert>
                     ) : !data || data.length === 0 ? (
                         <Alert className="border-orange-200 bg-orange-50">
-                            <AlertCircle className="h-5 w-5 text-orange-500" />
+                            <AlertCircle className="h-5 w-5 text-orange-500"/>
                             <AlertTitle className="text-orange-900">No Data Available</AlertTitle>
                             <AlertDescription className="text-orange-700 space-y-2">
-                                <p>Unable to retrieve trend data for this metric</p>
+                                <p>Unable to retrieve trend data for this metric.</p>
                                 <div className="mt-3">
                                     <p className="font-medium">Possible causes:</p>
                                     <ul className="list-disc list-inside mt-1 ml-2 text-sm space-y-1">
