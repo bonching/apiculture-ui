@@ -118,6 +118,7 @@ export function TrendsDialog({open, onOpenChange, beehive, metric}: TrendsDialog
     const fetchUrl = open && beehive?.id && metric
         ? `${API_ROUTES.metricRoutes}/${beehive.id}/${metric}`
         : null;
+
     const {data, setData, loading, error} = useFetch(fetchUrl);
 
     // Lazy load data only when dialog is open

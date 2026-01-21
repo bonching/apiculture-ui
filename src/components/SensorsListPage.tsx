@@ -48,15 +48,15 @@ export function SensorsListPage({
 
     // Save filter selections to localStorage whenever they change
     useEffect(() => {
-        localStorage.setItem("sensorStatusFilter", getInitialStatusFilter());
+        localStorage.setItem("sensorStatusFilter", statusFilter);
     }, [statusFilter]);
 
     useEffect(() => {
-        localStorage.setItem("sensorFarmFilter", getInitialFarmFilter());
+        localStorage.setItem("sensorFarmFilter", farmFilter);
     }, [farmFilter]);
 
     useEffect(() => {
-        localStorage.setItem("sensorBeehiveFilter", getInitialBeehiveFilter());
+        localStorage.setItem("sensorBeehiveFilter", beehiveFilter);
     }, [beehiveFilter]);
 
     const getBeehiveName = (beehiveId: string | null) => {
@@ -214,7 +214,7 @@ export function SensorsListPage({
                             variant="outline"
                             className="w-full"
                             onClick={handleResetFilters}
-                            >
+                        >
                             <FilterX className="h-4 w-4 mr-2"/>
                             Reset Filters
                         </Button>
