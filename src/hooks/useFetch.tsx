@@ -6,7 +6,14 @@ export function useFetch(url) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        // Don't fetch if url is null or undefined
+        if (!url) {
+            setLoading(false);
+            return;
+        }
+
         const fetchData = async () => {
+            setLoading(true);
             try {
                 const response = await fetch(url);
                 if (!response.ok) throw new Error(response.statusText);

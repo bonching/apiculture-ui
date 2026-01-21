@@ -112,7 +112,11 @@ const metricConfig: Record<TrendMetric, {
 export function TrendsDialog({open, onOpenChange, beehive, metric}: TrendsDialogProps) {
     const chartRef = useRef<HTMLDivElement>(null);
 
-    const {data, setData, loading, error} = useFetch(API_ROUTES.metricRoutes + '/' + beehive['id'] + '/' + metric);
+    // Only fetch data when dialog is open and we have valid beehive and metric
+    const fetchUrl = open && beehive?.id && metric
+        ? `${API_ROUTES.metricRoutes}/${beehive.id}/${metric}`
+        : null;
+    const {data, setData, loading, error} = useFetch(fetchUrl);
 
     // Lazy load data only when dialog is open
     // const data = useMemo<HistoryData[]>(() => {
