@@ -4,6 +4,8 @@ import {Area, AreaChart, CartesianGrid, Line, LineChart, ResponsiveContainer, To
 import {Beehive} from "../types";
 import {useFetch} from "../hooks/useFetch";
 import {API_ROUTES} from "../util/ApiRoutes";
+import {AlertCircle, Loader2} from "lucide-react";
+import {Alert, AlertDescription, AlertTitle} from "./ui/alert";
 
 type TrendMetric =
     | "honey"
@@ -163,27 +165,70 @@ export function TrendsDialog({open, onOpenChange, beehive, metric}: TrendsDialog
                     <DialogDescription>Historical data visualization over time</DialogDescription>
                 </DialogHeader>
                 <div ref={chartRef} className="py-4">
-                    <ResponsiveContainer width="100%" height={300}>
-                        {config.chartType === "area" ? (
-                            <AreaChart data={data}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0"/>
-                                <XAxis dataKey="time" stroke="#888" tick={{fontSize: 12}}/>
-                                <YAxis stroke="#888" tick={{fontSize: 12}}/>
-                                <Tooltip formatter={(value) => `${value}${config.unit}`}/>
-                                <Area type="monotone" dataKey="value" stroke={config.color} fill={config.color}
-                                      fillOpacity={0.3} name={config.title}/>
-                            </AreaChart>
-                        ) : (
-                            <LineChart data={data}>
-                                <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0"/>
-                                <XAxis dataKey="time" stroke="#888" tick={{fontSize: 12}}/>
-                                <YAxis stroke="#888" tick={{fontSize: 12}}/>
-                                <Tooltip formatter={(value) => `${value}${config.unit}`}/>
-                                <Line type="monotone" dataKey="value" stroke={config.color} strokeWidth={2}
-                                      name={config.title}/>
-                            </LineChart>
-                        )}
-                    </ResponsiveContainer>
+                    {loading ? (
+                        <div className="flex items-center justify-center h-[300px]">
+                            <div className="flex flex-col items-center gap-3">
+                                <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+                                <p className="text-sm text-muted-foreground">Loading trend data...</p>
+                            </div>
+                        </div>
+                    ) : error ? (
+                        <Alert className="border-red-200 bg-red-50">
+                            <AlertCircle className="h-5 w-5 text-red-500" />
+                            <AlertTitle className="text-red-900">Failed to Load Data</AlertTitle>
+                            <AlertDescription className="text-red-700">
+                                {error}
+                            </AlertDescription>
+                        </Alert>
+                    ) : !data || data.length === 0 ? (
+                        <Alert className="border-orange-200 bg-orange-50">
+                            <AlertCircle className="h-5 w-5 text-orange-500" />
+                            <AlertTitle className="text-orange-900">No Data Available</AlertTitle>
+                            <AlertDescription className="text-orange-700 space-y-2">
+                                <p>Unable to retrieve trend data for this metric</p>
+                                <div className="mt-3">
+                                    <p className="font-medium">Possible causes:</p>
+                                    <ul className="list-disc list-inside mt-1 ml-2 text-sm space-y-1">
+                                        <li>No sensors are configured to collect this metric</li>
+                                        <li>Sensors are offline or not sending readings</li>
+                                        <li>Insufficient historical data has been collected</li>
+                                        <li>Network connectivity issues</li>
+                                    </ul>
+                                </div>
+                                <div className="mt-3">
+                                    <p className="font-medium">Recommended actions:</p>
+                                    <ul className="list-disc list-inside mt-1 ml-2 text-sm space-y-1">
+                                        <li>Verify sensors are assigned to this beehive</li>
+                                        <li>Check sensor status in the Sensors page</li>
+                                        <li>Wait for more data to be collected over time</li>
+                                        <li>Ensure sensors have power and network connectivity</li>
+                                    </ul>
+                                </div>
+                            </AlertDescription>
+                        </Alert>
+                    ) : (
+                        <ResponsiveContainer width="100%" height={300}>
+                            {config.chartType === "area" ? (
+                                <AreaChart data={data}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0"/>
+                                    <XAxis dataKey="time" stroke="#888" tick={{fontSize: 12}}/>
+                                    <YAxis stroke="#888" tick={{fontSize: 12}}/>
+                                    <Tooltip formatter={(value) => `${value}${config.unit}`}/>
+                                    <Area type="monotone" dataKey="value" stroke={config.color} fill={config.color}
+                                          fillOpacity={0.3} name={config.title}/>
+                                </AreaChart>
+                            ) : (
+                                <LineChart data={data}>
+                                    <CartesianGrid strokeDasharray="3 3" stroke="#e0e0e0"/>
+                                    <XAxis dataKey="time" stroke="#888" tick={{fontSize: 12}}/>
+                                    <YAxis stroke="#888" tick={{fontSize: 12}}/>
+                                    <Tooltip formatter={(value) => `${value}${config.unit}`}/>
+                                    <Line type="monotone" dataKey="value" stroke={config.color} strokeWidth={2}
+                                          name={config.title}/>
+                                </LineChart>
+                            )}
+                        </ResponsiveContainer>
+                    )}
                 </div>
             </DialogContent>
         </Dialog>
