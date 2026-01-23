@@ -126,7 +126,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                 </Card>
 
                 {/* Sensor Readings at Alert Time */}
-                {beehive && !isPredatorAlert && (
+                {beehive && (alert.alertType === "anomaly_detected") && (
                     <>
                         {/* Environmental Readings */}
                         <Card>
@@ -312,15 +312,15 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                     </Card>
                 )}
 
-                {!beehive && (
-                    <Card>
-                        <CardContent className="py-8">
-                            <p className="text-muted-foreground text-center">
-                                No sensor data available for this beehive
-                            </p>
-                        </CardContent>
-                    </Card>
-                )}
+                {/*{!beehive && (*/}
+                {/*    <Card>*/}
+                {/*        <CardContent className="py-8">*/}
+                {/*            <p className="text-muted-foreground text-center">*/}
+                {/*                No sensor data available for this beehive*/}
+                {/*            </p>*/}
+                {/*        </CardContent>*/}
+                {/*    </Card>*/}
+                {/*)}*/}
 
                 {/* Recommended Actions */}
                 <Card>
