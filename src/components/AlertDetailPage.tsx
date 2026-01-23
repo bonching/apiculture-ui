@@ -336,7 +336,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <li>Check if the predator is still in the vicinity</li>
                                         <li>Activate additional defense measures if available</li>
                                         <li>Monitor bee activity and stress levels</li>
-                                        <li>Consider installing physical barriers of deterrents</li>
+                                        <li>Consider installing physical barriers or deterrents</li>
                                         <li>Document the incident for pattern analysis</li>
                                     </>
                                 )}
