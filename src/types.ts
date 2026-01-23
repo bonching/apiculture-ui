@@ -72,9 +72,12 @@ export interface Farm {
   beehiveIds: string[];
 }
 
+export type AlertType = "predator_detected" | "online_sensor" | "offline_sensor" | "honey_harvested" | "anomaly_detected"
+
 export interface Alert {
   id: string;
   severity: "critical" | "warning" | "info";
+  alertType: AlertType;
   title: string;
   message: string;
   beehiveName: string;

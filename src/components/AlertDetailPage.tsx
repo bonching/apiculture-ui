@@ -46,6 +46,8 @@ interface AlertDetailPageProps {
 }
 
 export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) {
+    const isPredatorAlert = alert.alertType === "predator_detected";
+
     const getAlertIcon = (severity: string) => {
         switch (severity) {
             case "critical":
@@ -124,7 +126,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                 </Card>
 
                 {/* Sensor Readings at Alert Time */}
-                {beehive && (
+                {beehive && !isPredatorAlert && (
                     <>
                         {/* Environmental Readings */}
                         <Card>
@@ -284,6 +286,32 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                     </>
                 )}
 
+                {/* Predator Detection Image */}
+                {isPredatorAlert && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Predator Detection</CardTitle>
+                            <CardDescription>Captured image and evidence</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                <div className="p-4 bg-muted rounded-lg">
+                                    <p className="text-sm text-muted-foreground mb-3">
+                                        A predator was detected by the defense system sensors. Review the captured image for identification and assessment.
+                                    </p>
+                                    <Button className="w-full" variant="default">
+                                        View Captured Image
+                                    </Button>
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                    <p><strong>Detection Method:</strong> MEMS Acoustic Monitor & Chemical Sensor</p>
+                                    <p><strong>Timestamp:</strong> {new Date(alert.timestampMs).toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
+
                 {!beehive && (
                     <Card>
                         <CardContent className="py-8">
@@ -301,7 +329,17 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                     </CardHeader>
                     <CardContent>
                         <ul className="space-y-2 list-disc list-inside text-muted-foreground">
-                            {alert.severity === "critical" && alert.title.includes("Sensor Non-Responsive") && (
+                            {alert.alertType === "predator_detected" && (
+                                <>
+                                    <li>Review the captured image immediately to identify the predator type</li>
+                                    <li>Check if the predator is still in the vicinity</li>
+                                    <li>Activate additional defense measures if available</li>
+                                    <li>Monitor bee activity and stress levels</li>
+                                    <li>Consider installing physical barriers of deterrents</li>
+                                    <li>Document the incident for pattern analysis</li>
+                                </>
+                            )}
+                            {alert.alertType === "offline_sensor" && (
                                 <>
                                     <li>Check sensor power supply and connections</li>
                                     <li>Verify network connectivity</li>
@@ -317,14 +355,20 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                     <li>Consider emergency cooling measures</li>
                                 </>
                             )}
-                            {alert.severity === "warning" && (
+                            {alert.alertType === "anomaly_detected" && alert.severity === "warning" && (
                                 <>
                                     <li>Monitor the situation closely</li>
                                     <li>Check sensor readings regularly</li>
                                     <li>Prepare to take action if conditions worsen</li>
                                 </>
                             )}
-                            {alert.severity === "info" && (
+                            {alert.alertType === "honey_harvested" && (
+                                <>
+                                    <li>No immediate action required</li>
+                                    <li>Continue regular monitoring</li>
+                                </>
+                            )}
+                            {alert.severity === "info" && alert.alertType === "anomaly_detected" && (
                                 <>
                                     <li>No immediate action required</li>
                                     <li>Continue regular monitoring</li>

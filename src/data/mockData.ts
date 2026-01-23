@@ -473,6 +473,7 @@ export const mockAlerts: Alert[] = [
     {
         id: "alert-1",
         severity: "critical",
+        alertType: "offline_sensor",
         title: "Sensor Non-Responsive",
         message: "Bee Counter Gamma-1 has been offline for 2 hours",
         beehiveName: "Gamma Hive",
@@ -484,6 +485,7 @@ export const mockAlerts: Alert[] = [
     {
         id: "alert-2",
         severity: "critical",
+        alertType: "offline_sensor",
         title: "Multiple Sensors Offline",
         message: "All sensors in Epsilon Hive are non-responsive",
         beehiveName: "Epsilon Hive",
@@ -495,6 +497,7 @@ export const mockAlerts: Alert[] = [
     {
         id: "alert-3",
         severity: "warning",
+        alertType: "anomaly_detected",
         title: "High Temperature Detected",
         message: "Temperature exceeds normal range (35.2°C)",
         beehiveName: "Gamma Hive",
@@ -506,6 +509,7 @@ export const mockAlerts: Alert[] = [
     {
         id: "alert-4",
         severity: "warning",
+        alertType: "anomaly_detected",
         title: "Elevated VOC Levels",
         message: "Volatile organic compounds above threshold",
         beehiveName: "Delta Hive",
@@ -517,6 +521,7 @@ export const mockAlerts: Alert[] = [
     {
         id: "alert-5",
         severity: "info",
+        alertType: "honey_harvested",
         title: "Honey Production Milestone",
         message: "Delta Hive reached 50kg production",
         beehiveName: "Delta Hive",
@@ -528,6 +533,7 @@ export const mockAlerts: Alert[] = [
     {
         id: "alert-6",
         severity: "warning",
+        alertType: "anomaly_detected",
         title: "Low Pheromone Activity",
         message: "Pheromone concentration below optimal levels",
         beehiveName: "Alpha Hive",
@@ -539,6 +545,7 @@ export const mockAlerts: Alert[] = [
     {
         id: "alert-7",
         severity: "info",
+        alertType: "anomaly_detected",
         title: "Weather Update",
         message: "Incoming rainfall detected in 2 hours",
         beehiveName: "Beta Hive",
@@ -550,6 +557,7 @@ export const mockAlerts: Alert[] = [
     {
         id: "alert-8",
         severity: "info",
+        alertType: "honey_harvested",
         title: "Honey Harvested",
         message: "Successfully harvested 15.5kg of honey from Alpha Hive",
         beehiveName: "Alpha Hive",
@@ -574,6 +582,7 @@ export const generateRandomAlert = (): Alert | null => {
     const alertTypes = [
         {
             severity: "critical" as const,
+            alertType: "predator_detected" as const,
             title: "Predator Detected - Bird",
             getMessage: (hive: string) => `Defense sensor detected a bird near ${hive}. MEMS Acoustic Monitor registered unusual vibration patterns.`,
             beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
@@ -581,6 +590,7 @@ export const generateRandomAlert = (): Alert | null => {
         },
         {
             severity: "critical" as const,
+            alertType: "predator_detected" as const,
             title: "Predator Detected - Lizard",
             getMessage: (hive: string) => `Defense sensor detected a lizard approaching ${hive}. TGS2600 Chemical Sensor picked up foreign pheromones.`,
             beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
@@ -588,6 +598,7 @@ export const generateRandomAlert = (): Alert | null => {
         },
         {
             severity: "warning" as const,
+            alertType: "predator_detected" as const,
             title: "Unusual Activity Detected",
             getMessage: (hive: string) => `Defense system detected unusual vibration patterns near ${hive}. Possible predator in vicinity.`,
             beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
@@ -595,6 +606,7 @@ export const generateRandomAlert = (): Alert | null => {
         },
         {
             severity: "warning" as const,
+            alertType: "anomaly_detected" as const,
             title: "High Temperature Detected",
             getMessage: () => "Temperature exceeds normal range",
             beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
@@ -602,6 +614,7 @@ export const generateRandomAlert = (): Alert | null => {
         },
         {
             severity: "warning" as const,
+            alertType: "anomaly_detected" as const,
             title: "Elevated VOC Levels",
             getMessage: () => "Volatile organic compounds above threshold",
             beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
@@ -609,6 +622,7 @@ export const generateRandomAlert = (): Alert | null => {
         },
         {
             severity: "info" as const,
+            alertType: "anomaly_detected" as const,
             title: "Bee Activity Spike",
             getMessage: (hive: string) => `${hive} showing increased foraging activity`,
             beehives: ["Alpha Hive", "Beta Hive", "Gamma Hive", "Delta Hive", "Zeta Hive"],
@@ -624,6 +638,7 @@ export const generateRandomAlert = (): Alert | null => {
     return {
         id: `alert-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         severity: alertType.severity,
+        alertType: alertType.alertType,
         title: alertType.title,
         message: alertType.getMessage(beehiveName),
         beehiveName,
