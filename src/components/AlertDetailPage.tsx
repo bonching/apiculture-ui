@@ -323,60 +323,62 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                 {/*)}*/}
 
                 {/* Recommended Actions */}
-                <Card>
-                    <CardHeader>
-                        <CardTitle>Recommended Actions</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <ul className="space-y-2 list-disc list-inside text-muted-foreground">
-                            {alert.alertType === "predator_detected" && (
-                                <>
-                                    <li>Review the captured image immediately to identify the predator type</li>
-                                    <li>Check if the predator is still in the vicinity</li>
-                                    <li>Activate additional defense measures if available</li>
-                                    <li>Monitor bee activity and stress levels</li>
-                                    <li>Consider installing physical barriers of deterrents</li>
-                                    <li>Document the incident for pattern analysis</li>
-                                </>
-                            )}
-                            {alert.alertType === "offline_sensor" && (
-                                <>
-                                    <li>Check sensor power supply and connections</li>
-                                    <li>Verify network connectivity</li>
-                                    <li>Replace batteries if applicable</li>
-                                    <li>Contact support if issue persists</li>
-                                </>
-                            )}
-                            {alert.severity === "critical" && alert.title.includes("Temperature") && (
-                                <>
-                                    <li>Ensure proper ventilation</li>
-                                    <li>Check for direct sunlight exposure</li>
-                                    <li>Monitor bee colony behavior</li>
-                                    <li>Consider emergency cooling measures</li>
-                                </>
-                            )}
-                            {alert.alertType === "anomaly_detected" && alert.severity === "warning" && (
-                                <>
-                                    <li>Monitor the situation closely</li>
-                                    <li>Check sensor readings regularly</li>
-                                    <li>Prepare to take action if conditions worsen</li>
-                                </>
-                            )}
-                            {alert.alertType === "honey_harvested" && (
-                                <>
-                                    <li>No immediate action required</li>
-                                    <li>Continue regular monitoring</li>
-                                </>
-                            )}
-                            {alert.severity === "info" && alert.alertType === "anomaly_detected" && (
-                                <>
-                                    <li>No immediate action required</li>
-                                    <li>Continue regular monitoring</li>
-                                </>
-                            )}
-                        </ul>
-                    </CardContent>
-                </Card>
+                {alert.alertType !== "online_sensor" && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Recommended Actions</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <ul className="space-y-2 list-disc list-inside text-muted-foreground">
+                                {alert.alertType === "predator_detected" && (
+                                    <>
+                                        <li>Review the captured image immediately to identify the predator type</li>
+                                        <li>Check if the predator is still in the vicinity</li>
+                                        <li>Activate additional defense measures if available</li>
+                                        <li>Monitor bee activity and stress levels</li>
+                                        <li>Consider installing physical barriers of deterrents</li>
+                                        <li>Document the incident for pattern analysis</li>
+                                    </>
+                                )}
+                                {alert.alertType === "offline_sensor" && (
+                                    <>
+                                        <li>Check sensor power supply and connections</li>
+                                        <li>Verify network connectivity</li>
+                                        <li>Replace batteries if applicable</li>
+                                        <li>Contact support if issue persists</li>
+                                    </>
+                                )}
+                                {alert.severity === "critical" && alert.title.includes("Temperature") && (
+                                    <>
+                                        <li>Ensure proper ventilation</li>
+                                        <li>Check for direct sunlight exposure</li>
+                                        <li>Monitor bee colony behavior</li>
+                                        <li>Consider emergency cooling measures</li>
+                                    </>
+                                )}
+                                {alert.alertType === "anomaly_detected" && alert.severity === "warning" && (
+                                    <>
+                                        <li>Monitor the situation closely</li>
+                                        <li>Check sensor readings regularly</li>
+                                        <li>Prepare to take action if conditions worsen</li>
+                                    </>
+                                )}
+                                {alert.alertType === "honey_harvested" && (
+                                    <>
+                                        <li>No immediate action required</li>
+                                        <li>Continue regular monitoring</li>
+                                    </>
+                                )}
+                                {alert.severity === "info" && alert.alertType === "anomaly_detected" && (
+                                    <>
+                                        <li>No immediate action required</li>
+                                        <li>Continue regular monitoring</li>
+                                    </>
+                                )}
+                            </ul>
+                        </CardContent>
+                    </Card>
+                )}
             </div>
         </div>
     );
