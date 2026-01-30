@@ -329,7 +329,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                             <CardTitle>Recommended Actions</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <ul className="space-y-2 list-disc list-inside text-muted-foreground">
+                            <ul className="space-y-2 list-disc list-outside ml-6 text-muted-foreground">
                                 {alert.alertType === "predator_detected" && (
                                     <>
                                         <li>Review the captured image immediately to identify the predator type</li>
