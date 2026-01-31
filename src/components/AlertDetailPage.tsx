@@ -56,12 +56,13 @@ interface AlertDetailPageProps {
 
 export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) {
     const isPredatorAlert = alert.alertType === "predator_detected";
+    const isBeeCountAlert = alert.dataType === "bee_count";
     const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
     const [imageData, setImageData] = useState<string | null>(null);
     const [imageLoading, setImageLoading] = useState(false);
     const [imageError, setImageError] = useState<string | null>(null);
 
-    const fetchPredatorImage = async () => {
+    const fetchImage = async () => {
         if (!alert.imageId) {
             setImageError("No image ID available");
             return;
@@ -171,7 +172,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                     </Badge>
                                 </div>
                                 <CardDescription>
-                                    {alert.beehiveName} - {alert.farmName}
+                                    {[alert.beehiveName, alert.farmName].filter(Boolean).join(" - ") || "N/A"}
                                 </CardDescription>
                             </div>
                         </div>
@@ -187,6 +188,42 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Bee Count Image */}
+                {isBeeCountAlert && alert.imageId && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Bee Count Analysis</CardTitle>
+                            <CardDescription>Captured image and report</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                <div className="p-4 bg-muted-rounded-lg">
+                                    <p className="text-sm text-muted-foreground mb-3">
+                                        Review the captured image from the bee count analysis.
+                                    </p>
+                                    <Button
+                                        className="w-full"
+                                        variant="default"
+                                        onClick={fetchImage}
+                                        disabled={!alert.imageId}
+                                    >
+                                        View Captured Image
+                                    </Button>
+                                </div>
+                                <div className="text-sm text-muted-foreground">
+                                    {alert.details?.method && (
+                                        <p><strong>Detection Method:</strong> {alert.details.method}</p>
+                                    )}
+                                    {alert.sensorValue && (
+                                        <p><strong>Bee Count:</strong> {Number(alert.sensorValue).toLocaleString()}</p>
+                                    )}
+                                    <p><strong>Timestamp:</strong> {new Date(alert.timestampMs).toLocaleString()}</p>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Sensor Readings at Alert Time */}
                 {beehive && (alert.alertType === "anomaly_detected") && (
@@ -365,15 +402,15 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                     <Button
                                         className="w-full"
                                         variant="default"
-                                        onClick={fetchPredatorImage}
+                                        onClick={fetchImage}
                                         disabled={!alert.imageId}
                                     >
                                         View Captured Image
                                     </Button>
                                 </div>
                                 <div className="text-sm text-muted-foreground">
-                                    {alert.details?.predatorDetectionMethod && (
-                                        <p><strong>Detection Method:</strong> {alert.details.predatorDetectionMethod}</p>
+                                    {(alert.details?.method || alert.details?.predatorDetectionMethod) && (
+                                        <p><strong>Detection Method:</strong> {alert.details.method || alert.details.predatorDetectionMethod}</p>
                                     )}
                                     <p><strong>Timestamp:</strong> {new Date(alert.timestampMs).toLocaleString()}</p>
                                 </div>
@@ -455,7 +492,9 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
             <Dialog open={isImageDialogOpen} onOpenChange={setIsImageDialogOpen}>
                 <DialogContent className="max-w-3xl">
                     <DialogHeader>
-                        <DialogTitle>Predator Detection Image</DialogTitle>
+                        <DialogTitle>
+                            {isPredatorAlert ? "Predator Detection Image" : isBeeCountAlert ? "Bee Count Analysis Image" : "Image"}
+                        </DialogTitle>
                         <DialogDescription>
                             Captured on {new Date(alert.timestampMs).toLocaleString()}
                         </DialogDescription>
@@ -476,7 +515,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                         {imageData && !imageLoading && !imageError && (
                             <img
                                 src={`data:image/jpeg;base64,${imageData}`}
-                                alt="Predator Detection"
+                                alt={isPredatorAlert ? "Predator Detection" : isBeeCountAlert ? "Bee Count Analysis" : "Alert Image"}
                                 className="max-w-full h-auto rounded-lg"
                             />
                         )}

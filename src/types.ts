@@ -80,8 +80,8 @@ export interface Alert {
   alertType: AlertType;
   title: string;
   message: string;
-  beehiveName: string;
-  farmName: string;
+  beehiveName?: string;
+  farmName?: string;
   timestamp: string;
   timestampMs: number;
   read?: boolean;
@@ -91,6 +91,7 @@ export interface Alert {
   imageId?: string;
   details?: {
     predatorDetectionMethod?: string;
+    method?: string;
   };
 }
 
