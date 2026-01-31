@@ -50,7 +50,7 @@ interface BeehiveDetailProps {
 
 export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
     const [imageDialogOpen, setImageDialogOpen] = useState(false);
-    const [trendMetric, setTrendMetric] = useState<"honey" | "temperature" | "humidity" | "beeCount" | "co2" | "sound" | "activity" | "voc" | "vibration" | "lux" | "uvIndex" | "rainfall" | "windSpeed" | "barometricPressure" | "pheromone" | "pollenConcentration" | null>(null);
+    const [trendMetric, setTrendMetric] = useState<"honey_harvested" | "temperature" | "humidity" | "beeCount" | "co2" | "sound" | "activity" | "voc" | "vibration" | "lux" | "uvIndex" | "rainfall" | "windSpeed" | "barometricPressure" | "pheromone" | "pollenConcentration" | null>(null);
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -106,7 +106,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                     variant="ghost"
                                     size="icon"
                                     className="h-8 w-8 text-amber-600 hover:text-amber-700 hover:bg-amber-100"
-                                    onClick={() => setTrendMetric("honey")}
+                                    onClick={() => setTrendMetric("honey_harvested")}
                                 >
                                     <TrendingUp className="h-4 w-4"/>
                                 </Button>

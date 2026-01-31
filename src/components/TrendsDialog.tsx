@@ -7,7 +7,7 @@ import {API_ROUTES} from "../util/ApiRoutes";
 import {AlertCircle, Loader2} from "lucide-react";
 
 type TrendMetric =
-    | "honey"
+    | "honey_harvested"
     | "temperature"
     | "humidity"
     | "beeCount"
@@ -38,7 +38,7 @@ const metricConfig: Record<TrendMetric, {
     chartType: "line" | "area";
     historyKey?: keyof Beehive;
 }> = {
-    honey: {title: "Honey Production Trend (12 Weeks)", color: "#f59e0b", unit: " kg", chartType: "line"},
+    honey_harvested: {title: "Honey Production Trend (5 years, 4-Month Aggregation)", color: "#f59e0b", unit: " kg", chartType: "line"},
     temperature: {
         title: "Temperature Trend",
         color: "#ef4444",
