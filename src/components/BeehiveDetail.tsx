@@ -73,7 +73,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
             console.log(result);
             if (result.data) {
                 setImageData(result.data);
-            } else  {
+            } else {
                 setImageError('Image data not found');
             }
         } catch (error) {
@@ -369,7 +369,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>UV Index</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.uvIndex ? `${beehive.sensors.uvIndex}` : <span className="text-muted-foreground italic">No data</span>}</div>
+                                <div>{beehive.sensors.uvIndex ? beehive.sensors.uvIndex : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -485,7 +485,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <p className="text-destructive">{imageError}</p>
                             </div>
                         )}
-                        {!imageLoading && !imageError && (
+                        {!imageLoading && !imageError && imageData && (
                             <>
                                 <img
                                     src={`data:image/jpeg;base64,${imageData}`}

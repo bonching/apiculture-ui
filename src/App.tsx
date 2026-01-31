@@ -113,9 +113,9 @@ export default function App() {
         } catch (error) {
             console.error('Failed to reload sensors:', error);
         }
-    }
+    };
 
-    // Simulated SSE for real-time alerts with reconnection
+    // SSE for real-time alerts with reconnection
     useEffect(() => {
         // Only start SSE when user is logged in
         if (username === "") return;
@@ -135,12 +135,12 @@ export default function App() {
                 // Build EventSource with Last-Event-ID header if available
                 const eventSourceInitDict: {
                     withCredentials?: boolean;
-                    headers?: { [key: string]: string }
+                    headers?: { [key: string]: string };
                 } = {
-                    withCredentials: false
+                    withCredentials: false,
                 };
 
-                // Add Last-Event_ID header if we have one
+                // Add Last-Event-ID header if we have one
                 if (lastEventId) {
                     eventSourceInitDict.headers = {
                         'Last-Event-ID': lastEventId,
@@ -168,7 +168,7 @@ export default function App() {
                     setAlerts(prev => {
                         const exists = prev.some(alert => alert.id === data.id);
                         return exists ? prev : [...prev, data];
-                    })
+                    });
 
                     // Reload sensors if anomaly detected
                     if (data.alertType === "anomaly_detected") {
@@ -200,7 +200,7 @@ export default function App() {
                     const delay = Math.min(
                         BASE_RECONNECT_DELAY * Math.pow(2, reconnectAttempts),
                         MAX_RECONNECT_DELAY
-                    )
+                    );
 
                     reconnectAttempts++;
 
@@ -211,7 +211,7 @@ export default function App() {
                         toast.error('Connection lost', {
                             description: 'Attempting to reconnect...',
                             duration: 3000,
-                        })
+                        });
                     }
 
                     // Schedule reconnection
@@ -256,7 +256,7 @@ export default function App() {
                 eventSource.close();
                 eventSource = null;
             }
-        }
+        };
     }, [username]);
 
     const handleLogin = (user: string) => {

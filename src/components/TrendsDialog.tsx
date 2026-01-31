@@ -38,7 +38,7 @@ const metricConfig: Record<TrendMetric, {
     chartType: "line" | "area";
     historyKey?: keyof Beehive;
 }> = {
-    honey_harvested: {title: "Honey Production Trend (5 years, 4-Month Aggregation)", color: "#f59e0b", unit: " kg", chartType: "line"},
+    honey_harvested: {title: "Honey Production Trend (5 Years, 4-Month Aggregation)", color: "#f59e0b", unit: " kg", chartType: "line"},
     temperature: {
         title: "Temperature Trend",
         color: "#ef4444",

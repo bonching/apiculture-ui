@@ -80,7 +80,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
 
         setImageLoading(true);
         setImageError(null);
-        setIsImageDialogOpen(false);
+        setIsImageDialogOpen(true);
 
         try {
             const response = await fetch(`${API_ROUTES.imageRoutes}/${alert.imageId}?include_data=true`);
@@ -96,10 +96,10 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
             let imageBase64Data = null;
 
             if (result.data && typeof result.data === 'string') {
-                // Case 1: { data: "base64string" } }
+                // Case 1: { data: "base64string" }
                 imageBase64Data = result.data;
-            } else if (result.data && typeof result.data.data) {
-                // Case 2: {data: { data: "base64string" } }
+            } else if (result.data && result.data.data) {
+                // Case 2: { data: { data: "base64string" } }
                 imageBase64Data = result.data.data;
             } else if (typeof result === 'string') {
                 // Case 3: Direct base64 string
@@ -113,14 +113,14 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                 setImageData(imageBase64Data);
             } else {
                 console.error('Response structure:', JSON.stringify(result, null, 2));
-                throw new Error("Image data not found in response")
+                throw new Error("Image data not found in response");
             }
         } catch (error) {
             setImageError(error instanceof Error ? error.message : "Failed to load image");
         } finally {
             setImageLoading(false);
         }
-    }
+    };
 
     const fetchHoneypotDetails = async () => {
         if (!alert.imageId) {
@@ -138,9 +138,9 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
             }
             const result = await response.json();
             console.log('Honeypot Details:', result['honeypot_analysis'] || result);
-            setHoneypotDetails(result);
+            setHoneypotDetails(result['honeypot_analysis'] || result);
         } catch (error) {
-            console.error('Honeypot fetching honeypot details:', error);
+            console.error('Error fetching honeypot details:', error);
             setImageError(error instanceof Error ? error.message : "Failed to load honeypot details");
         } finally {
             setHoneypotLoading(false);
@@ -152,7 +152,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
             await fetchHoneypotDetails();
         }
         await fetchImage();
-    }
+    };
 
     const getAlertIcon = (severity: string) => {
         switch (severity) {
@@ -236,7 +236,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                     <Card>
                         <CardHeader>
                             <CardTitle>Honeypot Details</CardTitle>
-                            <CardDescription>Harvest Information and analysis</CardDescription>
+                            <CardDescription>Harvest information and analysis</CardDescription>
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
@@ -268,25 +268,25 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                             {honeypotDetails.filled_honeypots !== undefined && (
                                                 <div className="p-3 bg-muted rounded-lg">
                                                     <div className="text-xs text-muted-foreground mb-1">Filled Honeypots</div>
-                                                    <div className="text-sm font-medium">{honeypotDetails.filled_honeypots}</div>
+                                                    <div className="text-sm font-medium text-green-600">{honeypotDetails.filled_honeypots}</div>
                                                 </div>
                                             )}
                                             {honeypotDetails.empty_honeypots !== undefined && (
                                                 <div className="p-3 bg-muted rounded-lg">
                                                     <div className="text-xs text-muted-foreground mb-1">Empty Honeypots</div>
-                                                    <div className="text-sm font-medium">{honeypotDetails.empty_honeypots}</div>
+                                                    <div className="text-sm font-medium text-green-500">{honeypotDetails.empty_honeypots}</div>
                                                 </div>
                                             )}
                                             {honeypotDetails.fill_percentage !== undefined && (
-                                                <div className="p-3 bg-muted rounded-lg">
+                                                <div className="p-3 bg-muted rounded-lg col-span-2">
                                                     <div className="text-xs text-muted-foreground mb-1">Fill Percentage</div>
-                                                    <div className="text-sm font-medium">{honeypotDetails.fill_percentage}</div>
+                                                    <div className="text-lg font-bold text-amber-600">{honeypotDetails.fill_percentage.toFixed(1)}%</div>
                                                 </div>
                                             )}
                                             {honeypotDetails.confidence !== undefined && (
-                                                <div className="p-3 bg-muted rounded-lg">
-                                                    <div className="text-xs text-muted-foreground mb-1">Confidence</div>
-                                                    <div className="text-sm font-medium">{honeypotDetails.confidence}</div>
+                                                <div className="p-3 bg-muted rounded-lg col-span-2">
+                                                    <div className="text-xs text-muted-foreground mb-1">Detection Confidence</div>
+                                                    <div className="text-sm font-medium">{(honeypotDetails.confidence * 100).toFixed(1)}%</div>
                                                 </div>
                                             )}
                                         </div>
@@ -336,7 +336,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                                                     <span className="text-muted-foreground">Position:</span> ({location.center_x}, {location.center_y})
                                                                 </div>
                                                                 <div>
-                                                                    <span className="text-muted-foreground">Size:</span> {location.width}*{location.height}
+                                                                    <span className="text-muted-foreground">Size:</span> {location.width}×{location.height}
                                                                 </div>
                                                                 {location.position_3d && (
                                                                     <>
@@ -422,7 +422,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                         </CardHeader>
                         <CardContent>
                             <div className="space-y-4">
-                                <div className="p-4 bg-muted-rounded-lg">
+                                <div className="p-4 bg-muted rounded-lg">
                                     <p className="text-sm text-muted-foreground mb-3">
                                         Review the captured image from the bee count analysis.
                                     </p>
@@ -537,7 +537,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Activity className="h-5 w-5 text-amber-500"/>
                                         <div>Bee Count</div>
                                     </div>
-                                    <div>{beehive.sensors.beeCount ? `${beehive.sensors.beeCount.toLocaleString()}` : <span className="text-muted-foreground italic">No data</span>}</div>
+                                    <div>{beehive.sensors.beeCount ? beehive.sensors.beeCount.toLocaleString() : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -562,7 +562,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Sun className="h-5 w-5 text-orange-500"/>
                                         <div>UV Index</div>
                                     </div>
-                                    <div>{beehive.sensors.uvIndex ? `${beehive.sensors.uvIndex}` : <span className="text-muted-foreground italic">No data</span>}</div>
+                                    <div>{beehive.sensors.uvIndex ? beehive.sensors.uvIndex : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">

@@ -52,7 +52,7 @@ export function AlertsPanel({alerts, onViewDetails, onMarkAsRead}: AlertsPanelPr
                 window.scrollTo(0, parseInt(savedScrollPosition, 10));
                 // Clear the saved position after restoration
                 sessionStorage.removeItem("alertsPanelScrollPosition");
-            }, 100)
+            }, 100);
         }
     }, []);
 
@@ -65,7 +65,7 @@ export function AlertsPanel({alerts, onViewDetails, onMarkAsRead}: AlertsPanelPr
         window.addEventListener("scroll", handleScroll);
         return () => {
             window.removeEventListener("scroll", handleScroll);
-        }
+        };
     }, []);
 
     // Pulse animation for live indicator
@@ -239,7 +239,7 @@ export function AlertsPanel({alerts, onViewDetails, onMarkAsRead}: AlertsPanelPr
                     <div>
                         <h1>Alerts & Notifications</h1>
                         <p className="text-muted-foreground text-sm whitespace-nowrap">
-                            {alerts.length} total · {unreadCount} unread
+                            {alerts.length} total • {unreadCount} unread
                         </p>
                     </div>
                     <div className="flex gap-2 flex-wrap">
