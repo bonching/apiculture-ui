@@ -88,6 +88,7 @@ export interface Alert {
   beehiveId?: string;
   dataType?: DataCaptureType;
   sensorValue?: number | string;
+  imageId?: string;
 }
 
 export interface HarvestDevice {

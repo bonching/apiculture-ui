@@ -8,6 +8,7 @@ export const API_ROUTES = {
     alertRoutes: `${API_SERVER}/alerts`,
     metricRoutes: `${API_SERVER}/metrics`,
     harvestRoutes: `${API_SERVER}/harvest`,
+    imageRoutes: `${API_SERVER}/images`
 }
 
 export const SSE_ROUTES = {

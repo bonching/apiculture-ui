@@ -2,6 +2,13 @@ import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "./ui/ca
 import {Button} from "./ui/button";
 import {Badge} from "./ui/badge";
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "./ui/dialog";
+import {
     Activity,
     AlertCircle,
     AlertTriangle,
@@ -19,6 +26,8 @@ import {
     Zap
 } from "lucide-react";
 import {Alert as AlertType, Beehive} from "../types";
+import {useState} from "react";
+import {API_ROUTES} from "../util/ApiRoutes";
 
 interface AlertDetailPageProps {
     alert: AlertType;
@@ -47,6 +56,60 @@ interface AlertDetailPageProps {
 
 export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) {
     const isPredatorAlert = alert.alertType === "predator_detected";
+    const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
+    const [imageData, setImageData] = useState<string | null>(null);
+    const [imageLoading, setImageLoading] = useState(false);
+    const [imageError, setImageError] = useState<string | null>(null);
+
+    const fetchPredatorImage = async () => {
+        if (!alert.imageId) {
+            setImageError("No image ID available");
+            return;
+        }
+
+        setImageLoading(true);
+        setImageError(null);
+        setIsImageDialogOpen(false);
+
+        try {
+            const response = await fetch(`${API_ROUTES.imageRoutes}/${alert.imageId}?include_data=true`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch image: ${response.statusText}`);
+            }
+            const result = await response.json();
+
+            // Debug: Log the response structure
+            console.log('API Response:', result);
+
+            // Try multiple possible response structures
+            let imageBase64Data = null;
+
+            if (result.data && typeof result.data === 'string') {
+                // Case 1: { data: "base64string" } }
+                imageBase64Data = result.data;
+            } else if (result.data && typeof result.data.data) {
+                // Case 2: {data: { data: "base64string" } }
+                imageBase64Data = result.data.data;
+            } else if (typeof result === 'string') {
+                // Case 3: Direct base64 string
+                imageBase64Data = result;
+            } else if (result.image) {
+                // Case 4: { image: "base64string" }
+                imageBase64Data = result.image;
+            }
+
+            if (imageBase64Data) {
+                setImageData(imageBase64Data);
+            } else {
+                console.error('Response structure:', JSON.stringify(result, null, 2));
+                throw new Error("Image data not found in response")
+            }
+        } catch (error) {
+            setImageError(error instanceof Error ? error.message : "Failed to load image");
+        } finally {
+            setImageLoading(false);
+        }
+    }
 
     const getAlertIcon = (severity: string) => {
         switch (severity) {
@@ -299,7 +362,12 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                     <p className="text-sm text-muted-foreground mb-3">
                                         A predator was detected by the defense system sensors. Review the captured image for identification and assessment.
                                     </p>
-                                    <Button className="w-full" variant="default">
+                                    <Button
+                                        className="w-full"
+                                        variant="default"
+                                        onClick={fetchPredatorImage}
+                                        disabled={!alert.imageId}
+                                    >
                                         View Captured Image
                                     </Button>
                                 </div>
@@ -380,6 +448,39 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                     </Card>
                 )}
             </div>
+
+            {/* Image Dialog */}
+            <Dialog open={isImageDialogOpen} onOpenChange={setIsImageDialogOpen}>
+                <DialogContent className="max-w-3xl">
+                    <DialogHeader>
+                        <DialogTitle>Predator Detection Image</DialogTitle>
+                        <DialogDescription>
+                            Captured on {new Date(alert.timestampMs).toLocaleString()}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex justify-center items-center min-h-[300px]">
+                        {imageLoading && (
+                            <div className="text-center">
+                                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto mb-4"></div>
+                                <p className="text-muted-foreground">Loading image...</p>
+                            </div>
+                        )}
+                        {imageError && (
+                            <div className="text-center text-red-500">
+                                <AlertCircle className="h-12 w-12 mx-auto mb-4" />
+                                <p>{imageError}</p>
+                            </div>
+                        )}
+                        {imageData && !imageLoading && !imageError && (
+                            <img
+                                src={`data:image/jpeg;base64,${imageData}`}
+                                alt="Predator Detection"
+                                className="max-w-full h-auto rounded-lg"
+                            />
+                        )}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
