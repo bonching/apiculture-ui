@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "./ui/card";
 import {Badge} from "./ui/badge";
 import {Button} from "./ui/button";
@@ -21,8 +21,8 @@ import {
     Zap
 } from "lucide-react";
 import {Beehive} from "../types";
-import {ImageWithFallback} from "./figma/ImageWithFallback";
 import {formatHoneyWeight} from "../hooks/useHoneyWeight";
+import {API_ROUTES} from "../util/ApiRoutes";
 
 interface BeehiveDetailProps {
     beehive: Beehive & {
@@ -51,6 +51,37 @@ interface BeehiveDetailProps {
 export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
     const [imageDialogOpen, setImageDialogOpen] = useState(false);
     const [trendMetric, setTrendMetric] = useState<"honey_harvested" | "temperature" | "humidity" | "beeCount" | "co2" | "sound" | "activity" | "voc" | "vibration" | "lux" | "uvIndex" | "rainfall" | "windSpeed" | "barometricPressure" | "pheromone" | "pollenConcentration" | null>(null);
+    const [imageData, setImageData] = useState<string | null>(null);
+    const [imageLoading, setImageLoading] = useState(false);
+    const [imageError, setImageError] = useState<string | null>(null);
+
+    // Fetch image data when dialog opens
+    useEffect(() => {
+        if (imageDialogOpen && !imageData) {
+            fetchImageData();
+        }
+    }, [imageDialogOpen]);
+
+    const fetchImageData = async () => {
+        setImageLoading(true);
+        setImageError(null);
+        try {
+            const url = `${API_ROUTES.imageRoutes}?beehive_id=${beehive.id}&context=data_collection&include_data=true`;
+            const response = await fetch(url);
+            if (!response.ok) throw new Error('Failed to fetch image');
+            const result = await response.json();
+            console.log(result);
+            if (result.data) {
+                setImageData(result.data);
+            } else  {
+                setImageError('Image data not found');
+            }
+        } catch (error) {
+            setImageError(error instanceof Error ? error.message : 'Failed to load image');
+        } finally {
+            setImageLoading(false);
+        }
+    };
 
     const getStatusColor = (status: string) => {
         switch (status) {
@@ -444,19 +475,33 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                         </DialogTitle>
                     </DialogHeader>
                     <div className="relative rounded-lg overflow-hidden">
-                        <ImageWithFallback
-                            src="https://images.unsplash.com/photo-1730190168042-3bef4553a8f4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob25leWNvbWIlMjBiZWVoaXZlJTIwY2xvc2UlMjB1cHxlbnwxfHx8fDE3NjAyMjgxMTV8MA&ixlib=rb-4.1.0&q=80&w=1080"
-                            alt="Beehive inspection"
-                            className="w-full h-auto object-cover"
-                        />
-                        <div
-                            className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
-                            <div className="flex items-center justify-between">
-                                <div>Estimated Count: {beehive.sensors.beeCount.toLocaleString()} bees</div>
-                                <Badge className="bg-green-500">Active</Badge>
+                        {imageLoading && (
+                            <div className="flex items-center justify-center h-64 bg-muted">
+                                <p className="text-muted-foreground">Loading image...</p>
                             </div>
-                            <p className="text-muted-foreground mt-2">Image-based bee counting analysis</p>
-                        </div>
+                        )}
+                        {imageError && (
+                            <div className="flex items-center justify-center h-64 bg-muted">
+                                <p className="text-destructive">{imageError}</p>
+                            </div>
+                        )}
+                        {!imageLoading && !imageError && (
+                            <>
+                                <img
+                                    src={`data:image/jpeg;base64,${imageData}`}
+                                    alt="Beehive inspection"
+                                    className="w-full h-auto object-cover"
+                                />
+                                <div
+                                    className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-white">
+                                    <div className="flex items-center justify-between">
+                                        <div>Estimated Count: {beehive.sensors.beeCount.toLocaleString()} bees</div>
+                                        <Badge className="bg-green-500">Active</Badge>
+                                    </div>
+                                    <p className="text-muted-foreground mt-2">Image-based bee counting analysis</p>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </DialogContent>
             </Dialog>
