@@ -100,6 +100,21 @@ export default function App() {
     // Filter state
     const [sensorStatusFilter, setSensorStatusFilter] = useState<"online" | "offline" | null>(null);
 
+    // Function to reload sensors from API
+    const reloadSensors = async () => {
+        try {
+            const response = await fetch(API_ROUTES.sensorRoutes);
+            if (!response.ok) throw new Error(response.statusText);
+            const result = await response.json();
+            if (result.data) {
+                setSensors(result.data);
+                console.log('Sensors reloaded due to anomaly detection');
+            }
+        } catch (error) {
+            console.error('Failed to reload sensors:', error);
+        }
+    }
+
     // Simulated SSE for real-time alerts with reconnection
     useEffect(() => {
         // Only start SSE when user is logged in
@@ -154,6 +169,11 @@ export default function App() {
                         const exists = prev.some(alert => alert.id === data.id);
                         return exists ? prev : [...prev, data];
                     })
+
+                    // Reload sensors if anomaly detected
+                    if (data.alertType === "anomaly_detected") {
+                        reloadSensors();
+                    }
 
                     if (data.dataType === "honey_harvested" && data.beehiveId && data.sensorValue) {
                         setBeehives(prevBeehives =>
