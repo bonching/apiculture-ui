@@ -372,7 +372,9 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                     </Button>
                                 </div>
                                 <div className="text-sm text-muted-foreground">
-                                    <p><strong>Detection Method:</strong> MEMS Acoustic Monitor & Chemical Sensor</p>
+                                    {alert.details?.predatorDetectionMethod && (
+                                        <p><strong>Detection Method:</strong> {alert.details.predatorDetectionMethod}</p>
+                                    )}
                                     <p><strong>Timestamp:</strong> {new Date(alert.timestampMs).toLocaleString()}</p>
                                 </div>
                             </div>

@@ -89,6 +89,9 @@ export interface Alert {
   dataType?: DataCaptureType;
   sensorValue?: number | string;
   imageId?: string;
+  details?: {
+    predatorDetectionMethod?: string;
+  };
 }
 
 export interface HarvestDevice {
