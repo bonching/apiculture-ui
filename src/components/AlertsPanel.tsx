@@ -43,6 +43,31 @@ export function AlertsPanel({alerts, onViewDetails, onMarkAsRead}: AlertsPanelPr
         localStorage.setItem("alertsSortBy", sortBy);
     }, [sortBy]);
 
+    // Restore scroll position when component mounts
+    useEffect(() => {
+        const savedScrollPosition = sessionStorage.getItem("alertsPanelScrollPosition");
+        if (savedScrollPosition) {
+            // Use setTimeout to ensure DOM is fully rendered
+            setTimeout(() => {
+                window.scrollTo(0, parseInt(savedScrollPosition, 10));
+                // Clear the saved position after restoration
+                sessionStorage.removeItem("alertsPanelScrollPosition");
+            }, 100)
+        }
+    }, []);
+
+    // Save scroll position before unmounting
+    useEffect(() => {
+        const handleScroll = () => {
+            sessionStorage.setItem("alertsPanelScrollPosition", window.scrollY.toString());
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => {
+            window.removeEventListener("scroll", handleScroll);
+        }
+    }, []);
+
     // Pulse animation for live indicator
     useEffect(() => {
         const interval = setInterval(() => {
