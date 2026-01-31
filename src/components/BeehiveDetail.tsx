@@ -100,7 +100,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <div className="text-muted-foreground mb-1">Honey Production</div>
-                                    <div>{formatHoneyWeight(beehive.honeyProduction)}</div>
+                                    <div>{beehive.honeyProduction ? formatHoneyWeight(beehive.honeyProduction) : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
                                 <Button
                                     variant="ghost"
@@ -118,17 +118,19 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <div className="text-muted-foreground mb-1">Est. Bee Count</div>
-                                    <div>{beehive.sensors.beeCount.toLocaleString()}</div>
+                                    <div>{beehive.sensors.beeCount ? beehive.sensors.beeCount.toLocaleString() : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
                                 <div className="flex gap-1">
-                                    <Button
-                                        variant="ghost"
-                                        size="icon"
-                                        className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
-                                        onClick={() => setImageDialogOpen(true)}
-                                    >
-                                        <Camera className="h-4 w-4"/>
-                                    </Button>
+                                    {beehive.sensors.beeCount ? (
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
+                                            className="h-8 w-8 text-blue-600 hover:text-blue-700 hover:bg-blue-100"
+                                            onClick={() => setImageDialogOpen(true)}
+                                        >
+                                            <Camera className="h-4 w-4"/>
+                                        </Button>
+                                    ) : null}
                                     <Button
                                         variant="ghost"
                                         size="icon"
@@ -156,7 +158,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>Temperature</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.temperature}°C</div>
+                                <div>{beehive.sensors.temperature ? `${beehive.sensors.temperature}°C` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -174,7 +176,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>Humidity</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.humidity}%</div>
+                                <div>{beehive.sensors.humidity ? `${beehive.sensors.humidity}%` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -192,7 +194,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>CO₂ Level</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.co2} ppm</div>
+                                <div>{beehive.sensors.co2 ? `${beehive.sensors.co2} ppm` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -210,7 +212,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>VOC Level</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.voc} kΩ</div>
+                                <div>{beehive.sensors.voc ? `${beehive.sensors.voc} kΩ` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -228,7 +230,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>Barometric Pressure</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.barometricPressure} hPa</div>
+                                <div>{beehive.sensors.barometricPressure ? `${beehive.sensors.barometricPressure} hPa` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -255,7 +257,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>Sound Level</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.soundLevel} dB</div>
+                                <div>{beehive.sensors.soundLevel ? `${beehive.sensors.soundLevel} dB` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -273,7 +275,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>Activity Level</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.activityLevel}%</div>
+                                <div>{beehive.sensors.activityLevel ? `${beehive.sensors.activityLevel}%` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -291,7 +293,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>Vibration</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.vibration} mm/s</div>
+                                <div>{beehive.sensors.vibration ? `${beehive.sensors.vibration} mm/s` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -318,7 +320,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>Light Intensity</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.lux} lux</div>
+                                <div>{beehive.sensors.lux ? `${beehive.sensors.lux} lux` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -336,7 +338,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>UV Index</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.uvIndex}</div>
+                                <div>{beehive.sensors.uvIndex ? `${beehive.sensors.uvIndex}` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -354,7 +356,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>Rainfall</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.rainfall} mm</div>
+                                <div>{beehive.sensors.rainfall ? `${beehive.sensors.rainfall} mm` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -372,7 +374,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>Wind Speed</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.windSpeed} km/h</div>
+                                <div>{beehive.sensors.windSpeed ? `${beehive.sensors.windSpeed} km/h` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -399,7 +401,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>Pheromone Level</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.pheromone}%</div>
+                                <div>{beehive.sensors.pheromone ? `${beehive.sensors.pheromone}%` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"
@@ -417,7 +419,7 @@ export function BeehiveDetail({beehive, onBack}: BeehiveDetailProps) {
                                 <div>Pollen Concentration</div>
                             </div>
                             <div className="flex items-center gap-2">
-                                <div>{beehive.sensors.pollenConcentration}%</div>
+                                <div>{beehive.sensors.pollenConcentration ? `${beehive.sensors.pollenConcentration}%` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 <Button
                                     variant="ghost"
                                     size="icon"

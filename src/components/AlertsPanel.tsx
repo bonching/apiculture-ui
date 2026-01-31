@@ -235,14 +235,14 @@ export function AlertsPanel({alerts, onViewDetails, onMarkAsRead}: AlertsPanelPr
                     </CardContent>
                 </Card>
 
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
                     <div>
                         <h1>Alerts & Notifications</h1>
-                        <p className="text-muted-foreground">
-                            {alerts.length} total alerts ({unreadCount} unread)
+                        <p className="text-muted-foreground text-sm whitespace-nowrap">
+                            {alerts.length} total · {unreadCount} unread
                         </p>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 flex-wrap">
                         {viewMode === "card" && (
                             <Button
                                 variant="outline"

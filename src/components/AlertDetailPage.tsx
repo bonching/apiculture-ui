@@ -464,7 +464,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Thermometer className="h-5 w-5 text-red-500"/>
                                         <div>Temperature</div>
                                     </div>
-                                    <div>{beehive.sensors.temperature}°C</div>
+                                    <div>{beehive.sensors.temperature ? `${beehive.sensors.temperature}°C` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -472,7 +472,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Droplet className="h-5 w-5 text-blue-500"/>
                                         <div>Humidity</div>
                                     </div>
-                                    <div>{beehive.sensors.humidity}%</div>
+                                    <div>{beehive.sensors.humidity ? `${beehive.sensors.humidity}%` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -480,7 +480,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Wind className="h-5 w-5 text-gray-500"/>
                                         <div>CO₂ Level</div>
                                     </div>
-                                    <div>{beehive.sensors.co2} ppm</div>
+                                    <div>{beehive.sensors.co2 ? `${beehive.sensors.co2} ppm` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -488,7 +488,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Zap className="h-5 w-5 text-orange-500"/>
                                         <div>VOC Level</div>
                                     </div>
-                                    <div>{beehive.sensors.voc} kΩ</div>
+                                    <div>{beehive.sensors.voc ? `${beehive.sensors.voc} kΩ` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -496,7 +496,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Gauge className="h-5 w-5 text-indigo-500"/>
                                         <div>Barometric Pressure</div>
                                     </div>
-                                    <div>{beehive.sensors.barometricPressure} hPa</div>
+                                    <div>{beehive.sensors.barometricPressure ? `${beehive.sensors.barometricPressure} hPa` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -513,7 +513,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Volume2 className="h-5 w-5 text-purple-500"/>
                                         <div>Sound Level</div>
                                     </div>
-                                    <div>{beehive.sensors.soundLevel} dB</div>
+                                    <div>{beehive.sensors.soundLevel ? `${beehive.sensors.soundLevel} dB` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -521,7 +521,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Activity className="h-5 w-5 text-green-500"/>
                                         <div>Activity Level</div>
                                     </div>
-                                    <div>{beehive.sensors.activityLevel}%</div>
+                                    <div>{beehive.sensors.activityLevel ? `${beehive.sensors.activityLevel}%` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -529,7 +529,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Waves className="h-5 w-5 text-cyan-500"/>
                                         <div>Vibration</div>
                                     </div>
-                                    <div>{beehive.sensors.vibration} mm/s</div>
+                                    <div>{beehive.sensors.vibration ? `${beehive.sensors.vibration} mm/s` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -537,7 +537,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Activity className="h-5 w-5 text-amber-500"/>
                                         <div>Bee Count</div>
                                     </div>
-                                    <div>{beehive.sensors.beeCount.toLocaleString()}</div>
+                                    <div>{beehive.sensors.beeCount ? `${beehive.sensors.beeCount.toLocaleString()}` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -554,7 +554,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Sun className="h-5 w-5 text-yellow-500"/>
                                         <div>Light Intensity</div>
                                     </div>
-                                    <div>{beehive.sensors.lux} lux</div>
+                                    <div>{beehive.sensors.lux ? `${beehive.sensors.lux} lux` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -562,7 +562,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Sun className="h-5 w-5 text-orange-500"/>
                                         <div>UV Index</div>
                                     </div>
-                                    <div>{beehive.sensors.uvIndex}</div>
+                                    <div>{beehive.sensors.uvIndex ? `${beehive.sensors.uvIndex}` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -570,7 +570,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <CloudRain className="h-5 w-5 text-blue-400"/>
                                         <div>Rainfall</div>
                                     </div>
-                                    <div>{beehive.sensors.rainfall} mm</div>
+                                    <div>{beehive.sensors.rainfall ? `${beehive.sensors.rainfall} mm` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -578,7 +578,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Wind className="h-5 w-5 text-teal-500"/>
                                         <div>Wind Speed</div>
                                     </div>
-                                    <div>{beehive.sensors.windSpeed} km/h</div>
+                                    <div>{beehive.sensors.windSpeed ? `${beehive.sensors.windSpeed} km/h` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -595,7 +595,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Zap className="h-5 w-5 text-pink-500"/>
                                         <div>Pheromone Level</div>
                                     </div>
-                                    <div>{beehive.sensors.pheromone}%</div>
+                                    <div>{beehive.sensors.pheromone ? `${beehive.sensors.pheromone}%` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
 
                                 <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
@@ -603,7 +603,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <Flower className="h-5 w-5 text-yellow-600"/>
                                         <div>Pollen Concentration</div>
                                     </div>
-                                    <div>{beehive.sensors.pollenConcentration}%</div>
+                                    <div>{beehive.sensors.pollenConcentration ? `${beehive.sensors.pollenConcentration}%` : <span className="text-muted-foreground italic">No data</span>}</div>
                                 </div>
                             </CardContent>
                         </Card>
@@ -660,7 +660,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                             <CardTitle>Recommended Actions</CardTitle>
                         </CardHeader>
                         <CardContent>
-                            <ul className="space-y-2 list-disc list-outside ml-6 text-muted-foreground">
+                            <ul className="space-y-2 list-disc list-outside ml-6 pl-2 text-muted-foreground">
                                 {alert.alertType === "predator_detected" && (
                                     <>
                                         <li>Review the captured image immediately to identify the predator type</li>
