@@ -274,7 +274,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                             {honeypotDetails.empty_honeypots !== undefined && (
                                                 <div className="p-3 bg-muted rounded-lg">
                                                     <div className="text-xs text-muted-foreground mb-1">Empty Honeypots</div>
-                                                    <div className="text-sm font-medium text-green-500">{honeypotDetails.empty_honeypots}</div>
+                                                    <div className="text-sm font-medium text-gray-500">{honeypotDetails.empty_honeypots}</div>
                                                 </div>
                                             )}
                                             {honeypotDetails.fill_percentage !== undefined && (
