@@ -26,7 +26,7 @@ import {
     Zap
 } from "lucide-react";
 import {Alert as AlertType, Beehive} from "../types";
-import {useState} from "react";
+import {useState, useEffect} from "react";
 import {API_ROUTES} from "../util/ApiRoutes";
 
 interface AlertDetailPageProps {
@@ -57,10 +57,20 @@ interface AlertDetailPageProps {
 export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) {
     const isPredatorAlert = alert.alertType === "predator_detected";
     const isBeeCountAlert = alert.dataType === "bee_count";
+    const isHoneyHarvestedAlert = alert.alertType === "honey_harvested";
     const [isImageDialogOpen, setIsImageDialogOpen] = useState(false);
     const [imageData, setImageData] = useState<string | null>(null);
     const [imageLoading, setImageLoading] = useState(false);
     const [imageError, setImageError] = useState<string | null>(null);
+    const [honeypotDetails, setHoneypotDetails] = useState<any>(null);
+    const [honeypotLoading, setHoneypotLoading] = useState(false);
+
+    // Eager load honeypot details for honey_harvested alerts
+    useEffect(() => {
+        if (isHoneyHarvestedAlert && alert.imageId && !honeypotDetails) {
+            fetchHoneypotDetails();
+        }
+    }, [isHoneyHarvestedAlert, alert.imageId]);
 
     const fetchImage = async () => {
         if (!alert.imageId) {
@@ -110,6 +120,38 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
         } finally {
             setImageLoading(false);
         }
+    }
+
+    const fetchHoneypotDetails = async () => {
+        if (!alert.imageId) {
+            setImageError("No image ID available");
+            return;
+        }
+
+        setHoneypotLoading(true);
+        setImageError(null);
+
+        try {
+            const response = await fetch(`${API_ROUTES.imageRoutes}/${alert.imageId}`);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch honeypot details: ${response.statusText}`);
+            }
+            const result = await response.json();
+            console.log('Honeypot Details:', result['honeypot_analysis'] || result);
+            setHoneypotDetails(result);
+        } catch (error) {
+            console.error('Honeypot fetching honeypot details:', error);
+            setImageError(error instanceof Error ? error.message : "Failed to load honeypot details");
+        } finally {
+            setHoneypotLoading(false);
+        }
+    };
+
+    const viewHoneypotImage = async () => {
+        if (!honeypotDetails) {
+            await fetchHoneypotDetails();
+        }
+        await fetchImage();
     }
 
     const getAlertIcon = (severity: string) => {
@@ -188,6 +230,188 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                         </div>
                     </CardContent>
                 </Card>
+
+                {/* Honeypot Details for Honey Harvested */}
+                {isHoneyHarvestedAlert && alert.imageId && (
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Honeypot Details</CardTitle>
+                            <CardDescription>Harvest Information and analysis</CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="space-y-4">
+                                {honeypotLoading && (
+                                    <div className="text-center py-4">
+                                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-amber-500 mx-auto mb-2"></div>
+                                        <p className="text-sm text-muted-foreground">Loading details...</p>
+                                    </div>
+                                )}
+
+                                {honeypotDetails && !honeypotLoading && (
+                                    <div className="space-y-4">
+                                        {/* Summary Stats */}
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {honeypotDetails.honeypots_detected !== undefined && (
+                                                <div className="p-3 bg-muted rounded-lg">
+                                                    <div className="text-xs text-muted-foreground mb-1">Honeypots Detected</div>
+                                                    <div className="text-sm font-medium">
+                                                        {honeypotDetails.honeypots_detected ? "Yes" : "No"}
+                                                    </div>
+                                                </div>
+                                            )}
+                                            {honeypotDetails.total_honeypots !== undefined && (
+                                                <div className="p-3 bg-muted rounded-lg">
+                                                    <div className="text-xs text-muted-foreground mb-1">Total Honeypots</div>
+                                                    <div className="text-sm font-medium">{honeypotDetails.total_honeypots}</div>
+                                                </div>
+                                            )}
+                                            {honeypotDetails.filled_honeypots !== undefined && (
+                                                <div className="p-3 bg-muted rounded-lg">
+                                                    <div className="text-xs text-muted-foreground mb-1">Filled Honeypots</div>
+                                                    <div className="text-sm font-medium">{honeypotDetails.filled_honeypots}</div>
+                                                </div>
+                                            )}
+                                            {honeypotDetails.empty_honeypots !== undefined && (
+                                                <div className="p-3 bg-muted rounded-lg">
+                                                    <div className="text-xs text-muted-foreground mb-1">Empty Honeypots</div>
+                                                    <div className="text-sm font-medium">{honeypotDetails.empty_honeypots}</div>
+                                                </div>
+                                            )}
+                                            {honeypotDetails.fill_percentage !== undefined && (
+                                                <div className="p-3 bg-muted rounded-lg">
+                                                    <div className="text-xs text-muted-foreground mb-1">Fill Percentage</div>
+                                                    <div className="text-sm font-medium">{honeypotDetails.fill_percentage}</div>
+                                                </div>
+                                            )}
+                                            {honeypotDetails.confidence !== undefined && (
+                                                <div className="p-3 bg-muted rounded-lg">
+                                                    <div className="text-xs text-muted-foreground mb-1">Confidence</div>
+                                                    <div className="text-sm font-medium">{honeypotDetails.confidence}</div>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Grid Analysis */}
+                                        {honeypotDetails.grid_analysis && (
+                                            <div className="space-y-2">
+                                                <div className="text-sm font-semibold">Grid Analysis</div>
+                                                <div className="grid grid-cols-3 gap-2">
+                                                    {Object.entries(honeypotDetails.grid_analysis).map(([position, data]: [string, any]) => (
+                                                        data.total > 0 && (
+                                                            <div key={position} className="p-2 bg-muted rounded border border-border">
+                                                                <div className="text-xs font-medium capitalize mb-1">
+                                                                    {position.replace(/_/g, ' ')}
+                                                                </div>
+                                                                <div className="text-xs text-muted-foreground">
+                                                                    <div>Total: {data.total}</div>
+                                                                    <div>Filled: {data.filled}</div>
+                                                                    <div className="text-amber-600 font-medium">
+                                                                        Fill: {data.fill_percentage.toFixed(0)}%
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Honeypot Locations */}
+                                        {honeypotDetails.honeypot_locations && honeypotDetails.honeypot_locations.length > 0 && (
+                                            <div className="space-y-2">
+                                                <div className="text-sm font-semibold">
+                                                    Honeypot Locations ({honeypotDetails.honeypot_locations.length})
+                                                </div>
+                                                <div className="max-h-48 overflow-y-auto space-y-2">
+                                                    {honeypotDetails.honeypot_locations.map((location: any, index: number) => (
+                                                        <div key={location.id || index} className="p-2 bg-muted rounded text-xs">
+                                                            <div className="grid grid-cols-2 gap-2">
+                                                                <div>
+                                                                    <span className="text-muted-foreground">ID:</span> {location.id}
+                                                                </div>
+                                                                <div>
+                                                                    <span className="text-muted-foreground">Quadrant:</span> {location.quadrant}
+                                                                </div>
+                                                                <div>
+                                                                    <span className="text-muted-foreground">Position:</span> ({location.center_x}, {location.center_y})
+                                                                </div>
+                                                                <div>
+                                                                    <span className="text-muted-foreground">Size:</span> {location.width}*{location.height}
+                                                                </div>
+                                                                {location.position_3d && (
+                                                                    <>
+                                                                        <div className="col-span-2">
+                                                                            <span className="text-muted-foreground">3D Position:</span> ({location.position_3d.x_mm.toFixed(1)}, {location.position_3d.y_mm.toFixed(1)}, {location.position_3d.z_mm.toFixed(1)}) mm
+                                                                        </div>
+                                                                        <div>
+                                                                            <span className="text-muted-foreground">Distance:</span> {location.position_3d.distance_from_center_mm.toFixed(1)} mm
+                                                                        </div>
+                                                                        <div>
+                                                                            <span className="text-muted-foreground">Angle:</span> {location.position_3d.angle_degrees.toFixed(1)}°
+                                                                        </div>
+                                                                    </>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Detection Details */}
+                                        {honeypotDetails.details && (
+                                            <div className="p-3 bg-muted rounded-lg space-y-1">
+                                                <div className="text-xs font-semibold mb-2">Detection Details</div>
+                                                {honeypotDetails.details.description && (
+                                                    <div className="text-xs">
+                                                        <span className="text-muted-foreground">Method:</span> {honeypotDetails.details.description}
+                                                    </div>
+                                                )}
+                                                {honeypotDetails.details.image_size && (
+                                                    <div className="text-xs">
+                                                        <span className="text-muted-foreground">Image Size:</span> {honeypotDetails.details.image_size}
+                                                    </div>
+                                                )}
+                                                {honeypotDetails.details.content_type && (
+                                                    <div className="text-xs">
+                                                        <span className="text-muted-foreground">Content Type:</span> {honeypotDetails.details.content_type}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* Analyzed At */}
+                                        {honeypotDetails.analyzed_at && (
+                                            <div className="text-xs text-muted-foreground">
+                                                Analyzed at: {new Date(honeypotDetails.analyzed_at.$date || honeypotDetails.analyzed_at).toLocaleString()}
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                <div className="p-4 bg-muted rounded-lg">
+                                    <p className="text-sm text-muted-foreground mb-3">
+                                        View the captured image from the honey harvest operation.
+                                    </p>
+                                    <Button
+                                        className="w-full"
+                                        variant="default"
+                                        onClick={viewHoneypotImage}
+                                        disabled={!alert.imageId}
+                                    >
+                                        View Honeypot Image
+                                    </Button>
+                                </div>
+
+                                {imageError && (
+                                    <div className="text-sm text-red-500 text-center">
+                                        {imageError}
+                                    </div>
+                                )}
+                            </div>
+                        </CardContent>
+                    </Card>
+                )}
 
                 {/* Bee Count Image */}
                 {isBeeCountAlert && alert.imageId && (
@@ -430,7 +654,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                 {/*)}*/}
 
                 {/* Recommended Actions */}
-                {alert.alertType !== "online_sensor" && (
+                {alert.alertType !== "online_sensor" && alert.alertType !== "honey_harvested" && (
                     <Card>
                         <CardHeader>
                             <CardTitle>Recommended Actions</CardTitle>
@@ -470,12 +694,6 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                                         <li>Prepare to take action if conditions worsen</li>
                                     </>
                                 )}
-                                {alert.alertType === "honey_harvested" && (
-                                    <>
-                                        <li>No immediate action required</li>
-                                        <li>Continue regular monitoring</li>
-                                    </>
-                                )}
                                 {alert.severity === "info" && alert.alertType === "anomaly_detected" && (
                                     <>
                                         <li>No immediate action required</li>
@@ -493,7 +711,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                 <DialogContent className="max-w-3xl">
                     <DialogHeader>
                         <DialogTitle>
-                            {isPredatorAlert ? "Predator Detection Image" : isBeeCountAlert ? "Bee Count Analysis Image" : "Image"}
+                            {isPredatorAlert ? "Predator Detection Image" : isBeeCountAlert ? "Bee Count Analysis Image" : isHoneyHarvestedAlert ? "Honeypot Image" : "Image"}
                         </DialogTitle>
                         <DialogDescription>
                             Captured on {new Date(alert.timestampMs).toLocaleString()}
@@ -515,7 +733,7 @@ export function AlertDetailPage({alert, beehive, onBack}: AlertDetailPageProps) 
                         {imageData && !imageLoading && !imageError && (
                             <img
                                 src={`data:image/jpeg;base64,${imageData}`}
-                                alt={isPredatorAlert ? "Predator Detection" : isBeeCountAlert ? "Bee Count Analysis" : "Alert Image"}
+                                alt={isPredatorAlert ? "Predator Detection" : isBeeCountAlert ? "Bee Count Analysis" : isHoneyHarvestedAlert ? "Honeypot" : "Alert Image"}
                                 className="max-w-full h-auto rounded-lg"
                             />
                         )}
