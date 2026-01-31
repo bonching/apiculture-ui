@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {EventSource} from "eventsource";
 import {LoginPage} from "./components/LoginPage";
 import {HomePage} from "./components/HomePage";
 import {FarmsListPage} from "./components/FarmsListPage";
@@ -99,87 +100,144 @@ export default function App() {
     // Filter state
     const [sensorStatusFilter, setSensorStatusFilter] = useState<"online" | "offline" | null>(null);
 
-    // Simulated SSE for real-time alerts
+    // Simulated SSE for real-time alerts with reconnection
     useEffect(() => {
         // Only start SSE when user is logged in
         if (username === "") return;
 
-        // Check for new alerts every 8-15 seconds (random interval)
-        // const checkInterval = () => {
-        //   const randomInterval = Math.floor(Math.random() * 7000) + 8000; // 8-15 seconds
-        //   return randomInterval;
-        // };
-        //
-        // const startSSE = () => {
-        //   const interval = setInterval(() => {
-        //     const newAlert = generateRandomAlert();
-        //
-        //     if (newAlert) {
-        //       setAlerts(prevAlerts => [newAlert, ...prevAlerts]);
-        //
-        //       // Show toast notification if not on alerts page
-        //       if (currentView !== "alerts") {
-        //         if (newAlert.severity === "critical") {
-        //           toast.error(`${newAlert.title}: ${newAlert.beehiveName}`, {
-        //             description: newAlert.message,
-        //             duration: 5000,
-        //           });
-        //         } else if (newAlert.severity === "warning") {
-        //           toast.warning(`${newAlert.title}: ${newAlert.beehiveName}`, {
-        //             description: newAlert.message,
-        //             duration: 4000,
-        //           });
-        //         } else {
-        //           toast.info(`${newAlert.title}: ${newAlert.beehiveName}`, {
-        //             description: newAlert.message,
-        //             duration: 3000,
-        //           });
-        //         }
-        //       }
-        //     }
-        //
-        //     // Reset interval with new random time
-        //     clearInterval(interval);
-        //     startSSE();
-        //   }, checkInterval());
-        //
-        //   return interval;
-        // };
-        //
-        // const intervalId = startSSE();
-        //
-        // return () => {
-        //   clearInterval(intervalId);
-        // };
+        let eventSource: EventSource | null = null;
+        let reconnectTimeoutId: NodeJS.Timeout | null = null;
+        let lastEventId: string | null = null;
+        let reconnectAttempts = 0;
+        const MAX_RECONNECT_DELAY = 30000; // 30 seconds max
+        const BASE_RECONNECT_DELAY = 1000; // 1 second base
+        let isMounted = true;
 
-        const eventSource = new EventSource(SSE_ROUTES.alertRoutes);
-        eventSource.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            // Only add the alert if it doesn't already exist (prevent duplicates)
-            setAlerts(prev => {
-                const exists = prev.some(alert => alert.id === data.id);
-                return exists ? prev : [...prev, data];
-            });
+        const connect = () => {
+            if (!isMounted) return;
 
-            if (data.dataType === "honey_harvested" && data.beehiveId && data.sensorValue) {
-                setBeehives(prevBeehives =>
-                    prevBeehives.map(hive =>
-                        hive.id === data.beehiveId
-                            ? { ...hive, honeyProduction: hive.honeyProduction + Number(data.sensorValue)}
-                            : hive
+            try {
+                // Build EventSource with Last-Event-ID header if available
+                const eventSourceInitDict: {
+                    withCredentials?: boolean;
+                    headers?: { [key: string]: string }
+                } = {
+                    withCredentials: false
+                };
+
+                // Add Last-Event_ID header if we have one
+                if (lastEventId) {
+                    eventSourceInitDict.headers = {
+                        'Last-Event-ID': lastEventId,
+                    };
+                }
+
+                eventSource = new EventSource(SSE_ROUTES.alertRoutes, eventSourceInitDict);
+
+                eventSource.onopen = () => {
+                    console.log('SSE connection established');
+                    reconnectAttempts = 0; // Reset on successful connection
+                };
+
+                eventSource.onmessage = (event) => {
+                    if (!isMounted) return;
+
+                    // Track the last event ID
+                    if (event.lastEventId) {
+                        lastEventId = event.lastEventId;
+                    }
+
+                    const data = JSON.parse(event.data);
+
+                    // Only add the alert if it doesn't already exist (prevent duplicates)
+                    setAlerts(prev => {
+                        const exists = prev.some(alert => alert.id === data.id);
+                        return exists ? prev : [...prev, data];
+                    })
+
+                    if (data.dataType === "honey_harvested" && data.beehiveId && data.sensorValue) {
+                        setBeehives(prevBeehives =>
+                            prevBeehives.map(hive =>
+                                hive.id === data.beehiveId
+                                    ? { ...hive, honeyProduction: hive.honeyProduction + Number(data.sensorValue)}
+                                    : hive
+                            )
+                        );
+                    }
+                };
+
+                eventSource.onerror = (err) => {
+                    console.error('SSE Error:', err);
+
+                    if (eventSource) {
+                        eventSource.close();
+                        eventSource = null;
+                    }
+
+                    if (!isMounted) return;
+
+                    // Calculate exponential backoff delay
+                    const delay = Math.min(
+                        BASE_RECONNECT_DELAY * Math.pow(2, reconnectAttempts),
+                        MAX_RECONNECT_DELAY
                     )
+
+                    reconnectAttempts++;
+
+                    console.log(`Reconnecting in ${delay}ms (attempt ${reconnectAttempts})...`);
+
+                    // Show toast notification on first error only
+                    if (reconnectAttempts === 1) {
+                        toast.error('Connection lost', {
+                            description: 'Attempting to reconnect...',
+                            duration: 3000,
+                        })
+                    }
+
+                    // Schedule reconnection
+                    reconnectTimeoutId = setTimeout(() => {
+                        if (isMounted) {
+                            connect();
+                        }
+                    }, delay);
+                };
+            } catch (error) {
+                console.error('Failed to create EventSource:', error);
+                if (!isMounted) return;
+
+                // Retry connection after delay
+                const delay = Math.min(
+                    BASE_RECONNECT_DELAY * Math.pow(2, reconnectAttempts),
+                    MAX_RECONNECT_DELAY
                 );
+                reconnectAttempts++;
+
+                reconnectTimeoutId = setTimeout(() => {
+                    if (isMounted) {
+                        connect();
+                    }
+                }, delay);
             }
         };
-        eventSource.onerror = (err) => {
-            // setError('SSE connection error');
-            console.error('SSE Error:', err);
-            eventSource.close();  // Close on error
-        };
+
+        // Initial connection
+        connect();
+
+        // Cleanup function
         return () => {
-            eventSource.close();
-        };
-    }, [username, currentView]);
+            isMounted = false;
+
+            if (reconnectTimeoutId) {
+                clearTimeout(reconnectTimeoutId);
+                reconnectTimeoutId = null;
+            }
+
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+        }
+    }, [username]);
 
     const handleLogin = (user: string) => {
         setUsername(user);
